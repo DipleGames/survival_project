@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -12,6 +13,7 @@ public class ItemDictionay : MonoBehaviour
     [SerializeField] Transform itemSlotParent;
     [SerializeField] GameObject itemSlotPrefab;
     [SerializeField] GameObject itemMatSlotPrefab;
+    [SerializeField] Image itemImage;
     [SerializeField] TextMeshProUGUI itemNameText;
     [SerializeField] TextMeshProUGUI itemEffectText;
     [SerializeField] TextMeshProUGUI itemAcquisition;
@@ -19,6 +21,7 @@ public class ItemDictionay : MonoBehaviour
     [SerializeField] Transform dictionaryIndexParent;
     [SerializeField] GameObject dictionaryIndexSlot;
     [SerializeField] Scrollbar scrollbar;
+    [SerializeField] GameObject DiscriptionContents;
 
     int currentCategory;
 
@@ -26,6 +29,7 @@ public class ItemDictionay : MonoBehaviour
 
     List<Item> items;
     List<Item> itemsByCategory;
+
 
     private void Start()
     {
@@ -154,6 +158,9 @@ public class ItemDictionay : MonoBehaviour
 
     public void ChangeItemInfoDescriptionText(int index)
     {
+        DiscriptionContents.SetActive(true);
+
+        itemImage.sprite = Resources.Load<Sprite>($"Item/{itemsByCategory[index].ItemId}");
         itemNameText.text = itemsByCategory[index].ItemName;
         itemEffectText.text = itemsByCategory[index].ItemEffect;
         itemAcquisition.text = "획득 장소: ";
@@ -164,7 +171,7 @@ public class ItemDictionay : MonoBehaviour
 
         int count = 0;
 
-        Transform matStringParent = transform.Find("Scroll View/DescriptionPanel/MatSlots");
+        Transform matStringParent = transform.Find("Scroll View/DescriptionPanel/Contents/MatSlots");
 
         for (int i = 0; i < matStringParent.childCount; i++)
             matStringParent.GetChild(i).gameObject.SetActive(false);
@@ -233,6 +240,8 @@ public class ItemDictionay : MonoBehaviour
 
             count++;
         }
+
+        DiscriptionContents.SetActive(true);
     }
 
     GameObject materialPanelPrefab;
