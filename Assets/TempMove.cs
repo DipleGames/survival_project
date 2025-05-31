@@ -28,7 +28,6 @@ public class TempMove : MonoBehaviour
 
     bool isDownUp = false;
     bool isLeftRight = false;
-
     void Move()
     {
         bool xInput = (Input.GetKey((KeyCode)PlayerPrefs.GetInt("Key_Left")))
@@ -86,7 +85,13 @@ public class TempMove : MonoBehaviour
 
         dir = (Vector3.right * x + Vector3.forward * z).normalized;
 
+        // Y축 기준으로 좌측(반시계 방향)으로 30도 회전
+        
+       /* Quaternion rotation = Quaternion.AngleAxis(multiDir, Vector3.up);
+        dir = rotation * dir;*/
+
         agent.speed = speed;
         agent.Move(dir * speed * Time.deltaTime);
     }
+    //public int multiDir = 45;
 }
