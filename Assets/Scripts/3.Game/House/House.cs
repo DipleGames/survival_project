@@ -1,15 +1,22 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
-public class House : MonoBehaviour, IMouseInteraction, IDamageable
+[RequireComponent(typeof(RepairRequirement))]
+public class House : MonoBehaviour, IMouseInteraction, IDamageable, IRepairable
 {
-    [SerializeField] float hp = 100;
+    [SerializeField] float hp = 90;
     [SerializeField] GameObject createDesk;
-    int houseLevel = 0;
+    int houseLevel = 1;
+    RepairRequirement repairRequirement;
 
     Dictionary<MaterialType, int> requireMaterials = new Dictionary<MaterialType, int>();
 
+    private void Awake()
+    {
+        repairRequirement = GetComponent<RepairRequirement>();
+    }
     private void Start()
     {
         ChangeLevel();
@@ -38,7 +45,6 @@ public class House : MonoBehaviour, IMouseInteraction, IDamageable
                 break;
         }
     }
-
     void CreateHouse()
     {
         if (!isSatisFyRequirement())
@@ -80,6 +86,9 @@ public class House : MonoBehaviour, IMouseInteraction, IDamageable
             case MaterialType.Wood:
                 GameManager.Instance.woodCount -= count; 
                 break;
+            case MaterialType.Branch:
+                //GameManager.Instance.
+                break;
 
             default:
                 break;
@@ -93,7 +102,7 @@ public class House : MonoBehaviour, IMouseInteraction, IDamageable
 
     public void InteractionRightButtonFuc(GameObject hitObject)
     {
-        throw new System.NotImplementedException();
+        Repair();
     }
 
     public void CanInteraction(bool _canInteraction)
@@ -125,6 +134,29 @@ public class House : MonoBehaviour, IMouseInteraction, IDamageable
 
     public void RendDamageUI(float damage, Vector3 rendPos, bool canCri, bool isCri)
     {
-        
+        throw new System.NotImplementedException();
+    }
+
+    public void Repair()
+    {
+        if (hp >= 100) return;
+
+        RepairMaterial repair_material = repairRequirement.GetMaterialList(houseLevel, hp);
+
+        if (repair_material == null)
+        {
+            Debug.Log("RepairMaterial returned NULL");
+            return;
+        }
+
+        if (GameManager.Instance.haveItems[GameManager.Instance.idByMaterialType[repair_material.type]] < repair_material.quantity)
+        {
+            Debug.Log($"Need more {repair_material.type}");
+            return;
+        }
+
+        GameManager.Instance.haveItems[GameManager.Instance.idByMaterialType[repair_material.type]] -= repair_material.quantity;
+        Debug.Log($"{repair_material.type} {GameManager.Instance.haveItems[GameManager.Instance.idByMaterialType[repair_material.type]]} remaining");
+        hp = 100;
     }
 }
