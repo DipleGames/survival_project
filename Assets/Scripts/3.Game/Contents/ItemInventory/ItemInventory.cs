@@ -25,7 +25,7 @@ public class ItemInventory : MonoBehaviour
 
         currentCategory = -1;
 
-        for (int i = 0; i < 28; i++)
+        for (int i = 0; i < 40; i++)
         {
             ItemInvenSlot slot = Instantiate(slotPrefab, slotParent).GetComponent<ItemInvenSlot>();
             slot.inventory = this;

@@ -31,7 +31,6 @@ public class ItemSlotUI : MonoBehaviour, IDropHandler
 
         dragHandler.droppedOnSlot = true;
 
-        // PuzzleController에 알리기!
         OnItemDropped?.Invoke(fromSlot, toSlot);
     }
 }

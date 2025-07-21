@@ -32,7 +32,8 @@ public class GamesceneManager : Singleton<GamesceneManager>
     Character character;
     GameSceneUI gameSceneUI;
     ItemManager itemManager;
-    ItemSpawner beach;
+    [SerializeField]SpawnItem beach;
+    //ItemSpawner beach;
     SoundManager soundManager;
 
     bool canCharacterContact = false;
@@ -47,7 +48,7 @@ public class GamesceneManager : Singleton<GamesceneManager>
         character = Character.Instance;
         gameSceneUI = GameSceneUI.Instance;
         itemManager = ItemManager.Instance;
-        beach = ItemSpawner.Instance;
+        //beach = ItemSpawner.Instance;
         soundManager = SoundManager.Instance;
 
         character.GetComponent<NavMeshAgent>().enabled = true;
@@ -109,7 +110,7 @@ public class GamesceneManager : Singleton<GamesceneManager>
 #endif
 
         StartCoroutine(SpawnBush());
-        StartCoroutine(beach.SpawnItem(beachParent));
+        StartCoroutine(beach.SpawnItems());
 
         isSetPieceEnd = false;
         character.isCanControll = false;

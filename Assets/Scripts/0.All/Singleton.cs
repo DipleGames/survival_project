@@ -10,4 +10,10 @@ public class Singleton<T> : MonoBehaviour
     {
         instance = this as T;                           // 나(Singleton)을 T형으로 변환후 대입
     }
+
+    private void OnDestroy()
+    {
+        if (instance == this)
+            instance = null;
+    }
 }

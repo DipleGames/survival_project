@@ -99,7 +99,7 @@ public class GameManager : Singleton<GameManager>
     public Dictionary<MaterialType, int> haveMaterials = new Dictionary<MaterialType, int>();
 
     public Dictionary<int, ItemInfo> itemInfos = new Dictionary<int, ItemInfo>();
-    public Dictionary<int, int> haveItems = new Dictionary<int, int>();
+    public Dictionary<int, int> haveItems = new Dictionary<int, int>(); // 아이템id - 갯수
 
     public Dictionary<MaterialType, int> idByMaterialType = new Dictionary<MaterialType, int>()
     {
@@ -109,7 +109,10 @@ public class GameManager : Singleton<GameManager>
         {MaterialType.SilkFish, 2030009}, {MaterialType.Patch, 2030010}, {MaterialType.Vodka, 2030011},
         {MaterialType.Rope, 2030012}, {MaterialType.Bottle, 2030013}, {MaterialType.Flour, 2030014},
         {MaterialType.Soil, 2030015}, {MaterialType.Salt, 1030002}, {MaterialType.SeeSalt, 1030003},
-        {MaterialType.Mud, 1030001}, {MaterialType.Stick, 1030000}, {MaterialType.WaterBottle, 2020002}
+        {MaterialType.Mud, 1030001}, {MaterialType.Stick, 1030000}, {MaterialType.WaterBottle, 2020002},
+        {MaterialType.Shell, 2030016}, {MaterialType.BlueCoral, 2030022}, {MaterialType.Sand, 2030023},
+        {MaterialType.RedDye, 2030024}, {MaterialType.YellowDye, 2030025}, {MaterialType.GreenDye, 2030026},
+        {MaterialType.BlueDye, 2030027}, {MaterialType.PurpleDye, 2030028}
     };
 
     public static Dictionary<int, MaterialType> materialTypeById = new Dictionary<int, MaterialType>();

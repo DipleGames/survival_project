@@ -3,19 +3,23 @@ using UnityEngine;
 
 public class PuzzleController : MonoBehaviour
 {
-    [SerializeField] Puzzle_Beach puzzleBeach;
     [SerializeField] List<PuzzleSlot> puzzleSlots;
+    BasicPanel puzzleUI;
 
+    private void Awake()
+    {
+        if (puzzleUI == null)
+        {
+            puzzleUI = transform.parent.GetComponent<BasicPanel>();
+        }
+    }
     private void Start()
     {
-        if (puzzleBeach == null)
-        {
-            puzzleBeach = GetComponent<Puzzle_Beach>();
-        }
         if (puzzleSlots == null || puzzleSlots.Count == 0)
         {
             puzzleSlots = new List<PuzzleSlot>(GetComponentsInChildren<PuzzleSlot>());
         }
+        if (puzzleUI == null) { Debug.LogError("puzzleUI not assigned"); }
 
     }
     private void OnEnable()
@@ -42,7 +46,7 @@ public class PuzzleController : MonoBehaviour
     {
         PuzzlePiece piece = slot.GetComponentInChildren<PuzzlePiece>();
         if (piece != null)
-            slot.SetIndex(piece.Index);
+            slot.SetIndex((int)piece.Index);
         else
             slot.SetIndex(-1);
     }
@@ -57,21 +61,26 @@ public class PuzzleController : MonoBehaviour
             submit.Add(slot.PuzzleIndex);
         }
 
-        bool isCorrect = puzzleBeach.IsCorrect(submit);
-
-        if (isCorrect)
+        if (IsCorrect(submit))
         {
-            Debug.Log("정답입니다!");
+            Debug.Log("(대충 해변 2가 활성화된다는 내용)");
+            puzzleUI.ClosePanel();
         }
         else
         {
-            string failed = "오답입니다";
-            foreach (int result in submit)
-            {
-                failed += $" {result}";
-            }
-            Debug.Log(failed);
+            Debug.Log("오답입니다");
         }
+    }
+
+    bool IsCorrect(List<int> submit)
+    {
+        if (submit.Count != SetPuzzleAnswer.Instance.Answer.Count) return false;
+
+        for (int i = 0; i < submit.Count; i++)
+        {
+            if (submit[i] != SetPuzzleAnswer.Instance.Answer[i]) return false;
+        }
+        return true;
     }
 }
 

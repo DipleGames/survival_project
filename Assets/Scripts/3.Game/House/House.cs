@@ -156,7 +156,6 @@ public class House : MonoBehaviour, IMouseInteraction, IDamageable, IRepairable
         }
 
         GameManager.Instance.haveItems[GameManager.Instance.idByMaterialType[repair_material.type]] -= repair_material.quantity;
-        Debug.Log($"{repair_material.type} {GameManager.Instance.haveItems[GameManager.Instance.idByMaterialType[repair_material.type]]} remaining");
         hp = 100;
     }
 }

@@ -169,9 +169,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 339f1af1af527ab4e8547075cb13a298, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  beachPieceList:
-  - {fileID: 11400000, guid: 48d64b482b9b50d40a54f85fa05ab993, type: 2}
-  - {fileID: 11400000, guid: 1409f817f2e97494faa1ac887fb2a16a, type: 2}
+  beachPieceList: []
   gatherPoints:
   - {fileID: 6691247678152933779}
   - {fileID: 2964632260305361915}
