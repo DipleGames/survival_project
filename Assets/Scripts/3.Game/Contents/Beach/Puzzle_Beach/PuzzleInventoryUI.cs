@@ -9,7 +9,7 @@ public class PuzzleInventoryUI : MonoBehaviour
     [SerializeField] ItemType itemSort;
     [SerializeField] GameObject puzzlePieceObject;
 
-    [SerializeField]List<Transform> slotpanels;
+    List<Transform> slotpanels = new List<Transform>();
 
     private void Awake()
     {
@@ -18,11 +18,11 @@ public class PuzzleInventoryUI : MonoBehaviour
             slotpanels.Add(slotpanel);
         }
     }
-    private void OnEnable()
+    private void Start()
     {
         UpdateInventoryUI();
     }
-    public void UpdateInventoryUI()
+    private void UpdateInventoryUI()
     {
         int index = 0;
         GameManager gameManager = GameManager.Instance;
@@ -33,7 +33,7 @@ public class PuzzleInventoryUI : MonoBehaviour
                 GameObject puzzlePiece = Instantiate(puzzlePieceObject, slotpanels[index]);
                 if(puzzlePiece.TryGetComponent(out PuzzlePiece piece))
                 {
-                    piece.InitShellColor((ShellColor)gameManager.itemInfos[item.Key].itemId - 2030017);
+                    piece.InitShellColor((ShellColor)gameManager.itemInfos[item.Key].itemId);
                 }
 
                 index++;   

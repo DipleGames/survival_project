@@ -6219,7 +6219,7 @@ MonoBehaviour:
   - itemId: 2030024
     itemName: "\uBE68\uAC04 \uC5FC\uB8CC"
     itemType: 3
-    acquisitions: 0
+    acquisitions: 1
     needMaterialTypes: 6
     needMaterialCounts: 5
     takeTimeByAcquisition: 5
@@ -6231,7 +6231,7 @@ MonoBehaviour:
   - itemId: 2030025
     itemName: "\uB178\uB780 \uC5FC\uB8CC"
     itemType: 3
-    acquisitions: 0
+    acquisitions: 1
     needMaterialTypes: 25
     needMaterialCounts: 20
     takeTimeByAcquisition: 5
@@ -6243,7 +6243,7 @@ MonoBehaviour:
   - itemId: 2030026
     itemName: "\uCD08\uB85D \uC5FC\uB8CC"
     itemType: 3
-    acquisitions: 0
+    acquisitions: 1
     needMaterialTypes: 1
     needMaterialCounts: 10
     takeTimeByAcquisition: 5
@@ -6255,7 +6255,7 @@ MonoBehaviour:
   - itemId: 2030027
     itemName: "\uD30C\uB780 \uC5FC\uB8CC"
     itemType: 3
-    acquisitions: 0
+    acquisitions: 1
     needMaterialTypes: 24
     needMaterialCounts: 3
     takeTimeByAcquisition: 5
@@ -6267,7 +6267,7 @@ MonoBehaviour:
   - itemId: 2030028
     itemName: "\uBCF4\uB77C\uC0C9 \uC5FC\uB8CC"
     itemType: 3
-    acquisitions: 0
+    acquisitions: 1
     needMaterialTypes: 6,24
     needMaterialCounts: 3,3
     takeTimeByAcquisition: 5

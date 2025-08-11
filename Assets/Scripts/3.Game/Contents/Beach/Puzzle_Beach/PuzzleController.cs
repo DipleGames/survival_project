@@ -47,8 +47,8 @@ public class PuzzleController : MonoBehaviour
         PuzzlePiece piece = slot.GetComponentInChildren<PuzzlePiece>();
         if (piece != null)
             slot.SetIndex((int)piece.Index);
-        else
-            slot.SetIndex(-1);
+        //else
+        //    slot.SetIndex(-1);
     }
 
     // 버튼에서 호출

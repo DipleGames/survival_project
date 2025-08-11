@@ -1,21 +1,25 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 
 public class SetPuzzleAnswer : Singleton<SetPuzzleAnswer>
 {
-    /// <summary>
-    /// 해변1->해변2 퍼즐 클리어 여부
-    /// </summary>
+    [Tooltip("Is puzzle Cleared")]
     public bool isCleared = false;
     [SerializeField] int puzzleSize = 5;
+    public int PuzzleSize { get { return puzzleSize; } }
+
+    int shellID = 0;
+    public int ShellID { get { return shellID; } }
 
     [SerializeField]List<int> answer;
     public IReadOnlyList<int> Answer => answer.AsReadOnly();
     
 
-    void Start()
+    protected override void Awake()
     {
+        base.Awake();
         if (isCleared) Destroy(gameObject);
 
         answer = InitAnswer();
@@ -24,18 +28,20 @@ public class SetPuzzleAnswer : Singleton<SetPuzzleAnswer>
     // 정답 설정 로직
     private List<int> InitAnswer()
     {
-        List<int> result = new List<int>();
-
-        for (int i = 0; i < puzzleSize; i++)
+        GameManager gameManager = GameManager.Instance;
+        foreach (var item in gameManager.itemInfos)
         {
-            result.Add(i);
+            if(item.Value.itemType == (int)ItemType.BeachPuzzlePiece)
+            {
+                shellID = item.Key;
+                break;
+            }
         }
 
-        for (int i = result.Count - 1; i > 0; i--)
+        List<int> result = new List<int>()
         {
-            int j = Random.Range(0, i + 1);
-            (result[j], result[i]) = (result[i], result[j]);
-        }
+            shellID,shellID+3,shellID+2,shellID+1,shellID+4
+        };
 
         return result;
     }

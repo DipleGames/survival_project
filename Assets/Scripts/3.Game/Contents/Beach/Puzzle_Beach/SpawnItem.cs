@@ -10,11 +10,11 @@ public class Prefab_Ratio
 }
 public class SpawnItem : MonoBehaviour
 {
-    [SerializeField] Collider area;
-    [SerializeField] List<Prefab_Ratio> list;
-    [SerializeField] Transform parent;
-    [SerializeField] int spawnAmount;
-    [SerializeField] float minDistance = 2f;
+    [SerializeField] Collider area;             // 생성범위
+    [SerializeField] List<Prefab_Ratio> list;   // 생성 품목-비율
+    [SerializeField] Transform parent;          // 품목들을 모아놓는 오브젝트
+    [SerializeField] int spawnAmount;           // 총 생성개수
+    [SerializeField] float minDistance = 2f;    // 품목간 최소거리
 
     Vector3 minBounds;
     Vector3 maxBounds;

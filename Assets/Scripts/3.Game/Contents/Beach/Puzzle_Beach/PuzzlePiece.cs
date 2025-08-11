@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public enum ShellColor
 {
-    RED,
+    RED = 2030017,
     YELLOW,
     GREEN,
     BLUE,
@@ -22,10 +22,16 @@ public class PuzzlePiece : MonoBehaviour
     {
         image = GetComponent<Image>();
     }
-
+    private void Start()
+    {
+        if((int)ShellColor.RED != SetPuzzleAnswer.Instance.ShellID) 
+        {
+            Debug.LogError("ShellColor doesn't match");
+        }
+    }
     public void InitShellColor(ShellColor color)
     {
         index = color;
-        image.sprite = Resources.Load<Sprite>($"Item/{2030017+index}");
+        image.sprite = Resources.Load<Sprite>($"Item/{(int)index}");
     }
 }

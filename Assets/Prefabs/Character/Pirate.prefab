@@ -232,8 +232,6 @@ MonoBehaviour:
   getItemUI: {fileID: 9083610162007046966}
   tamedPet: {fileID: 7444320351319460353}
   isDead: 0
-  x: 0
-  z: 0
   weaponParent: {fileID: 4566666533326533890}
   canWeaponChange: 1
   currentWeaponIndex: 0
@@ -267,7 +265,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layerMask:
     serializedVersion: 2
-    m_Bits: 262144
+    m_Bits: 262176
 --- !u!210 &6647390453161408462
 SortingGroup:
   m_ObjectHideFlags: 0
