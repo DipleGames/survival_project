@@ -8,10 +8,12 @@ public class RotateWeaponArm : MonoBehaviour
     Vector3 dir, mouse;
 
     GameManager gameManager;
+    Character character;
 
     private void Start()
     {
         gameManager = GameManager.Instance;
+        character = Character.Instance;
     }
 
     private void OnEnable()
@@ -21,7 +23,7 @@ public class RotateWeaponArm : MonoBehaviour
 
     void Update()
     {
-        if (!gameManager.isPause && Character.Instance.isCanControll)
+        if (!gameManager.isPause && character.isCanControll)
             LookMousePosition();
     }
 
@@ -38,8 +40,12 @@ public class RotateWeaponArm : MonoBehaviour
 
         if (dir.x < 0)
             transform.rotation *= Quaternion.Euler(0, 0, 0);
-
         else
             transform.rotation *= Quaternion.Euler(180, 0, 0);
+    }
+
+    void SwingArm()
+    {
+
     }
 }

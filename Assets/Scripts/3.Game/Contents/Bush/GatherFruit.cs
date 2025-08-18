@@ -123,7 +123,7 @@ public class GatherFruit : MonoBehaviour, IMouseInteraction
 
             int num = (character.transform.position - transform.position).x > 0 ? 0 : 1;
 
-            character.MoveToInteractableObject(gatherPoint[num].position, gameObject, 3, 5, -1, num);
+            character.MoveToInteractableObject(gatherPoint[num].position, gameObject, 3, 6, -1, num);
         }
     }
 

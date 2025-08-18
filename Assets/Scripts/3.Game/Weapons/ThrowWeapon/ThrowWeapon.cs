@@ -1,8 +1,8 @@
-public class ThrowWeapon : FireProjectile
+public class ThrowWeapon : ProjectileManager
 {
     void Start()
     {
-        initCoolTime = 2f;
+        weaponManager.delayTime = 2f;
     }
 
     private void Update()
@@ -21,12 +21,12 @@ public class ThrowWeapon : FireProjectile
     protected override void SetFire()
     {
         base.SetFire();
-        GetComponent<ParabolaLineRenderer>().ChangeLineColor(canFire);
+        GetComponent<ParabolaLineRenderer>().ChangeLineColor(weaponManager.canAttack);
     }
 
     protected override void SetInitFire()
     {
         base.SetInitFire();
-        GetComponent<ParabolaLineRenderer>().ChangeLineColor(canFire);
+        GetComponent<ParabolaLineRenderer>().ChangeLineColor(weaponManager.canAttack);
     }
 }

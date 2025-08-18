@@ -23,7 +23,6 @@ public class Character : Singleton<Character>
     [SerializeField] GameObject coffinObject;
 
     [SerializeField] Slider playerHpBar;
-    [SerializeField] SpriteRenderer[] weaponImages;
 
     [Header("Stat")]
     [SerializeField] RuntimeAnimatorController[] currentController;
@@ -57,22 +56,16 @@ public class Character : Singleton<Character>
     bool isAvoid = false;
     [HideInInspector] public bool isDead = false;
 
-    GameManager gameManager;
-
     Vector3 dir;
     float x;
     float z;
 
     Coroutine currentCoroutine;
-
-    public Transform weaponParent;
-    [HideInInspector] public bool canWeaponChange = true;
-    [HideInInspector] public int currentWeaponIndex;
-
     NavMeshAgent agent;
 
     [HideInInspector] public bool isCanControll = true;
     [HideInInspector] public bool canFlip = true;
+    [HideInInspector] public bool canDash = true;
 
     bool isTamingPet = false;
     int getPetRound = 0;
@@ -82,8 +75,11 @@ public class Character : Singleton<Character>
 
     public GameObject TamedPed => tamedPet;
 
+    GameManager gameManager;
     GamesceneManager gamesceneManager;
     SoundManager soundManager;
+    WeaponManager weaponManager;
+    WeaponChanger weaponChanger;
 
     public bool IsFlip => rendUpper.flipX;
 
@@ -115,13 +111,13 @@ public class Character : Singleton<Character>
 
         gameManager = GameManager.Instance;
         soundManager = SoundManager.Instance;
+        weaponManager = WeaponManager.Instance;
+        weaponChanger = WeaponChanger.Instance;
 
         maxRecoveryGauge = 80;
         initMaxRecGauge = maxRecoveryGauge;
         currentRecoveryGauge = 0;
         recoveryValue = 20;
-
-        currentWeaponIndex = 0;
 
         dashCoolTime = 4;
         dashCount = gameManager.dashCount;
@@ -138,6 +134,8 @@ public class Character : Singleton<Character>
         rendLower.gameObject.SetActive(false);
 
         transform.position = gameManager.characterSpawnPos;
+
+        weaponManager.CurrentIndex = 0;
     }
     
     void Update()
@@ -561,33 +559,36 @@ public class Character : Singleton<Character>
 
     public IEnumerator IEDashInvincible()
     {
+        if (weaponManager == null)
+            weaponManager = WeaponManager.Instance;
+
         Color semiWhite = Color.white;
 
         isAttacked = true;
         semiWhite.a = 0.5f;
         rendUpper.color = semiWhite;
         rendLower.color = semiWhite;
-        if (weaponImages[currentWeaponIndex] != null)
-            weaponImages[currentWeaponIndex].color = semiWhite;
+        weaponManager.ChangeCurrentIdxColor(semiWhite);
 
         yield return CoroutineCaching.WaitForSeconds(0.5f);
         
         rendUpper.color = Color.white;
         rendLower.color = Color.white;
-        if (weaponImages[currentWeaponIndex] != null)
-            weaponImages[currentWeaponIndex].color = Color.white;
+        weaponManager.ChangeCurrentIdxColor(Color.white);
 
         isAttacked = false;
     }
 
     private IEnumerator PlayerColorInvincible()
     {
+        if (weaponManager == null)
+            weaponManager = WeaponManager.Instance;
+
         Color semiWhite = new Color(1, 1, 1, 0.5f);
 
         rendUpper.color = semiWhite;
         rendLower.color = semiWhite;
-        if (weaponImages[currentWeaponIndex] != null)
-            weaponImages[currentWeaponIndex].color = semiWhite;
+        weaponManager.ChangeCurrentIdxColor(semiWhite);
 
         float waitTime = invincibleTime <= 0 ? 0 : invincibleTime;
 
@@ -595,41 +596,40 @@ public class Character : Singleton<Character>
 
         rendUpper.color = Color.white;
         rendLower.color = Color.white;
-        if (weaponImages[currentWeaponIndex] != null)
-            weaponImages[currentWeaponIndex].color = Color.white;
+        weaponManager.ChangeCurrentIdxColor(Color.white);
 
         isAttacked = false;
     }
 
     private IEnumerator PlayerColorBlink()
     {
+        if (weaponManager == null)
+            weaponManager = WeaponManager.Instance;
+
         Color semiRed = new Color(1, 0, 0, 0.5f);
         Color semiWhite = new Color(1, 1, 1, 0.5f);
 
-        int weaponIndex = currentWeaponIndex;
+        int currentIdx = weaponManager.CurrentIndex;
+        int weaponIndex = currentIdx;
 
         rendUpper.color = semiRed;
         rendLower.color = semiRed;
-        if (weaponImages[currentWeaponIndex] != null)
-            weaponImages[currentWeaponIndex].color = semiRed;
+        weaponManager.ChangeCurrentIdxColor(semiRed);
         yield return CoroutineCaching.WaitForSeconds(0.1f);
 
         rendUpper.color = semiWhite;
         rendLower.color = semiWhite;
-        if (weaponImages[currentWeaponIndex] != null)
-            weaponImages[currentWeaponIndex].color = semiWhite;
+        weaponManager.ChangeCurrentIdxColor(semiWhite);
         yield return CoroutineCaching.WaitForSeconds(0.1f);
 
         rendUpper.color = semiRed;
         rendLower.color = semiRed;
-        if (weaponImages[currentWeaponIndex] != null)
-            weaponImages[currentWeaponIndex].color = semiRed;
+        weaponManager.ChangeCurrentIdxColor(semiRed);
         yield return CoroutineCaching.WaitForSeconds(0.1f);
 
         rendUpper.color = semiWhite;
         rendLower.color = semiWhite;
-        if (weaponImages[currentWeaponIndex] != null)
-            weaponImages[currentWeaponIndex].color = semiWhite;
+        weaponManager.ChangeCurrentIdxColor(semiWhite);
 
         float waitTime = invincibleTime - 0.3f <= 0 ? 0 : invincibleTime;
 
@@ -637,13 +637,12 @@ public class Character : Singleton<Character>
 
         rendUpper.color = Color.white;
         rendLower.color = Color.white;
-        if (weaponImages[currentWeaponIndex] != null)
-            weaponImages[currentWeaponIndex].color = Color.white;
+        weaponManager.ChangeCurrentIdxColor(Color.white);
 
-        if(weaponIndex != currentWeaponIndex && weaponImages[weaponIndex] != null)
+        if (weaponIndex != currentIdx && weaponManager.GetWeaponImage(weaponIndex) != null)
         {
-            weaponImages[weaponIndex].color = Color.white;
-        }
+            weaponManager.ChangeTargetIdxColor(weaponIndex, Color.white);
+        } 
 
         isAttacked = false;
     }
@@ -729,4 +728,5 @@ public class Character : Singleton<Character>
     {
         anim.runtimeAnimatorController = currentController[num];
     }
+
 }

@@ -1,41 +1,49 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class WeaponChanger : MonoBehaviour
+public class WeaponChanger : Singleton<WeaponChanger>
 {
-    [SerializeField] Sprite[] weaponImages;
+    [Header("Image")]
+    [SerializeField] protected Sprite[] weaponImages;
+    [SerializeField] Transform[] weaponTransforms;
     [SerializeField] Image currentItemImage;
     [SerializeField] Image nextItemImage;
-    [SerializeField] GameObject bulletText;
+
+    [Header("Sound")]
     [SerializeField] AudioClip changeSound;
 
-    int beforeIndex = 0;
-    int currentIndex = 0;
-    int nextIndex = 0;
+    [Header("Other")]
+    [SerializeField] GameObject bulletText;
 
     bool canScroll = true;
 
     Character character;
     SoundManager soundManager;
     GameManager gameManager;
+    WeaponManager weaponManager;
 
-    void Awake()
+    protected override void Awake()
     {
+        base.Awake();
+        DontDestroyOnLoad(this);
+
         character = Character.Instance;
         soundManager = SoundManager.Instance;
         gameManager = GameManager.Instance;
+        weaponManager = WeaponManager.Instance;
 
         currentItemImage.sprite = weaponImages[0];
         nextItemImage.sprite = weaponImages[1];
 
-        foreach (Transform weapon in character.weaponParent)
+        foreach (Transform weapon in weaponManager.weaponParent)
         {
             weapon.gameObject.SetActive(false);
         }
 
-        character.weaponParent.GetChild(0).gameObject.SetActive(true);
+        weaponManager.weaponParent.GetChild(0).gameObject.SetActive(true);
 
         bulletText.gameObject.SetActive(false);
         gameObject.SetActive(false);
@@ -46,10 +54,11 @@ public class WeaponChanger : MonoBehaviour
         if (character == null)
             character = Character.Instance;
 
-        character.ChangeAnimationController(currentIndex + 2);
+        weaponManager.CurrentIndex = 0;
+        character.ChangeAnimationController(weaponManager.CurrentIndex + 2);
 
         canScroll = true;
-        character.canWeaponChange = true;
+        weaponManager.canWeaponChange = true;
     }
 
     private void OnDisable()
@@ -60,7 +69,7 @@ public class WeaponChanger : MonoBehaviour
 
     void Update()
     {
-        if (!canScroll || !character.isCanControll || !character.canWeaponChange || gameManager.isPause)
+        if (!canScroll || !character.isCanControll || !weaponManager.canWeaponChange || gameManager.isPause)
         {
             return;
         }
@@ -70,49 +79,46 @@ public class WeaponChanger : MonoBehaviour
         if (mouseWheel == 0)
             return;
 
-        beforeIndex = currentIndex;
+        weaponManager.BeforeIndex = weaponManager.CurrentIndex;
 
         soundManager.PlaySFX(changeSound);
 
         if (mouseWheel > 0)
         {
-            currentIndex = currentIndex + 1 >= weaponImages.Length ? 0 : currentIndex + 1;
-            nextIndex = currentIndex + 1 >= weaponImages.Length ? 0 : currentIndex + 1;
+            weaponManager.CurrentIndex = weaponManager.CurrentIndex + 1 >= weaponImages.Length ? 0 : weaponManager.CurrentIndex + 1;
+            weaponManager.NextIndex = weaponManager.CurrentIndex + 1 >= weaponImages.Length ? 0 : weaponManager.CurrentIndex + 1;
         }
 
         else if (mouseWheel < 0)
         {
-            currentIndex = currentIndex - 1 < 0 ? weaponImages.Length - 1 : currentIndex - 1;
-            nextIndex = beforeIndex;
+            weaponManager.CurrentIndex = weaponManager.CurrentIndex - 1 < 0 ? weaponImages.Length - 1 : weaponManager.CurrentIndex - 1;
+            weaponManager.NextIndex = weaponManager.BeforeIndex;
         }
 
-        character.ChangeAnimationController(currentIndex + 2);
+        character.ChangeAnimationController(weaponManager.CurrentIndex + 2);
 
-        currentItemImage.sprite = weaponImages[currentIndex];
-        nextItemImage.sprite = weaponImages[nextIndex];
+        currentItemImage.sprite = weaponImages[weaponManager.CurrentIndex];
+        nextItemImage.sprite = weaponImages[weaponManager.NextIndex];
 
-        character.weaponParent.GetChild(beforeIndex).gameObject.SetActive(false);
-        character.weaponParent.GetChild(currentIndex).gameObject.SetActive(true);
+        weaponManager.weaponParent.GetChild(weaponManager.BeforeIndex).gameObject.SetActive(false);
+        weaponManager.weaponParent.GetChild(weaponManager.CurrentIndex).gameObject.SetActive(true);
 
-        if(currentIndex == 1)
+        if(weaponManager.CurrentIndex == 1)
             bulletText.gameObject.SetActive(true);
 
         else
             bulletText.gameObject.SetActive(false);
 
-        character.currentWeaponIndex = currentIndex;
-
         StartCoroutine(ScrollCoolDown());
     }
-
-
 
     IEnumerator ScrollCoolDown()
     {
         canScroll = false;
 
-        yield return CoroutineCaching.WaitForSeconds(0.5f);
+        yield return CoroutineCaching.WaitForSeconds(weaponManager.changeDelay);
 
         canScroll = true;
     }
+
 }

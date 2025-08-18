@@ -9,6 +9,7 @@ public class BowCatchBar : MonoBehaviour
     SoundManager soundManager;
     GameManager gameManager;
     Character character;
+    WeaponManager weaponManager;
 
     float barSpeed;
     float maxBarSpeed = 600;
@@ -24,6 +25,7 @@ public class BowCatchBar : MonoBehaviour
         soundManager = SoundManager.Instance;
         gameManager = GameManager.Instance;
         character = Character.Instance;
+        weaponManager = WeaponManager.Instance;
     }
 
     private void OnEnable()
@@ -39,7 +41,7 @@ public class BowCatchBar : MonoBehaviour
 
         if (Input.GetMouseButton(0))
         {
-            if (GetComponent<ShootArrow>().checkCanFire())
+            if (weaponManager.canAttack)
             {
                 if (currentSfx == null)
                 {

@@ -171,7 +171,7 @@ public class BeachItem : MonoBehaviour, IMouseInteraction
         int num = (character.transform.position - transform.position).x > 0 ? 0 : 1;
 
         canInteract = false;
-        character.MoveToInteractableObject(gatherPoints[num].position, gameObject, 1.25f, 5, -1, num);
+        character.MoveToInteractableObject(gatherPoints[num].position, gameObject, 1.25f, 6, -1, num);
     }
 
     public void InteractionRightButtonFuc(GameObject hitObject)

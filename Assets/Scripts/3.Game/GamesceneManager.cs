@@ -34,6 +34,7 @@ public class GamesceneManager : Singleton<GamesceneManager>
     ItemManager itemManager;
     ItemSpawner beach;
     SoundManager soundManager;
+    WeaponManager weaponManager;
 
     bool canCharacterContact = false;
 
@@ -49,6 +50,7 @@ public class GamesceneManager : Singleton<GamesceneManager>
         itemManager = ItemManager.Instance;
         beach = ItemSpawner.Instance;
         soundManager = SoundManager.Instance;
+        weaponManager = WeaponManager.Instance;
 
         character.GetComponent<NavMeshAgent>().enabled = true;
 
@@ -93,7 +95,7 @@ public class GamesceneManager : Singleton<GamesceneManager>
         character.ChangeAnimationController(0);
 
         character.UpdateStat();
-        character.weaponParent.gameObject.SetActive(false);
+        weaponManager.weaponParent.gameObject.SetActive(false);
 
 #if UNITY_EDITOR
         //StartCoroutine(SpawnTree());
@@ -140,14 +142,14 @@ public class GamesceneManager : Singleton<GamesceneManager>
             currentGameTime = gameManager.gameDayTime;
         }
 
-        character.canWeaponChange = true;
+        weaponManager.canWeaponChange = true;
 
-        for (int i = 0; i < character.weaponParent.childCount; ++i)
+        for (int i = 0; i < weaponManager.weaponParent.childCount; ++i)
         {
-            if (!character.weaponParent.GetChild(i).gameObject.activeSelf)
+            if (!weaponManager.weaponParent.GetChild(i).gameObject.activeSelf)
             {
-                character.weaponParent.GetChild(i).gameObject.SetActive(true);
-                character.weaponParent.GetChild(i).gameObject.SetActive(false);
+                weaponManager.weaponParent.GetChild(i).gameObject.SetActive(true);
+                weaponManager.weaponParent.GetChild(i).gameObject.SetActive(false);
             }
         }
 
@@ -192,7 +194,7 @@ public class GamesceneManager : Singleton<GamesceneManager>
         }
 
         character.UpdateStat();
-        character.weaponParent.gameObject.SetActive(true);
+        weaponManager.weaponParent.gameObject.SetActive(true);
         character.transform.position = new Vector3(-1f, 0f, -41f);
 
         campFire.GetComponent<Campfire>().ToNightScene();
