@@ -19,7 +19,9 @@ public class SpreadSheetJson : EditorWindow
         public string spreadsheetId;
         public int startX;
         public int startY;
+        public string rootKey;
         public string saveFileName;
+        public bool enableDataStart;
     }
 
     private List<TemplateData> templates = new();
@@ -30,11 +32,14 @@ public class SpreadSheetJson : EditorWindow
     private string spreadsheetId = "";
     private int startX = 0;
     private int startY = 0;
-    private string saveFileName = "game_data.json";
+    private string rootKey = "rootKey";     // Json파일 최상단 "{rootKey}" : 
+    private string saveFileName = "game_data.txt";
+    private bool enableDataStart = false;
 
-    private string templateNameInput = "";
+    private string templateNameInput = ""; 
     private static string TemplateFilePath =>
-        Path.Combine(Application.persistentDataPath, "spreadsheet_templates.json");
+        Path.Combine(Application.persistentDataPath, "spreadsheet_templates.txt");
+
 
     [MenuItem("Tools/Spreadsheet JSON")]
     public static void ShowWindow()
@@ -54,7 +59,9 @@ public class SpreadSheetJson : EditorWindow
         EditorPrefs.SetString("ss_json_spreadsheetId", spreadsheetId);
         EditorPrefs.SetInt("ss_json_startX", startX);
         EditorPrefs.SetInt("ss_json_startY", startY);
+        EditorPrefs.SetString("ss_json_rootKey", rootKey);
         EditorPrefs.SetString("ss_json_saveFileName", saveFileName);
+        EditorPrefs.SetBool("ss_json_enableDataStart", enableDataStart);
     }
 
     private void OnGUI()
@@ -100,6 +107,8 @@ public class SpreadSheetJson : EditorWindow
                 startX = startX,
                 startY = startY,
                 saveFileName = saveFileName,
+                rootKey = rootKey,
+                enableDataStart = enableDataStart,
             };
             templates.Add(newTemplate);
             SaveTemplates();
@@ -107,7 +116,7 @@ public class SpreadSheetJson : EditorWindow
         }
 
         GUILayout.Space(15);
-        GUILayout.Label("📄 Spreadsheet 설정", EditorStyles.boldLabel);
+        GUILayout.Label("Spreadsheet 설정", EditorStyles.boldLabel);
 
         spreadsheetId = EditorGUILayout.TextField("스프레드시트 ID", spreadsheetId);
 
@@ -119,14 +128,31 @@ public class SpreadSheetJson : EditorWindow
         typesY = EditorGUILayout.IntField(typesY);
         EditorGUILayout.EndHorizontal();
 
-        EditorGUILayout.LabelField("본문 데이터 시작 위치");
-        EditorGUILayout.BeginHorizontal();
-        EditorGUILayout.LabelField("가로 (X)", GUILayout.Width(80));
-        startX = EditorGUILayout.IntField(startX);
-        EditorGUILayout.LabelField("세로 (Y)", GUILayout.Width(80));
-        startY = EditorGUILayout.IntField(startY);
-        EditorGUILayout.EndHorizontal();
+        enableDataStart = EditorGUILayout.ToggleLeft("데이터 시작위치 수동 지정", enableDataStart);
+        if (!enableDataStart)
+        {
+            startX = typesX;
+            startY = typesY + 2;
+        }
+        using (new EditorGUI.DisabledScope(!enableDataStart))
+        {
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField("가로 (X)", GUILayout.Width(80));
 
+            int shownX = enableDataStart ? startX : typesX;
+            int newStartX = EditorGUILayout.IntField(shownX);
+            if (enableDataStart) startX = newStartX;
+
+            EditorGUILayout.LabelField("세로 (Y)", GUILayout.Width(80));
+
+            int shownY = enableDataStart ? startY : (typesY + 2);
+            int newStartY = EditorGUILayout.IntField(shownY);
+            if (enableDataStart) startY = newStartY;
+
+            EditorGUILayout.EndHorizontal();
+        }
+
+        rootKey = EditorGUILayout.TextField("Json 루트 키", rootKey);
         saveFileName = EditorGUILayout.TextField("저장파일 이름", saveFileName);
 
         GUILayout.Space(10);
@@ -141,7 +167,9 @@ public class SpreadSheetJson : EditorWindow
         spreadsheetId = t.spreadsheetId;
         startX = t.startX;
         startY = t.startY;
+        rootKey = t.rootKey;
         saveFileName = t.saveFileName;
+        enableDataStart = t.enableDataStart;
     }
 
     private void SaveTemplates()
@@ -215,7 +243,12 @@ public class SpreadSheetJson : EditorWindow
 
     private void SaveJson(List<Dictionary<string, object>> data)
     {
-        string json = JsonConvert.SerializeObject(data, Formatting.Indented);
+        var root = new Dictionary<string, object>
+        {
+            [$"{rootKey}"] = data
+        };
+
+        string json = JsonConvert.SerializeObject(root, Formatting.Indented);
         string path = Path.Combine(Application.dataPath, saveFileName);
         File.WriteAllText(path, json, Encoding.UTF8);
         AssetDatabase.Refresh();

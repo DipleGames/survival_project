@@ -1,5 +1,7 @@
+using System;
 using System.IO;
 using UnityEngine;
+using UnityEngine.Purchasing.MiniJSON;
 
 [System.Serializable]
 public class ItemInfo
@@ -40,10 +42,9 @@ public class ItemData : Singleton<ItemData>
 
     int count;
 
-
     private class ItemJson
     {
-        public ItemInfo[] items;
+        public ItemInfo[] items;    // Json rootKey
 
         public ItemJson(ItemInfo[] items)
         {
@@ -103,7 +104,7 @@ public class ItemData : Singleton<ItemData>
     [ContextMenu("AddJsonFile")]
     public void AddJsonFile()
     {
-        ItemJson itemJson = new ItemJson(AddItemArray(1));      
+        ItemJson itemJson = new ItemJson(AddItemArray(1));
 
         string json = JsonUtility.ToJson(itemJson, true);
         SaveFile("ItemtData", json);
