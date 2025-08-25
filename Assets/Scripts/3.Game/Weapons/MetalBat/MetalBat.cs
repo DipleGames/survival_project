@@ -1,13 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public class MetalBat : MonoBehaviour, IWeapon
 {
-    [SerializeField] BoxCollider collder;
     [SerializeField] GameObject chargeBar;
+    [SerializeField] List<Collider> detectedList;
 
     [Header("Stat")]
     [SerializeField] float damage;
@@ -15,19 +16,22 @@ public class MetalBat : MonoBehaviour, IWeapon
     [SerializeField] float pushPower;
 
     [Header("Time")]
-    [Range(0f, 2.5f)]
-    float clickTime;
+    [Range(0f, 3f)]
+    [SerializeField] float clickTime;
 
     [Header("Sound")]
     [SerializeField] List<AudioClip> attackSounds;
     //[SerializeField] AudioClip chargeSound;
     //[SerializeField] AudioClip chargeAttackSound;
 
+    WaitForSeconds WFS_400ms;
+
     Animator anim;
     Character character;
     GameManager gameManager;
     WeaponManager weaponManager;
     SoundManager soundManager;
+    MonsterFinder monsterFinder;
 
     private void Awake()
     {
@@ -36,6 +40,10 @@ public class MetalBat : MonoBehaviour, IWeapon
         gameManager = GameManager.Instance;
         weaponManager = WeaponManager.Instance;
         soundManager = SoundManager.Instance;
+        
+        monsterFinder = GetComponent<MonsterFinder>();
+        detectedList = new List<Collider>();
+        WFS_400ms = new WaitForSeconds(0.4f);
     }
 
     public void Attack()
@@ -53,7 +61,11 @@ public class MetalBat : MonoBehaviour, IWeapon
         {
             clickTime += Time.deltaTime;
 
-            if (0.5f <= clickTime)
+            if(clickTime > 3f)
+            {
+                clickTime = 3f;
+            }
+            else if (1f <= clickTime)
             {
                 chargeBar.SetActive(true);
                 weaponManager.chargeTime = clickTime - 1f;
@@ -62,48 +74,65 @@ public class MetalBat : MonoBehaviour, IWeapon
         
         if (Input.GetMouseButtonUp(0) && character.isCanControll && weaponManager.canAttack)
         {
+            chargeBar.SetActive(false);
+            clickTime = 0f;
+
             AudioClip selectedSound = attackSounds[Random.Range(0, 3)];
             soundManager.PlaySFX(selectedSound);
 
-            float angle1 = GetComponent<MonsterFinder>().rangeAngleA;
-            float angle2 = GetComponent<MonsterFinder>().rangeAngleB;
-            gameObject.GetComponent<ClipController>().SetKeyframesRotationZ(angle1, angle2);
-
             weaponManager.canWeaponChange = false;
-            character.canFlip = false;
-            character.anim.SetTrigger("isAttack");
-            collder.enabled = true;
+            weaponManager.canAttack = false;
+            StartCoroutine(ControlAnim());
 
-            anim.SetBool("canAttack", weaponManager.canAttack);
-            
-            if (character.IsFlip)
-                anim.SetBool("RightAttack", true);
-            else
-                anim.SetBool("RightAttack", false);
+            detectedList = monsterFinder.FindMonster();
+            if (detectedList.Count > 0)
+            {
+                //Debug.Log(string.Join(',', detectedList.Select(x => x.gameObject.transform.parent.name)));
 
-            transform.rotation = Quaternion.identity;
-            chargeBar.SetActive(false);
-            SetDelay();
+                foreach (Collider moncol in detectedList)
+                {
+                    Transform monster = moncol.transform.parent;
+
+                    Vector3 direction = (monster.position - transform.position).normalized;
+
+                    if (moncol.GetComponent<MonsterHit>() != null)
+                    {
+                        bool isCri = gameManager.status[Status.Critical] >= Random.Range(0f, 100f);
+                        float finalDamage = (damage + gameManager.status[Status.Damage] + gameManager.status[Status.CloseDamage] + gameManager.bloodDamage) * (100 + character.percentDamage) * 0.01f;
+
+                        finalDamage *= (isCri ? 2 : 1);
+                        
+                        float hpNow = moncol.gameObject.GetComponentInParent<Monster>().hp;
+                        float realDamage = (weaponManager.chargeTime > 0f && hpNow <= finalDamage) ? hpNow - 1 : finalDamage;
+
+                        moncol.GetComponent<IDamageable>().Attacked(realDamage, moncol.gameObject);
+                        moncol.GetComponent<IDamageable>().RendDamageUI(realDamage, moncol.transform.position, true, isCri);
+
+                        if (weaponManager.chargeTime > 0f)
+                        {
+                            float finalPower = pushPower * (weaponManager.chargeTime / 2f);
+
+                            if (monster.GetComponent<MonsterMove>() != null)
+                            {
+                                StartCoroutine(monster.gameObject.GetComponent<MonsterMove>().FlyAway(direction, finalPower, finalDamage, isCri));
+                            }
+                        }
+                    }
+                }
+            }
         }
-
     }
     public void SetDelay()
     {
         weaponManager.delayTime = batDelay * character.attackSpeed;
-        weaponManager.canAttack = false;
         weaponManager.canWeaponChange = false;
+        weaponManager.canAttack = false;
+        character.canFlip = true;
     }
-
-    public void ChargeAttack()
-    {
-        /// ???
-    }
-
     
     private void OnEnable()
     {
         weaponManager.SetChangeDelay();
-        collder.enabled = false;
         chargeBar.SetActive(false);
     }
     private void Update()
@@ -115,34 +144,17 @@ public class MetalBat : MonoBehaviour, IWeapon
         StopAllCoroutines();
     }
 
-    private void OnTriggerEnter(Collider other)
+    IEnumerator ControlAnim()
     {
-        if (other.GetComponent<IDamageable>() != null)
+        weaponManager.delayTime = 0.4f;
+        character.canFlip = false;
+        character.anim.SetTrigger("isAttack");
+
+        do
         {
-            bool isCri = gameManager.status[Status.Critical] >= Random.Range(0f, 100f);
+            yield return WFS_400ms;
+        } while (false);
 
-            float realDamage = (damage + gameManager.status[Status.Damage] + gameManager.status[Status.CloseDamage] + gameManager.bloodDamage) * (100 + character.percentDamage) * 0.01f;
-
-            realDamage *= isCri ? 2 : 1;
-
-            other.GetComponent<IDamageable>().Attacked(realDamage, this.gameObject);
-            other.GetComponent<IDamageable>().RendDamageUI(realDamage, other.transform.position, true, isCri);
-
-            if (weaponManager.chargeTime > 0f)
-            {
-                Vector3 pushDir = (other.transform.position - transform.position).normalized;
-                pushDir.y = other.gameObject.transform.position.y;
-                float finalPower = pushPower * (weaponManager.chargeTime / 2f);
-                
-            }
-        }
-    }
-
-    void EndBatAttack()
-    {
-        collder.enabled = false;
-        character.canFlip = true;
-        anim.SetBool("canAttack", weaponManager.canAttack);
         SetDelay();
     }
 

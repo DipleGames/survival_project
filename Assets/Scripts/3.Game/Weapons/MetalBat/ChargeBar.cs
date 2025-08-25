@@ -14,6 +14,8 @@ public class ChargeBar : MonoBehaviour
     private void Awake()
     {
         weaponManager = WeaponManager.Instance;
+        chargeBar.value = 0;
+        chargebarFill.color = Color.yellow;
     }
 
     private void OnEnable()
@@ -26,7 +28,7 @@ public class ChargeBar : MonoBehaviour
     {
         if (weaponManager.chargeTime > 0f)
         {
-            chargeBar.value = weaponManager.chargeTime / 2f;
+            chargeBar.value = weaponManager.chargeTime / 2f + 0.01f;
 
             if (chargeBar.value == 1f)
                 chargebarFill.color = Color.red;

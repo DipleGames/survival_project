@@ -12,12 +12,8 @@ public class MonsterFinder : MonoBehaviour
     [Range(0f, 360f)]
     [SerializeField] float detactAngle;
     [SerializeField] LayerMask detactLayer;
-
-    [SerializeField] List<Collider> detactedMonsters;
-    bool canRotate;
-
-    internal float rangeAngleA;
-    internal float rangeAngleB;
+    [HideInInspector]
+    [SerializeField] public List<Collider> detactedMonsters;
 
     // Vector3 mousePos;
     Ray ray;
@@ -42,17 +38,13 @@ public class MonsterFinder : MonoBehaviour
             mouseWorldPos = hit.point;
 
         mouseWorldPos.y = transform.position.y;
-
-
-        if (Input.GetMouseButtonUp(0) && weaponManager.canAttack)
-        {
-            FindMonster((mouseWorldPos - transform.position).normalized);
-        }
     }
 
-    void FindMonster(Vector3 attackDir)
+    public List<Collider> FindMonster()
     {
+        Vector3 attackDir = (mouseWorldPos - transform.position).normalized;
         var monsters = Physics.OverlapSphere(transform.position, detactRadius, detactLayer);
+        
         detactedMonsters.Clear();
 
         foreach (var monster in monsters) 
@@ -63,8 +55,8 @@ public class MonsterFinder : MonoBehaviour
                 detactedMonsters.Add(monster);
         }
 
-        Debug.Log(string.Join(',', detactedMonsters.Select(x => x.gameObject.name)));
-        
+        // Debug.Log(string.Join(',', detactedMonsters.Select(x => x.gameObject.name)));
+        return detactedMonsters;
     }
 
     private void OnDrawGizmos()
@@ -81,9 +73,6 @@ public class MonsterFinder : MonoBehaviour
         Handles.color = Color.red;
         Handles.DrawLine(transform.position, transform.position + viewAngleA * detactRadius);
         Handles.DrawLine(transform.position, transform.position + viewAngleB * detactRadius);
-
-        rangeAngleA = Vector3.Angle(transform.position, transform.position + viewAngleA * detactRadius);
-        rangeAngleB = Vector3.Angle(transform.position, transform.position + viewAngleB * detactRadius);
     }
 
     public Vector3 DirFromAngle(float angleInDegrees)

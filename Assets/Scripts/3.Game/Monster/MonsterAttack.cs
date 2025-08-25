@@ -5,7 +5,9 @@ using UnityEngine;
 public class MonsterAttack : MonoBehaviour
 {
     [SerializeField] AudioClip attackSound;
-    
+
+    [HideInInspector] bool canAttack;
+
     SoundManager soundManager;
 
     private void Start()

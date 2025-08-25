@@ -52,8 +52,8 @@ public class Monster : MonoBehaviour
     float initAttackDelay;
     float initMoveDelay;
 
-    bool canAttack = true;
-    bool canMove = true;
+    public bool canAttack = true;
+    public bool canMove = true;
 
     int initOrder;
 
@@ -64,6 +64,8 @@ public class Monster : MonoBehaviour
     Vector3 housePos;
 
     MonsterMove monsterMove;
+
+    public bool isblowed = false;
 
     private void Awake()
     {

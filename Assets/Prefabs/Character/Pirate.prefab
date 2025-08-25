@@ -7274,53 +7274,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 126
   m_CollisionDetection: 1
---- !u!65 &3033505897582359926
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8486216436802026876}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 0.2, y: 1.1, z: 0.3}
-  m_Center: {x: 0, y: 0.45, z: 0}
---- !u!95 &5767805497123696515
-Animator:
-  serializedVersion: 4
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8486216436802026876}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 07454089306958b4cadc8ba229b7146f, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &3194044805947808411
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8486216436802026876}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c91ca9f5f1ce0774f80c24b6119374ae, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  leftAttack: {fileID: 7400000, guid: 89b1065123ec504418d58a53f89fad24, type: 2}
-  rightAttack: {fileID: 7400000, guid: 3519ed1e35969e64898deea3f51b31c0, type: 2}
 --- !u!114 &5768575177139739798
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7337,7 +7290,7 @@ MonoBehaviour:
   detactAngle: 100
   detactLayer:
     serializedVersion: 2
-    m_Bits: 128
+    m_Bits: 1048576
   detactedMonsters: []
 --- !u!114 &7186334355576954676
 MonoBehaviour:
@@ -7351,9 +7304,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37aa6134662408645821a05f6c6d75c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  collder: {fileID: 3033505897582359926}
   chargeBar: {fileID: 4140880195931893656}
-  damage: 25
+  detectedList: []
+  damage: 15
   batDelay: 0.9
   pushPower: 2
   attackSounds:

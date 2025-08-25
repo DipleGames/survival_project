@@ -1,6 +1,8 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.SocialPlatforms;
 
 public enum MonsterFocusObject
 {
@@ -32,13 +34,17 @@ public class MonsterMove : MonoBehaviour
 
     [SerializeField] float initMoveTime;
     [SerializeField] float initWaitTime;
-
     [SerializeField] float initSpeed;
 
     Vector3 housePos;
 
     Vector3 destination;
     public MonsterFocusObject FocusObject { get; private set; }
+
+    WaitForSeconds WFS_1s;
+
+    LayerMask detactLayer;
+    [SerializeField] float flyDuration;
 
     private void Awake()
     {
@@ -64,6 +70,9 @@ public class MonsterMove : MonoBehaviour
 
         destination = housePos;
         FocusObject = MonsterFocusObject.House;
+
+        WFS_1s = new WaitForSeconds(1f);
+        flyDuration = 1f;
     }
 
     private void OnEnable()
@@ -209,5 +218,92 @@ public class MonsterMove : MonoBehaviour
     {
         Gizmos.color = Color.green;
         Gizmos.DrawWireSphere(transform.position + characterDetectCollider.center, characterDetectCollider.radius);
+    }
+
+    public IEnumerator FlyAway(Vector3 flyDirection, float power, float damage, bool isCri)
+    {
+        GetComponentInParent<Monster>().isblowed = true;
+
+        Vector3 endPos = transform.position + (new Vector3(flyDirection.x, 0, flyDirection.z) * power);
+        endPos.y = transform.position.y;
+
+        StartCoroutine(MoveParabolic(transform.position, endPos, 2, flyDuration));
+        yield return WFS_1s;
+
+        detactLayer = 1 << LayerMask.NameToLayer("MonsterAttaked");
+        var detected = Physics.OverlapSphere(transform.position, 1f, detactLayer);
+
+        if (detected != null)
+        {
+            foreach (Collider monster in detected)
+            {
+                if (monster == boxCollider) continue;
+                if (monster.GetComponentInParent<Monster>().isblowed) continue;
+
+                monster.GetComponent<IDamageable>().Attacked(damage, monster.gameObject);
+                monster.GetComponent<IDamageable>().RendDamageUI(damage, monster.transform.position, true, isCri);
+            }
+        }
+
+        StartCoroutine(Stunned());
+        GetComponentInParent<Monster>().isblowed = false;
+        GetComponentInChildren<IDamageable>().Attacked(damage, gameObject);
+        GetComponentInChildren<IDamageable>().RendDamageUI(damage, transform.position, true, isCri);
+    }
+
+    IEnumerator MoveParabolic(Vector3 startPos, Vector3 endPos, float maxHeight, float duration)
+    {
+        agent.enabled = false;
+
+        float timePassed = 0f;
+        float time = 0f;
+
+        while (timePassed < duration)
+        {
+            time = timePassed / duration;
+
+            Vector3 basePos = Vector3.Lerp(startPos, endPos, time);
+
+            float height = 2f * maxHeight * time * (1 - time);
+
+            Vector3 finalPos = new Vector3(basePos.x, transform.position.y, basePos.z + height);
+
+            transform.position = finalPos;
+
+            timePassed += Time.deltaTime;
+
+            yield return null;
+        }
+
+        NavMeshHit hit;
+
+        if (NavMesh.SamplePosition(transform.position, out hit, 1000, 1 << groundLayer))
+        {
+            transform.position = hit.position;
+        }
+
+        agent.enabled = true;
+        
+    }
+
+    IEnumerator Stunned()
+    {
+        agent.enabled = false;
+        GetComponent<Monster>().canAttack = false;
+
+        do
+        {
+            yield return WFS_1s;
+        } while (false);
+
+        GetComponent<Monster>().canAttack = true;
+        agent.enabled = true;
+    }
+
+    private void OnDisable()
+    {
+        GetComponent<Monster>().canAttack = true;
+        agent.enabled = true;
+        StopAllCoroutines();
     }
 }
