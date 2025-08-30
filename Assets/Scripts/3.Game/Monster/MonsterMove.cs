@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.SocialPlatforms;
+using static UnityEngine.Rendering.HableCurve;
 
 public enum MonsterFocusObject
 {
@@ -44,7 +45,10 @@ public class MonsterMove : MonoBehaviour
     WaitForSeconds WFS_1s;
 
     LayerMask detactLayer;
-    [SerializeField] float flyDuration;
+    float impactRadius;
+
+    [SerializeField] LineRenderer lineRenderer;
+    [SerializeField] int segments;
 
     private void Awake()
     {
@@ -72,7 +76,17 @@ public class MonsterMove : MonoBehaviour
         FocusObject = MonsterFocusObject.House;
 
         WFS_1s = new WaitForSeconds(1f);
-        flyDuration = 1f;
+        impactRadius = 1f;
+
+        lineRenderer.enabled = true;
+        segments = 60;
+        lineRenderer.positionCount = segments + 1;
+        lineRenderer.useWorldSpace = true;
+        lineRenderer.loop = true;
+        lineRenderer.startColor = Color.red;
+        lineRenderer.endColor = Color.red;
+        lineRenderer.widthMultiplier = 0.025f;
+        lineRenderer.enabled = false;
     }
 
     private void OnEnable()
@@ -227,11 +241,15 @@ public class MonsterMove : MonoBehaviour
         Vector3 endPos = transform.position + (new Vector3(flyDirection.x, 0, flyDirection.z) * power);
         endPos.y = transform.position.y;
 
-        StartCoroutine(MoveParabolic(transform.position, endPos, 2, flyDuration));
-        yield return WFS_1s;
+        float distance = 1 + power;             // 비거리 : [1 ~ 5]
+        float flyDuration = 1f;
+        float height = 2f;
+        StartCoroutine(MoveParabolic(transform.position, endPos, height, flyDuration));
+        yield return WFS_1s;    // 비행시간 동안 대기
 
+        // float radius = 0.25f + distance * 0.25f;         // 비거리에 따른 공격판정 범위
         detactLayer = 1 << LayerMask.NameToLayer("MonsterAttaked");
-        var detected = Physics.OverlapSphere(transform.position, 1f, detactLayer);
+        var detected = Physics.OverlapSphere(transform.position, impactRadius, detactLayer);
 
         if (detected != null)
         {
@@ -240,15 +258,15 @@ public class MonsterMove : MonoBehaviour
                 if (monster == boxCollider) continue;
                 if (monster.GetComponentInParent<Monster>().isblowed) continue;
 
-                monster.GetComponent<IDamageable>().Attacked(damage, monster.gameObject);
-                monster.GetComponent<IDamageable>().RendDamageUI(damage, monster.transform.position, true, isCri);
+                monster.GetComponent<IDamageable>().Attacked(damage * 0.7f, monster.gameObject);
+                monster.GetComponent<IDamageable>().RendDamageUI(damage * 0.7f, monster.transform.position, true, isCri);
             }
         }
 
         StartCoroutine(Stunned());
         GetComponentInParent<Monster>().isblowed = false;
-        GetComponentInChildren<IDamageable>().Attacked(damage, gameObject);
-        GetComponentInChildren<IDamageable>().RendDamageUI(damage, transform.position, true, isCri);
+        GetComponentInChildren<IDamageable>().Attacked(damage * 0.7f, gameObject);
+        GetComponentInChildren<IDamageable>().RendDamageUI(damage * 0.7f, transform.position, true, isCri);
     }
 
     IEnumerator MoveParabolic(Vector3 startPos, Vector3 endPos, float maxHeight, float duration)
@@ -258,6 +276,8 @@ public class MonsterMove : MonoBehaviour
         float timePassed = 0f;
         float time = 0f;
 
+        StartCoroutine(DrawLandingPoint(endPos, duration));
+
         while (timePassed < duration)
         {
             time = timePassed / duration;
@@ -266,9 +286,9 @@ public class MonsterMove : MonoBehaviour
 
             float height = 2f * maxHeight * time * (1 - time);
 
-            Vector3 finalPos = new Vector3(basePos.x, transform.position.y, basePos.z + height);
+            Vector3 posNow = new Vector3(basePos.x, transform.position.y, basePos.z + height);
 
-            transform.position = finalPos;
+            transform.position = posNow;
 
             timePassed += Time.deltaTime;
 
@@ -290,14 +310,41 @@ public class MonsterMove : MonoBehaviour
     {
         agent.enabled = false;
         GetComponent<Monster>().canAttack = false;
+        float time = 0f;
 
-        do
+        // WFS 없이 적용되는가?
+        while (time < 1f)
         {
-            yield return WFS_1s;
-        } while (false);
+            time += Time.deltaTime;
+            yield return null;
+        } 
 
         GetComponent<Monster>().canAttack = true;
         agent.enabled = true;
+    }
+
+    IEnumerator DrawLandingPoint(Vector3 landingPoint, float duration)
+    {
+        float time = 0f;
+        lineRenderer.enabled = true;
+
+        // Debug.Log("impactRadiuis: " + impactRadius);
+        for (int i = 0; i <= segments; i++)
+        {
+            float angle = (2 * Mathf.PI) * ((float)i / segments);
+            // Debug.Log("i: " + i + " angle: " + angle);
+            float x = landingPoint.x + Mathf.Cos(angle) * impactRadius;
+            float z = landingPoint.z + Mathf.Sin(angle) * impactRadius;
+            lineRenderer.SetPosition(i, new Vector3(x, 0.1f, z));
+        }
+
+        while (time < duration)
+        {
+            time += Time.deltaTime;
+            yield return null;
+        }
+
+        lineRenderer.enabled = false;       // 비행 종료시 비활성화
     }
 
     private void OnDisable()

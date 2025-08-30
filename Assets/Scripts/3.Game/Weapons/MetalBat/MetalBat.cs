@@ -53,7 +53,6 @@ public class MetalBat : MonoBehaviour, IWeapon
 
         if (Input.GetMouseButtonDown(0) && character.isCanControll && weaponManager.canAttack)
         {
-            weaponManager.chargeTime = 0f;
             clickTime = 0f;
         }
         
@@ -120,6 +119,7 @@ public class MetalBat : MonoBehaviour, IWeapon
                     }
                 }
             }
+            weaponManager.chargeTime = 0f;
         }
     }
     public void SetDelay()

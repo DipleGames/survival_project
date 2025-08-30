@@ -7308,7 +7308,8 @@ MonoBehaviour:
   detectedList: []
   damage: 15
   batDelay: 0.9
-  pushPower: 2
+  pushPower: 4
+  clickTime: 0
   attackSounds:
   - {fileID: 8300000, guid: 3738c6f6e2fcd0b41ac3c105b54e650f, type: 3}
   - {fileID: 8300000, guid: 5da3f77dfdd5c164fb2733f4fd8c93a7, type: 3}
