@@ -155,20 +155,23 @@ public class Monster : MonoBehaviour
         }
 
         rend.color = initcolor;
-    }   
+    }
 
     protected virtual void OnTriggerEnter(Collider other)
     {
-        if(isDead) return;
+        if (isDead) return;
 
         if (other.CompareTag("Character"))
         {
             character.OnDamaged(damage, gameObject.transform.GetComponentInChildren<MonsterHit>().gameObject);
         }
-
-        else if (other.GetComponentInChildren<IDamageable>() is House)
+        else
         {
-            other.GetComponent<IDamageable>().Attacked(damage, null);
+            IDamageable damageable = other.GetComponentInChildren<IDamageable>();
+            if (damageable != null)
+            {
+                damageable.Attacked(damage, null);
+            }
         }
     }
 

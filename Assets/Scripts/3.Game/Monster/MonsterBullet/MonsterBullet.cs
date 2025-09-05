@@ -48,15 +48,19 @@ public class MonsterBullet : MonoBehaviour
             DestroyBullet();
         }
 
-        else if(other.tag == "Obstacle")
+        else if (other.tag == "Obstacle")
         {
             DestroyBullet();
         }
 
-        else if(other.GetComponentInChildren<IDamageable>() is House)
+        else
         {
-            other.GetComponent<IDamageable>().Attacked(realDamage, null);
-            DestroyBullet();
+            IDamageable damageable = other.GetComponentInChildren<IDamageable>();
+            if (damageable != null)
+            {
+                damageable.Attacked(realDamage, null);
+                DestroyBullet();
+            }
         }
     }
 
