@@ -56,9 +56,9 @@ public class ItemInventory : MonoBehaviour
 
         foreach (var item in gameManager.haveItems)
         {
-            if (gameManager.itemInfos[item.Key].itemType == type)
+            if (gameManager.Items[item.Key].Type == (ItemType)type)
             {
-                slots[index].SetSlot(gameManager.itemInfos[item.Key]);
+                slots[index].SetSlot(gameManager.Items[item.Key]);
                 index++;
             }
         }
@@ -71,8 +71,8 @@ public class ItemInventory : MonoBehaviour
         currentCategory = type;
     }
 
-    public void SetItemDescription(ItemInfo item)
+    public void SetItemDescription(Item item)
     {
-        descriptionPanel.GetComponent<Text>().text = $"{item.itemName}\n\n{item.effect.Replace("\\n", "\n")}\n\n{item.decription.Replace("\\n","\n")}";
+        descriptionPanel.GetComponent<Text>().text = $"{item.ItemName}\n\n{item.ItemEffect.Replace("\\n", "\n")}\n\n{item.Description.Replace("\\n","\n")}";
     }
 }

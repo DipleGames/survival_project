@@ -6,7 +6,7 @@ using System;
 
 public class PuzzleInventoryUI : MonoBehaviour
 {
-    [SerializeField] ItemType itemSort;
+    [SerializeField] ItemType type;
     [SerializeField] GameObject puzzlePieceObject;
 
     List<Transform> slotpanels = new List<Transform>();
@@ -20,20 +20,21 @@ public class PuzzleInventoryUI : MonoBehaviour
     }
     private void Start()
     {
-        UpdateInventoryUI();
+        UpdatePuzzleInventoryUI();
     }
-    private void UpdateInventoryUI()
+    private void UpdatePuzzleInventoryUI()
     {
         int index = 0;
         GameManager gameManager = GameManager.Instance;
+
         foreach (var item in gameManager.haveItems)
         {
-            if (gameManager.itemInfos[item.Key].itemType == (int)itemSort)
+            if (gameManager.Items[item.Key].Type == type)
             {
                 GameObject puzzlePiece = Instantiate(puzzlePieceObject, slotpanels[index]);
                 if(puzzlePiece.TryGetComponent(out PuzzlePiece piece))
                 {
-                    piece.InitShellColor((ShellColor)gameManager.itemInfos[item.Key].itemId);
+                    piece.InitShellColor((ShellColor)gameManager.Items[item.Key].ItemId);
                 }
 
                 index++;   

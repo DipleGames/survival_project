@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
@@ -98,8 +99,12 @@ public class GameManager : Singleton<GameManager>
 
     public Dictionary<MaterialType, int> haveMaterials = new Dictionary<MaterialType, int>();
 
-    public Dictionary<int, ItemInfo> itemInfos = new Dictionary<int, ItemInfo>();
-    public Dictionary<int, int> haveItems = new Dictionary<int, int>(); // 아이템id - 갯수
+    [Obsolete]
+    public Dictionary<int, ItemInfo> itemInfos = new Dictionary<int, ItemInfo>(); // id - ItemInfo
+    /// <summary> 아이템 id - 정보</summary>
+    public Dictionary<int, Item> Items = new Dictionary<int, Item>();
+    /// <summary> 아이템 id - 갯수 </summary>
+    public Dictionary<int, int> haveItems = new Dictionary<int, int>();
 
     public Dictionary<MaterialType, int> idByMaterialType = new Dictionary<MaterialType, int>()
     {
@@ -149,7 +154,7 @@ public class GameManager : Singleton<GameManager>
 
         LoadItemData();
 
-#if UNITY_EDITOR
+#if UNITY_EDITOR // 
         foreach (var material in idByMaterialType)
         {
             materialTypeById.Add(material.Value, material.Key);
@@ -157,13 +162,13 @@ public class GameManager : Singleton<GameManager>
 
         int num = 10;
 
-        foreach (var itemInfo in itemInfos)
+        foreach (var itemInfo in Items)
         {
-            if (haveItems.ContainsKey(itemInfo.Value.itemId))
-                haveItems[itemInfo.Value.itemId] += num;
+            if (haveItems.ContainsKey(itemInfo.Value.ItemId))
+                haveItems[itemInfo.Value.ItemId] += num;
 
             else
-                haveItems.Add(itemInfo.Value.itemId, num);
+                haveItems.Add(itemInfo.Value.ItemId, num);
 
             num++;
         }
@@ -272,10 +277,12 @@ public class GameManager : Singleton<GameManager>
 
         for (int i = 0; i < itemInfos.Length; ++i)
         {
-            this.itemInfos.Add(itemInfos[i].itemId, itemInfos[i]);
+            //this.itemInfos.Add(itemInfos[i].itemId, itemInfos[i]);
+            Items.Add(itemInfos[i].itemId, new Item(itemInfos[i].itemId, itemInfos[i].itemName, itemInfos[i].itemType, itemInfos[i].needMaterialTypes, itemInfos[i].needMaterialCounts, itemInfos[i].takeTimeByAcquisition, itemInfos[i].acquisitions, itemInfos[i].isConsumable, itemInfos[i].effect, itemInfos[i].decription));
 
             //f (itemInfos[i].itemId / 1000000 == 01 && !string.IsNullOrEmpty(itemInfos[i].needMaterialTypes))
             itemDatas.Add(new Item(itemInfos[i].itemId, itemInfos[i].itemName, itemInfos[i].itemType, itemInfos[i].needMaterialTypes, itemInfos[i].needMaterialCounts, itemInfos[i].takeTimeByAcquisition, itemInfos[i].acquisitions, itemInfos[i].isConsumable, itemInfos[i].effect, itemInfos[i].decription));
+
         }
     }
 }

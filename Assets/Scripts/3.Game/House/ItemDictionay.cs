@@ -189,7 +189,7 @@ public class ItemDictionay : MonoBehaviour
             }
 
             matSlot.transform.Find("MatImage").GetComponent<Image>().sprite = Resources.Load<Sprite>($"Item/{GameManager.Instance.idByMaterialType[mat.Key]}");
-            matSlot.transform.Find("MatName").GetComponent<Text>().text = $"{GameManager.Instance.itemInfos[GameManager.Instance.idByMaterialType[mat.Key]].itemName}";
+            matSlot.transform.Find("MatName").GetComponent<Text>().text = $"{GameManager.Instance.Items[GameManager.Instance.idByMaterialType[mat.Key]].ItemName}";
             matSlot.transform.Find("MatCount").GetComponent<Text>().text = $"x {mat.Value}";
 
             GameObject matString = null;
@@ -213,7 +213,7 @@ public class ItemDictionay : MonoBehaviour
                 matString.SetActive(true);
             }
 
-            matName.text = $"[{GameManager.Instance.itemInfos[GameManager.Instance.idByMaterialType[mat.Key]].itemName}]";
+            matName.text = $"[{GameManager.Instance.Items[GameManager.Instance.idByMaterialType[mat.Key]].ItemName}]";
 
             Vector2 textSize = matName.GetComponent<RectTransform>().sizeDelta;
             textSize.x = matName.preferredWidth;

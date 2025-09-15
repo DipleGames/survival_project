@@ -29,9 +29,9 @@ public class SetPuzzleAnswer : Singleton<SetPuzzleAnswer>
     private List<int> InitAnswer()
     {
         GameManager gameManager = GameManager.Instance;
-        foreach (var item in gameManager.itemInfos)
+        foreach (var item in gameManager.Items)
         {
-            if(item.Value.itemType == (int)ItemType.BeachPuzzlePiece)
+            if(item.Value.Type == ItemType.BeachPuzzlePiece)
             {
                 shellID = item.Key;
                 break;

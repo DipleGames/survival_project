@@ -159,7 +159,7 @@ public class CreatePanel : MonoBehaviour
         foreach (var material in item.NeedMaterials)
         {
             gameManager.haveItems[gameManager.idByMaterialType[material.Key]] -= material.Value * createCount;
-            Debug.Log($"{gameManager.itemInfos[GameManager.Instance.idByMaterialType[material.Key]].itemName}: {material.Value * createCount}개 소모");
+            Debug.Log($"{gameManager.Items[GameManager.Instance.idByMaterialType[material.Key]].ItemName}: {material.Value * createCount}개 소모");
         }
 
         //item.AddItem();
@@ -186,7 +186,7 @@ public class CreatePanel : MonoBehaviour
         foreach (var material in item.NeedMaterials)
         {
             gameManager.haveMaterials[material.Key] -= material.Value;
-            Debug.Log($"{gameManager.itemInfos[GameManager.Instance.idByMaterialType[material.Key]].itemName}: {material.Value}개 소모");
+            Debug.Log($"{gameManager.Items[GameManager.Instance.idByMaterialType[material.Key]].ItemName}: {material.Value}개 소모");
         }
 
         item.AddItem();
@@ -195,17 +195,17 @@ public class CreatePanel : MonoBehaviour
 
     public void ChangeItemList(Acquisition aquisition)
     {
-        List<ItemInfo> items = new List<ItemInfo>();
+        List<Item> items = new List<Item>();
 
-        foreach (var itemInfo in gameManager.itemInfos)
+        foreach (var item in gameManager.Items)
         {
-            string[] aquisitions = itemInfo.Value.acquisitions.Split(",");
+            List<Acquisition> aquisitions = item.Value.AcquisitionList;
 
-            for (int i = 0; i < aquisitions.Length; i++)
+            for (int i = 0; i < aquisitions.Count; i++)
             {
-                if ((Acquisition)int.Parse(aquisitions[i]) == aquisition)
+                if (aquisitions[i] == aquisition)
                 {
-                    items.Add(itemInfo.Value);
+                    items.Add(item.Value);
                 }
             }
         }
