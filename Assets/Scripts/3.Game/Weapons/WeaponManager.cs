@@ -3,12 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.TextCore.Text;
 
-public enum Weapons
+public enum RangeMode
 {
-    Bow,
-    Revolver,
-    Cutlass,
-    Bat
+    Arc,
+    Circle
 }
 
 public class WeaponManager : Singleton<WeaponManager>
@@ -33,6 +31,7 @@ public class WeaponManager : Singleton<WeaponManager>
     [HideInInspector] public int weaponCount = 4;
     [HideInInspector] public bool canWeaponChange = true;
     [SerializeField] public SpriteRenderer[] weaponRenderer;
+    public int rangeMode;
 
     Character character;
     WeaponChanger weaponChanger;

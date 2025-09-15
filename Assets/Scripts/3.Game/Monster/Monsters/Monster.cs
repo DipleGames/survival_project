@@ -21,9 +21,7 @@ public class Monster : MonoBehaviour
     float moveSpeed;
     float damage;
 
-
     [HideInInspector] protected bool isDead = false, isAttack = false;
-
     public bool IsDead => isDead;
 
     public float hp;

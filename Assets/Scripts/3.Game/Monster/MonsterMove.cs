@@ -13,8 +13,7 @@ public enum MonsterFocusObject
 
 public class MonsterMove : MonoBehaviour
 {
-    float moveTime;
-    float waitTime;
+    [SerializeField] Monster monster;
     [SerializeField] LayerMask groundLayer;
     [SerializeField] BoxCollider boxCollider;
     [SerializeField] BoxCollider weaponBoxCollider;
@@ -22,38 +21,35 @@ public class MonsterMove : MonoBehaviour
     [SerializeField] GameObject weapon;
     [SerializeField] SphereCollider characterDetectCollider;
 
-    Character character;
-    GameManager gameManager;
-
-    Vector3 dir;
-
-    [HideInInspector] public NavMeshAgent agent;
-
     float initScaleX;
     float initColliderX;
     float initWeaponColliderX;
 
+    [HideInInspector] public NavMeshAgent agent;
+
+    Vector3 dir;
+    Vector3 housePos;
+    Vector3 destination;
+
+    [Header("Setting")]
     [SerializeField] float initMoveTime;
     [SerializeField] float initWaitTime;
     [SerializeField] float initSpeed;
+   
+    float moveTime;
+    float waitTime;
 
-    Vector3 housePos;
-
-    Vector3 destination;
     public MonsterFocusObject FocusObject { get; private set; }
-
-    WaitForSeconds WFS_1s;
 
     LayerMask detactLayer;
     float impactRadius;
+    float flyDelay;
 
-    [SerializeField] LineRenderer lineRenderer;
-    [SerializeField] int segments;
+    Character character;
 
     private void Awake()
     {
         character = Character.Instance;
-        gameManager = GameManager.Instance;
         agent = GetComponent<NavMeshAgent>();
 
         housePos = GameObject.Find("House").transform.position;
@@ -75,18 +71,8 @@ public class MonsterMove : MonoBehaviour
         destination = housePos;
         FocusObject = MonsterFocusObject.House;
 
-        WFS_1s = new WaitForSeconds(1f);
         impactRadius = 1f;
-
-        lineRenderer.enabled = true;
-        segments = 60;
-        lineRenderer.positionCount = segments + 1;
-        lineRenderer.useWorldSpace = true;
-        lineRenderer.loop = true;
-        lineRenderer.startColor = Color.red;
-        lineRenderer.endColor = Color.red;
-        lineRenderer.widthMultiplier = 0.025f;
-        lineRenderer.enabled = false;
+        flyDelay = 0f;
     }
 
     private void OnEnable()
@@ -234,20 +220,24 @@ public class MonsterMove : MonoBehaviour
         Gizmos.DrawWireSphere(transform.position + characterDetectCollider.center, characterDetectCollider.radius);
     }
 
-    public IEnumerator FlyAway(Vector3 flyDirection, float power, float damage, bool isCri)
+    public IEnumerator FlyAway(Vector3 flyDirection, float distance, float height, float duration, float damage, bool isCri)
     {
         GetComponentInParent<Monster>().isblowed = true;
 
-        Vector3 endPos = transform.position + (new Vector3(flyDirection.x, 0, flyDirection.z) * power);
+        Vector3 endPos = transform.position + (new Vector3(flyDirection.x, 0, flyDirection.z) * distance);
         endPos.y = transform.position.y;
 
-        float distance = 1 + power;             // 비거리 : [1 ~ 5]
-        float flyDuration = 1f;
-        float height = 2f;
-        StartCoroutine(MoveParabolic(transform.position, endPos, height, flyDuration));
-        yield return WFS_1s;    // 비행시간 동안 대기
+        StartCoroutine(MoveParabolic(transform.position, endPos, height, duration));    // 포물선 이동
+        
+        flyDelay = 0f;
+        while (flyDelay < duration)
+        {
+            flyDelay += Time.deltaTime;
+            yield return null;
+        }
 
-        // float radius = 0.25f + distance * 0.25f;         // 비거리에 따른 공격판정 범위
+        // distance : 최소 1 ~ 최대 5
+        impactRadius = 0.5f + distance * 0.1f;         // 비거리에 따른 공격판정 범위변동
         detactLayer = 1 << LayerMask.NameToLayer("MonsterAttaked");
         var detected = Physics.OverlapSphere(transform.position, impactRadius, detactLayer);
 
@@ -263,7 +253,7 @@ public class MonsterMove : MonoBehaviour
             }
         }
 
-        StartCoroutine(Stunned());
+        
         GetComponentInParent<Monster>().isblowed = false;
         GetComponentInChildren<IDamageable>().Attacked(damage * 0.7f, gameObject);
         GetComponentInChildren<IDamageable>().RendDamageUI(damage * 0.7f, transform.position, true, isCri);
@@ -306,45 +296,18 @@ public class MonsterMove : MonoBehaviour
         
     }
 
-    IEnumerator Stunned()
-    {
-        agent.enabled = false;
-        GetComponent<Monster>().canAttack = false;
-        float time = 0f;
-
-        // WFS 없이 적용되는가?
-        while (time < 1f)
-        {
-            time += Time.deltaTime;
-            yield return null;
-        } 
-
-        GetComponent<Monster>().canAttack = true;
-        agent.enabled = true;
-    }
-
     IEnumerator DrawLandingPoint(Vector3 landingPoint, float duration)
     {
         float time = 0f;
-        lineRenderer.enabled = true;
-
-        // Debug.Log("impactRadiuis: " + impactRadius);
-        for (int i = 0; i <= segments; i++)
-        {
-            float angle = (2 * Mathf.PI) * ((float)i / segments);
-            // Debug.Log("i: " + i + " angle: " + angle);
-            float x = landingPoint.x + Mathf.Cos(angle) * impactRadius;
-            float z = landingPoint.z + Mathf.Sin(angle) * impactRadius;
-            lineRenderer.SetPosition(i, new Vector3(x, 0.1f, z));
-        }
+        
+        // 착지지점 오브젝트 풀을 생성하여 관리할 것
+        // ㅂㅈㄷㄱㅁㄴㅇㄹ
 
         while (time < duration)
         {
             time += Time.deltaTime;
             yield return null;
         }
-
-        lineRenderer.enabled = false;       // 비행 종료시 비활성화
     }
 
     private void OnDisable()

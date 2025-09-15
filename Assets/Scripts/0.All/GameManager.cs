@@ -43,6 +43,7 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] public Transform bulletStorage;
     [SerializeField] public Transform damageStorage;
     [SerializeField] public Transform monsterBulletStorage;
+    [SerializeField] public Transform landingPoints;
 
     [Header("GameData")]
     [SerializeField] GameObject characterPrefab;

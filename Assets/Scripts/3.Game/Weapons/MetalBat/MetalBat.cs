@@ -1,30 +1,51 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
+using UnityEngine.SocialPlatforms;
+using UnityEngine.UIElements;
+using static UnityEditor.ShaderGraph.Internal.KeywordDependentCollection;
 
 public class MetalBat : MonoBehaviour, IWeapon
 {
-    [SerializeField] GameObject chargeBar;
-    [SerializeField] List<Collider> detectedList;
+    [SerializeField] Transform chargeBar;
+    [SerializeField] Transform landingPoint;
+    [SerializeField] Transform EffectRange;
+    List<Collider> detectedList;
+    Collider detectedOne;
+    Vector3 targetPos;
 
     [Header("Stat")]
     [SerializeField] float damage;
     [SerializeField] float batDelay;
-    [SerializeField] float pushPower;
+    [SerializeField] float maxDistance;
+    [SerializeField] float maxHeight;
+    [SerializeField] float flyTime;
+    [SerializeField] float stunDuration;
+
+    [SerializeField] int isOption_One;
 
     [Header("Time")]
     [Range(0f, 3f)]
     [SerializeField] float clickTime;
+    float attackAnimTime;
 
     [Header("Sound")]
     [SerializeField] List<AudioClip> attackSounds;
     //[SerializeField] AudioClip chargeSound;
     //[SerializeField] AudioClip chargeAttackSound;
 
-    WaitForSeconds WFS_400ms;
+    [Header("Tracker")]
+    [Inspectable] Transform monster;
+    [Inspectable] Vector3 direction;
+    [Inspectable] float diffX;
+    [Inspectable] float diffZ;
+    [Inspectable] Vector3 diffPos;
+    [Inspectable] float flyDistance;
+    MonsterOutline monsterOutline;
 
     Animator anim;
     Character character;
@@ -33,6 +54,8 @@ public class MetalBat : MonoBehaviour, IWeapon
     SoundManager soundManager;
     MonsterFinder monsterFinder;
 
+    public RangeMode rangeMode;
+
     private void Awake()
     {
         anim = GetComponent<Animator>();
@@ -40,10 +63,19 @@ public class MetalBat : MonoBehaviour, IWeapon
         gameManager = GameManager.Instance;
         weaponManager = WeaponManager.Instance;
         soundManager = SoundManager.Instance;
-        
+
         monsterFinder = GetComponent<MonsterFinder>();
         detectedList = new List<Collider>();
-        WFS_400ms = new WaitForSeconds(0.4f);
+        detectedOne = new Collider();
+        attackAnimTime = 0.4f;
+
+        isOption_One = 0;
+        
+        if(landingPoint.gameObject.activeSelf)
+            landingPoint.gameObject.SetActive(false);
+
+        if (EffectRange.gameObject.activeSelf)
+            EffectRange.gameObject.SetActive(false);
     }
 
     public void Attack()
@@ -58,22 +90,50 @@ public class MetalBat : MonoBehaviour, IWeapon
         
         if (Input.GetMouseButton(0) && character.isCanControll && weaponManager.canAttack)
         {
-            clickTime += Time.deltaTime;
-
-            if(clickTime > 3f)
-            {
+            if(clickTime < 3f)
+                clickTime += Time.deltaTime;
+            
+            else if(clickTime > 3f)
                 clickTime = 3f;
-            }
-            else if (1f <= clickTime)
+
+            if (1f <= clickTime)
             {
-                chargeBar.SetActive(true);
+                chargeBar.gameObject.SetActive(true);
                 weaponManager.chargeTime = clickTime - 1f;
+                
+                // 차지공격 옵션 1번인 경우
+                if (isOption_One == 0 && weaponManager.chargeTime > 0f)
+                {
+                    detectedOne = monsterFinder.FindNearest();
+
+                    if (detectedOne != null)
+                    {
+                        landingPoint.gameObject.SetActive(true);
+                        monster = detectedOne.transform.parent;
+
+                        diffPos = monster.position - transform.position;
+                        direction = diffPos.normalized;
+                        flyDistance = 0.5f + (maxDistance * (weaponManager.chargeTime / 2f));
+
+                        targetPos = diffPos + (new Vector3(direction.x, 0, direction.z) * flyDistance);
+                        landingPoint.GetComponent<LandingPoint>().UpdateLandingPoint(targetPos);
+                    }
+                    else
+                    { landingPoint.gameObject.SetActive(false); }
+                }
+
+                if (isOption_One == 1 && weaponManager.chargeTime > 0f)
+                {
+                    EffectRange.gameObject.SetActive(true);
+
+
+                }
             }
         }
         
         if (Input.GetMouseButtonUp(0) && character.isCanControll && weaponManager.canAttack)
         {
-            chargeBar.SetActive(false);
+            chargeBar.gameObject.SetActive(false);
             clickTime = 0f;
 
             AudioClip selectedSound = attackSounds[Random.Range(0, 3)];
@@ -83,42 +143,20 @@ public class MetalBat : MonoBehaviour, IWeapon
             weaponManager.canAttack = false;
             StartCoroutine(ControlAnim());
 
-            detectedList = monsterFinder.FindMonster();
-            if (detectedList.Count > 0)
+            if(weaponManager.chargeTime <= 0f)
             {
-                //Debug.Log(string.Join(',', detectedList.Select(x => x.gameObject.transform.parent.name)));
-
-                foreach (Collider moncol in detectedList)
-                {
-                    Transform monster = moncol.transform.parent;
-
-                    Vector3 direction = (monster.position - transform.position).normalized;
-
-                    if (moncol.GetComponent<MonsterHit>() != null)
-                    {
-                        bool isCri = gameManager.status[Status.Critical] >= Random.Range(0f, 100f);
-                        float finalDamage = (damage + gameManager.status[Status.Damage] + gameManager.status[Status.CloseDamage] + gameManager.bloodDamage) * (100 + character.percentDamage) * 0.01f;
-
-                        finalDamage *= (isCri ? 2 : 1);
-                        
-                        float hpNow = moncol.gameObject.GetComponentInParent<Monster>().hp;
-                        float realDamage = (weaponManager.chargeTime > 0f && hpNow <= finalDamage) ? hpNow - 1 : finalDamage;
-
-                        moncol.GetComponent<IDamageable>().Attacked(realDamage, moncol.gameObject);
-                        moncol.GetComponent<IDamageable>().RendDamageUI(realDamage, moncol.transform.position, true, isCri);
-
-                        if (weaponManager.chargeTime > 0f)
-                        {
-                            float finalPower = pushPower * (weaponManager.chargeTime / 2f);
-
-                            if (monster.GetComponent<MonsterMove>() != null)
-                            {
-                                StartCoroutine(monster.gameObject.GetComponent<MonsterMove>().FlyAway(direction, finalPower, finalDamage, isCri));
-                            }
-                        }
-                    }
-                }
+                NormalAttack();
             }
+            else if(weaponManager.chargeTime > 0f)
+            {
+                Debug.Log("모드: 차지공격1");
+                ChargeAttack_Option1();
+
+                // Debug.Log("모드: 차지공격2");
+                // ChargeAttack_Option2();
+            }
+
+            landingPoint.gameObject.SetActive(false);
             weaponManager.chargeTime = 0f;
         }
     }
@@ -133,29 +171,125 @@ public class MetalBat : MonoBehaviour, IWeapon
     private void OnEnable()
     {
         weaponManager.SetChangeDelay();
-        chargeBar.SetActive(false);
+        chargeBar.gameObject.SetActive(false);
+        landingPoint.gameObject.SetActive(false);
+        weaponManager.rangeMode = (int)(RangeMode.Arc);
     }
     private void Update()
     {
         Attack();
     }
-    private void OnDisable()
-    {
-        StopAllCoroutines();
-    }
 
+    // 공격모션(anim) 제어
     IEnumerator ControlAnim()
     {
         weaponManager.delayTime = 0.4f;
         character.canFlip = false;
         character.anim.SetTrigger("isAttack");
 
-        do
+        float timeNow = 0f;
+        while (timeNow < attackAnimTime)
         {
-            yield return WFS_400ms;
-        } while (false);
+            timeNow += Time.deltaTime;
+            yield return null;
+        }
 
         SetDelay();
+    }
+
+    // 공격처리 함수
+    protected void AttackProcess(Collider moncol)
+    {
+        Transform monster = moncol.transform.parent;
+        Vector3 direction = (monster.position - transform.position).normalized;
+
+        if (moncol.GetComponent<MonsterHit>() != null)
+        {
+            bool isCri = gameManager.status[Status.Critical] >= Random.Range(0f, 100f);
+            float finalDamage = (damage + gameManager.status[Status.Damage] + gameManager.status[Status.CloseDamage] + gameManager.bloodDamage) * (100 + character.percentDamage) * 0.01f;
+
+            finalDamage *= (isCri ? 2 : 1);
+
+            float hpNow = moncol.gameObject.GetComponentInParent<Monster>().hp;
+            float realDamage = (weaponManager.chargeTime > 0f && hpNow <= finalDamage) ? hpNow - 1 : finalDamage;
+
+            moncol.GetComponent<IDamageable>().Attacked(realDamage, moncol.gameObject);
+            moncol.GetComponent<IDamageable>().RendDamageUI(realDamage, moncol.transform.position, true, isCri);
+        }
+    }
+
+    // 0. 기본공격(+스턴) 실행처리
+    protected void NormalAttack()
+    {
+        detectedList = monsterFinder.FindMonster();
+        if (detectedList.Count > 0)
+        {
+            //Debug.Log(string.Join(',', detectedList.Select(col => col.gameObject.transform.parent.name)));
+
+            foreach (Collider moncol in detectedList)
+            {
+                AttackProcess(moncol);
+                moncol.GetComponent<MonsterHit>().GetStunned(stunDuration);
+            }
+        }
+    }
+
+    // 1. 가장 가까운 적의 착지점 UI 표시 & 대상 넉백 처리
+    protected void ChargeAttack_Option1()
+    {
+        // 범위 안에서 가장 가까운 몬스터
+        detectedOne = monsterFinder.FindNearest();
+        
+        if (detectedOne != null)
+        {
+            AttackProcess(detectedOne);
+
+            if (weaponManager.chargeTime > 0f)
+            {
+                Transform monster = detectedOne.transform.parent;
+                Vector3 direction = (monster.position - transform.position).normalized;
+
+                float finalDistance = 1 + (maxDistance * (weaponManager.chargeTime / 2f));
+                bool isCri = gameManager.status[Status.Critical] >= Random.Range(0f, 100f);
+
+                float finalDamage = (damage + gameManager.status[Status.Damage] + gameManager.status[Status.CloseDamage] + gameManager.bloodDamage) * (100 + character.percentDamage) * 0.01f;
+                finalDamage *= (isCri ? 2 : 1);
+
+                if (monster.GetComponent<MonsterMove>() != null)
+                {
+                    StartCoroutine(monster.gameObject.GetComponent<MonsterMove>().FlyAway(direction, finalDistance, maxHeight, flyTime, finalDamage, isCri));
+                }
+            }
+
+            landingPoint.gameObject.SetActive(false);
+        }
+    }
+
+    // 2. 범위내 몬스터 전체 넉백처리       // 구현 중
+    protected void ChargeAttack_Option2()
+    {
+        detectedList = monsterFinder.FindMonster();
+        if (detectedList.Count > 0)
+        {
+            foreach (Collider moncol in detectedList)
+            {
+                AttackProcess(moncol);
+
+                Transform monster = moncol.transform.parent;
+                Vector3 direction = (monster.position - transform.position).normalized;
+
+                float finalDistance = 1 + (maxDistance * (weaponManager.chargeTime / 2f));
+                bool isCri = gameManager.status[Status.Critical] >= Random.Range(0f, 100f);
+
+                float finalDamage = (damage + gameManager.status[Status.Damage] + gameManager.status[Status.CloseDamage] + gameManager.bloodDamage) * (100 + character.percentDamage) * 0.01f;
+                finalDamage *= (isCri ? 2 : 1);
+
+                if (monster.GetComponent<MonsterMove>() != null)
+                {
+                    StartCoroutine(monster.gameObject.GetComponent<MonsterMove>().FlyAway(direction, finalDistance, maxHeight, flyTime, finalDamage, isCri));
+                }
+            }
+        }
     }
 
 }
