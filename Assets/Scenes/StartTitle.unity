@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.37311953, g: 0.38074014, b: 0.3587274, a: 1}
+  m_IndirectSpecularColor: {r: 0.37311918, g: 0.3807398, b: 0.35872716, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -5393,7 +5393,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -57, y: -213}
+  m_AnchoredPosition: {x: -56.999756, y: -213}
   m_SizeDelta: {x: 0, y: -332.195}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &933381783
@@ -6122,6 +6122,162 @@ MonoBehaviour:
     effect: "\uD669\uD640\uD55C \uC0DD\uC120 \uAD6C\uC774 \uC81C\uC791 \uC7AC\uB8CC"
     decription: "\uBC14\uB2F7\uBB3C\uC744 \uAC00\uC5F4\uD574\uC11C \uC5BB\uC740 \uC18C\uAE08\uC774\uB2E4.\\n\uC77C\uBC18\uC18C\uAE08\uACFC
       \uC0C9\uC774 \uC870\uAE08 \uB2E4\uB978 \uAC83 \uAC19\uB2E4."
+  - itemId: 2030016
+    itemName: "\uC870\uAC1C"
+    itemType: 3
+    acquisitions: 2
+    needMaterialTypes: 
+    needMaterialCounts: 
+    takeTimeByAcquisition: 5
+    takePercentByAcquisition: 10
+    isConsumable: 0
+    maxCount: 5
+    effect: "\uC0C9\uC870\uAC1C \uC81C\uC791 \uC7AC\uB8CC"
+    decription: "\uC0C9\uC870\uAC1C\uC758 \uC7AC\uB8CC\uC774\uB2E4."
+  - itemId: 2030017
+    itemName: "\uBE68\uAC04\uC0C9 \uC870\uAC1C"
+    itemType: 6
+    acquisitions: 0
+    needMaterialTypes: 23,26
+    needMaterialCounts: 1,1
+    takeTimeByAcquisition: 5
+    takePercentByAcquisition: 10
+    isConsumable: 0
+    maxCount: 5
+    effect: "\uD37C\uC990 \uC870\uAC01"
+    decription: "\uD574\uBCC0 \uD37C\uC990\uC744 \uD480\uAE30 \uC704\uD55C \uC870\uAC1C\uC774\uB2E4."
+  - itemId: 2030018
+    itemName: "\uB178\uB780\uC0C9 \uC870\uAC1C"
+    itemType: 6
+    acquisitions: 0
+    needMaterialTypes: 23,27
+    needMaterialCounts: 1,1
+    takeTimeByAcquisition: 5
+    takePercentByAcquisition: 10
+    isConsumable: 0
+    maxCount: 5
+    effect: "\uD37C\uC990 \uC870\uAC01"
+    decription: "\uD574\uBCC0 \uD37C\uC990\uC744 \uD480\uAE30 \uC704\uD55C \uC870\uAC1C\uC774\uB2E4."
+  - itemId: 2030019
+    itemName: "\uCD08\uB85D\uC0C9 \uC870\uAC1C"
+    itemType: 6
+    acquisitions: 0
+    needMaterialTypes: 23,28
+    needMaterialCounts: 1,1
+    takeTimeByAcquisition: 5
+    takePercentByAcquisition: 10
+    isConsumable: 0
+    maxCount: 5
+    effect: "\uD37C\uC990 \uC870\uAC01"
+    decription: "\uD574\uBCC0 \uD37C\uC990\uC744 \uD480\uAE30 \uC704\uD55C \uC870\uAC1C\uC774\uB2E4."
+  - itemId: 2030020
+    itemName: "\uD30C\uB780\uC0C9 \uC870\uAC1C"
+    itemType: 6
+    acquisitions: 0
+    needMaterialTypes: 23,29
+    needMaterialCounts: 1,1
+    takeTimeByAcquisition: 5
+    takePercentByAcquisition: 10
+    isConsumable: 0
+    maxCount: 5
+    effect: "\uD37C\uC990 \uC870\uAC01"
+    decription: "\uD574\uBCC0 \uD37C\uC990\uC744 \uD480\uAE30 \uC704\uD55C \uC870\uAC1C\uC774\uB2E4."
+  - itemId: 2030021
+    itemName: "\uBCF4\uB77C\uC0C9 \uC870\uAC1C"
+    itemType: 6
+    acquisitions: 0
+    needMaterialTypes: 23,30
+    needMaterialCounts: 1,1
+    takeTimeByAcquisition: 5
+    takePercentByAcquisition: 10
+    isConsumable: 0
+    maxCount: 5
+    effect: "\uD37C\uC990 \uC870\uAC01"
+    decription: "\uD574\uBCC0 \uD37C\uC990\uC744 \uD480\uAE30 \uC704\uD55C \uC870\uAC1C\uC774\uB2E4."
+  - itemId: 2030022
+    itemName: "\uD478\uB978\uC0C9 \uC0B0\uD638"
+    itemType: 3
+    acquisitions: 2
+    needMaterialTypes: 
+    needMaterialCounts: 
+    takeTimeByAcquisition: 5
+    takePercentByAcquisition: 10
+    isConsumable: 0
+    maxCount: 5
+    effect: "\uC0C9\uC870\uAC1C\uC758 \uC5FC\uB8CC\uC758 \uC7AC\uB8CC"
+    decription: "\uC5FC\uB8CC\uB85C \uC4F0\uC774\uB294 \uC7AC\uB8CC\uC774\uB2E4."
+  - itemId: 2030023
+    itemName: "\uBAA8\uB798"
+    itemType: 3
+    acquisitions: 6
+    needMaterialTypes: 
+    needMaterialCounts: 
+    takeTimeByAcquisition: 5
+    takePercentByAcquisition: 10
+    isConsumable: 0
+    maxCount: 5
+    effect: "\uC0C9\uC870\uAC1C\uC758 \uC5FC\uB8CC\uC758 \uC7AC"
+    decription: "\uC5FC\uB8CC\uB85C \uC4F0\uC774\uB294 \uC7AC\uB8CC\uC774\uB2E4."
+  - itemId: 2030024
+    itemName: "\uBE68\uAC04 \uC5FC\uB8CC"
+    itemType: 3
+    acquisitions: 1
+    needMaterialTypes: 6
+    needMaterialCounts: 5
+    takeTimeByAcquisition: 5
+    takePercentByAcquisition: 10
+    isConsumable: 0
+    maxCount: 5
+    effect: "\uC0C9\uC870\uAC1C\uC758 \uC5FC\uB8CC"
+    decription: "\uC0C9\uC870\uAC1C\uC758 \uC7AC\uB8CC\uC774\uB2E4."
+  - itemId: 2030025
+    itemName: "\uB178\uB780 \uC5FC\uB8CC"
+    itemType: 3
+    acquisitions: 1
+    needMaterialTypes: 25
+    needMaterialCounts: 20
+    takeTimeByAcquisition: 5
+    takePercentByAcquisition: 10
+    isConsumable: 0
+    maxCount: 5
+    effect: "\uC0C9\uC870\uAC1C\uC758 \uC5FC\uB8CC"
+    decription: "\uC0C9\uC870\uAC1C\uC758 \uC7AC\uB8CC\uC774\uB2E4."
+  - itemId: 2030026
+    itemName: "\uCD08\uB85D \uC5FC\uB8CC"
+    itemType: 3
+    acquisitions: 1
+    needMaterialTypes: 1
+    needMaterialCounts: 10
+    takeTimeByAcquisition: 5
+    takePercentByAcquisition: 10
+    isConsumable: 0
+    maxCount: 5
+    effect: "\uC0C9\uC870\uAC1C\uC758 \uC5FC\uB8CC"
+    decription: "\uC0C9\uC870\uAC1C\uC758 \uC7AC\uB8CC\uC774\uB2E4."
+  - itemId: 2030027
+    itemName: "\uD30C\uB780 \uC5FC\uB8CC"
+    itemType: 3
+    acquisitions: 1
+    needMaterialTypes: 24
+    needMaterialCounts: 3
+    takeTimeByAcquisition: 5
+    takePercentByAcquisition: 10
+    isConsumable: 0
+    maxCount: 5
+    effect: "\uC0C9\uC870\uAC1C\uC758 \uC5FC\uB8CC"
+    decription: "\uC0C9\uC870\uAC1C\uC758 \uC7AC\uB8CC\uC774\uB2E4."
+  - itemId: 2030028
+    itemName: "\uBCF4\uB77C\uC0C9 \uC5FC\uB8CC"
+    itemType: 3
+    acquisitions: 1
+    needMaterialTypes: 6,24
+    needMaterialCounts: 3,3
+    takeTimeByAcquisition: 5
+    takePercentByAcquisition: 10
+    isConsumable: 0
+    maxCount: 5
+    effect: "\uC0C9\uC870\uAC1C\uC758 \uC5FC\uB8CC"
+    decription: "\uC0C9\uC870\uAC1C\uC758 \uC7AC\uB8CC\uC774\uB2E4."
 --- !u!1 &1005871280
 GameObject:
   m_ObjectHideFlags: 0

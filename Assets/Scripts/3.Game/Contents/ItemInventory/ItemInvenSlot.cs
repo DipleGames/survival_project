@@ -10,48 +10,48 @@ public class ItemInvenSlot : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     [SerializeField] TextMeshProUGUI itemCount;
     
     GameObject dragSlot;
-    ItemInfo itemInfo;
+    Item item;
 
     [HideInInspector] public ItemInventory inventory;
 
-    public void SetSlot(ItemInfo itemInfo)
+    public void SetSlot(Item item)
     {
-        this.itemInfo = itemInfo;
+        this.item = item;
 
-        itemImage.gameObject.SetActive(itemInfo != null);
-        itemCount.gameObject.SetActive(itemInfo != null);
+        itemImage.gameObject.SetActive(item != null);
+        itemCount.gameObject.SetActive(item != null);
 
-        if (itemInfo != null)
+        if (item != null)
         {
-            itemImage.sprite = Resources.Load<Sprite>($"Item/{itemInfo.itemId}");
-            itemCount.text = $"x {GameManager.Instance.haveItems[itemInfo.itemId]}";
+            itemImage.sprite = Resources.Load<Sprite>($"Item/{item.ItemId}");
+            itemCount.text = $"x {GameManager.Instance.haveItems[item.ItemId]}";
         }
     }
 
     public void SetDescription()
     {
-        if (itemInfo != null)
+        if (item != null)
         {
-            inventory.SetItemDescription(itemInfo);
+            inventory.SetItemDescription(item);
         }
     }
 
     public void OnBeginDrag(PointerEventData eventData)
     {
-        if (itemInfo == null)
+        if (item == null)
             return;
 
         if (dragSlot == null)
             dragSlot = inventory.DragSlot;
 
-        dragSlot.GetComponent<ItemInventoryDrag>().itemInfo = itemInfo;
+        dragSlot.GetComponent<ItemInventoryDrag>().item = item;
         dragSlot.GetComponentInChildren<Image>().sprite = itemImage.sprite;
         dragSlot.gameObject.SetActive(true);
     }
 
     public void OnDrag(PointerEventData eventData)
     {
-        if (itemInfo == null)
+        if (item == null)
             return;
 
         dragSlot.GetComponent<ItemInventoryDrag>().RectTransform.anchoredPosition = eventData.position;
@@ -60,7 +60,7 @@ public class ItemInvenSlot : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        if (itemInfo == null)
+        if (item == null)
             return;
 
         dragSlot.gameObject.SetActive(false);

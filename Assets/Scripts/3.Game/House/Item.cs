@@ -27,10 +27,19 @@ public enum MaterialType
     WaterBottle,
 
     Rock,
-    Count
+    Count,
+
+    Shell,
+    BlueCoral,
+    Sand,
+    RedDye,
+    YellowDye,
+    GreenDye,
+    BlueDye,
+    PurpleDye,
 }
 
-public enum ItemType { Facility, Consumable, Tool, Material, Piece, Weapon };
+public enum ItemType { Facility, Consumable, Tool, Material, Piece, Weapon, BeachPuzzlePiece };
 
 public enum Acquisition
 {

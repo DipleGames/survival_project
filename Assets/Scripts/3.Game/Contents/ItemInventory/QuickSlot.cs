@@ -9,30 +9,30 @@ public class QuickSlot : MonoBehaviour, IDropHandler, IBeginDragHandler, IDragHa
     [SerializeField] Image itemImage;
     [SerializeField] ItemInventoryDrag dragSlot;
 
-    ItemInfo itemInfo;
+    Item item;
 
     public void OnDrop(PointerEventData eventData)
     {
-        itemInfo = dragSlot.itemInfo;
-        itemImage.sprite = Resources.Load<Sprite>($"Item/{itemInfo.itemId}");
+        item = dragSlot.item;
+        itemImage.sprite = Resources.Load<Sprite>($"Item/{item.ItemId}");
     }
 
     public void OnBeginDrag(PointerEventData eventData)
     {
-        if (itemInfo == null)
+        if (item == null)
             return;
 
-        dragSlot.itemInfo = itemInfo;
+        dragSlot.item = item;
         dragSlot.GetComponentInChildren<Image>().sprite = itemImage.sprite;
         dragSlot.gameObject.SetActive(true);
 
-        itemInfo = null;
+        item = null;
         itemImage.sprite = null;
     }
 
     public void OnDrag(PointerEventData eventData)
     {
-        if (dragSlot.itemInfo == null)
+        if (dragSlot.item == null)
             return;
 
         dragSlot.GetComponent<ItemInventoryDrag>().RectTransform.anchoredPosition = eventData.position;
@@ -40,7 +40,7 @@ public class QuickSlot : MonoBehaviour, IDropHandler, IBeginDragHandler, IDragHa
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        if (dragSlot.itemInfo == null)
+        if (dragSlot.item == null)
             return;
 
         dragSlot.gameObject.SetActive(false);

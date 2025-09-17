@@ -10,7 +10,7 @@ public class ItemInventoryDrag : MonoBehaviour
 
     RectTransform rectTransform;
 
-    public ItemInfo itemInfo;
+    public Item item;
 
     private void Awake()
     {

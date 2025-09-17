@@ -134,7 +134,7 @@ public class Campfire : MonoBehaviour, IMouseInteraction
     void SettingBuff()
     {
         character.maxHp = Mathf.RoundToInt(character.maxHp * (100 + mxHps[buffValues[Buff.MAXHEALTH]]) * 0.01f);
-        //character.currentHp = character.maxHp;
+        //character.hp = character.maxHp;
 
         character.recoverHpRatio += reHps[buffValues[Buff.RECOVERY_HEALTH]];
 
