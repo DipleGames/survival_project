@@ -19,7 +19,7 @@ public class LandingPointManager : Singleton<LandingPointManager>
     protected SoundManager soundManager;
     protected WeaponManager weaponManager;
 
-    protected virtual void Awake()
+    protected override void Awake()
     {
         base.Awake();
         landingPointPool = new ObjectPool<LandingPointObjectPool>(CreatePool, OnGetPool, OnReleasePool, OnDestroyPool, maxSize: poolCount);

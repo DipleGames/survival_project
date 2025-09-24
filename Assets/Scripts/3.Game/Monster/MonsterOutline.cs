@@ -4,27 +4,39 @@ using UnityEngine;
 
 public class MonsterOutline : MonoBehaviour
 {
-    [SerializeField] Renderer monsterRenderer;
-    [SerializeField] Material monsterOutline;
+    [SerializeField] SpriteRenderer monsterRenderer;
+    [SerializeField] Material outline_Off;
+    [SerializeField] Material outline_On;
+    Color outlineColor;
 
-    MaterialPropertyBlock mpb;
+    // MaterialPropertyBlock mpb;
 
-    int outlineWidth;
-
-    bool isEnabled = false;
+    bool isEnabled;
 
     private void Awake()
     {
-        mpb = new MaterialPropertyBlock();
+        // mpb = new MaterialPropertyBlock();
 
-        outlineWidth = Shader.PropertyToID("_Thickness");
+        monsterRenderer.material = outline_Off;
+    }
+
+    private void OnEnable()
+    {
+        isEnabled = false;
     }
 
     public void SetOutLine(bool enabled)
     {
         isEnabled = enabled;
 
-        mpb.SetFloat(outlineWidth, isEnabled ? 5f : 0f);
+        if(isEnabled)
+        {
+            monsterRenderer.material = outline_On;
+        }
+        else
+        {
+            monsterRenderer.material = outline_Off;
+        }
     }
 
 }

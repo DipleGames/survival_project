@@ -65,6 +65,8 @@ public class Monster : MonoBehaviour
 
     public bool isblowed = false;
 
+    MonsterOutline monsterOutline;
+
     private void Awake()
     {
         gameManager = GameManager.Instance;
@@ -73,6 +75,7 @@ public class Monster : MonoBehaviour
         soundManager = SoundManager.Instance;
 
         monsterMove = GetComponent<MonsterMove>();
+        monsterOutline = GetComponent<MonsterOutline>();
 
         housePos = GameObject.Find("House").transform.position;
 
@@ -257,6 +260,7 @@ public class Monster : MonoBehaviour
         {
             soundManager.PlaySFX(damagedSound);
             OnDead();
+            monsterOutline.SetOutLine(false);
         }
 
         else

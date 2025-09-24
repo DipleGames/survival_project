@@ -8,25 +8,37 @@ using UnityEngine;
 using UnityEngine.SocialPlatforms;
 using UnityEngine.UIElements;
 using static UnityEditor.ShaderGraph.Internal.KeywordDependentCollection;
+using static UnityEngine.UI.Image;
+
+enum ChargeOptionNo
+{
+    None,
+    SingleTarget,
+    AttackRange
+}
 
 public class MetalBat : MonoBehaviour, IWeapon
 {
+    [SerializeField] MonsterFinder monsterFinder;
     [SerializeField] Transform chargeBar;
     [SerializeField] Transform landingPoint;
     [SerializeField] Transform EffectRange;
     List<Collider> detectedList;
     Collider detectedOne;
+    Collider detectedPastOne;
     Vector3 targetPos;
+    Vector3 dirToMouse;
 
     [Header("Stat")]
     [SerializeField] float damage;
     [SerializeField] float batDelay;
+    [SerializeField] public float attackAngle;
     [SerializeField] float maxDistance;
     [SerializeField] float maxHeight;
     [SerializeField] float flyTime;
     [SerializeField] float stunDuration;
 
-    [SerializeField] int isOption_One;
+    [SerializeField] int optionNo;
 
     [Header("Time")]
     [Range(0f, 3f)]
@@ -52,13 +64,17 @@ public class MetalBat : MonoBehaviour, IWeapon
     GameManager gameManager;
     WeaponManager weaponManager;
     SoundManager soundManager;
-    MonsterFinder monsterFinder;
+    
 
     public RangeMode rangeMode;
+    Color transparentYellow = new Color(1f, 0.92f, 0.016f, 0.05f);
+    
 
     private void Awake()
     {
         anim = GetComponent<Animator>();
+        attackAnimTime = 0.4f;
+        
         character = Character.Instance;
         gameManager = GameManager.Instance;
         weaponManager = WeaponManager.Instance;
@@ -67,11 +83,10 @@ public class MetalBat : MonoBehaviour, IWeapon
         monsterFinder = GetComponent<MonsterFinder>();
         detectedList = new List<Collider>();
         detectedOne = new Collider();
-        attackAnimTime = 0.4f;
-
-        isOption_One = 0;
+        detectedPastOne = new Collider();
+        optionNo = (int)ChargeOptionNo.SingleTarget;
         
-        if(landingPoint.gameObject.activeSelf)
+        if (landingPoint.gameObject.activeSelf)
             landingPoint.gameObject.SetActive(false);
 
         if (EffectRange.gameObject.activeSelf)
@@ -90,7 +105,7 @@ public class MetalBat : MonoBehaviour, IWeapon
         
         if (Input.GetMouseButton(0) && character.isCanControll && weaponManager.canAttack)
         {
-            if(clickTime < 3f)
+            if(clickTime < 3f && weaponManager.delayTime <= 0f)
                 clickTime += Time.deltaTime;
             
             else if(clickTime > 3f)
@@ -101,31 +116,15 @@ public class MetalBat : MonoBehaviour, IWeapon
                 chargeBar.gameObject.SetActive(true);
                 weaponManager.chargeTime = clickTime - 1f;
                 
-                // 차지공격 옵션 1번인 경우
-                if (isOption_One == 0 && weaponManager.chargeTime > 0f)
+                // 차지공격 단일타겟 옵션인 경우
+                if (optionNo == (int)ChargeOptionNo.SingleTarget && weaponManager.chargeTime > 0f)
                 {
-                    detectedOne = monsterFinder.FindNearest();
-
-                    if (detectedOne != null)
-                    {
-                        landingPoint.gameObject.SetActive(true);
-                        monster = detectedOne.transform.parent;
-
-                        diffPos = monster.position - transform.position;
-                        direction = diffPos.normalized;
-                        flyDistance = 0.5f + (maxDistance * (weaponManager.chargeTime / 2f));
-
-                        targetPos = diffPos + (new Vector3(direction.x, 0, direction.z) * flyDistance);
-                        landingPoint.GetComponent<LandingPoint>().UpdateLandingPoint(targetPos);
-                    }
-                    else
-                    { landingPoint.gameObject.SetActive(false); }
+                    ChargeAttack_Option1_Targetting();
                 }
-
-                if (isOption_One == 1 && weaponManager.chargeTime > 0f)
+                // 차지공격 범위전체 옵션인 경우
+                if (optionNo == (int)ChargeOptionNo.AttackRange && weaponManager.chargeTime > 0f)
                 {
                     EffectRange.gameObject.SetActive(true);
-
 
                 }
             }
@@ -149,14 +148,21 @@ public class MetalBat : MonoBehaviour, IWeapon
             }
             else if(weaponManager.chargeTime > 0f)
             {
-                Debug.Log("모드: 차지공격1");
-                ChargeAttack_Option1();
-
-                // Debug.Log("모드: 차지공격2");
-                // ChargeAttack_Option2();
+                switch(optionNo)
+                {
+                    case 1:
+                        Debug.Log("모드: 차지공격1");
+                        ChargeAttack_Option1();
+                        break;
+                    case 2:
+                        Debug.Log("모드: 차지공격2");
+                        ChargeAttack_Option2();
+                        break;
+                }
             }
 
             landingPoint.gameObject.SetActive(false);
+            EffectRange.gameObject.SetActive(false);
             weaponManager.chargeTime = 0f;
         }
     }
@@ -234,6 +240,33 @@ public class MetalBat : MonoBehaviour, IWeapon
         }
     }
 
+    void ChargeAttack_Option1_Targetting()
+    {
+        detectedOne = monsterFinder.FindNearest();
+            
+        if (detectedPastOne != null && detectedPastOne != detectedOne)
+            detectedPastOne.transform.parent.gameObject.GetComponentInChildren<MonsterOutline>().SetOutLine(false);
+
+        if (detectedOne != null)
+        {
+            detectedPastOne = detectedOne;
+            detectedOne.transform.parent.gameObject.GetComponentInChildren<MonsterOutline>().SetOutLine(true);
+
+            monster = detectedOne.transform.parent;
+            diffPos = monster.position - character.transform.position;
+            direction = diffPos.normalized;
+            flyDistance = 0.5f + (maxDistance * (weaponManager.chargeTime / 2f));
+
+            landingPoint.gameObject.SetActive(true);
+            targetPos = diffPos + (new Vector3(direction.x, 0, direction.z) * flyDistance);
+            landingPoint.GetComponent<LandingPoint>().UpdateLandingPoint(targetPos);
+        }
+        else
+        {
+            landingPoint.gameObject.SetActive(false);
+        }
+    }
+
     // 1. 가장 가까운 적의 착지점 UI 표시 & 대상 넉백 처리
     protected void ChargeAttack_Option1()
     {
@@ -262,6 +295,7 @@ public class MetalBat : MonoBehaviour, IWeapon
             }
 
             landingPoint.gameObject.SetActive(false);
+            detectedOne.transform.parent.gameObject.GetComponentInChildren<MonsterOutline>().SetOutLine(false);
         }
     }
 
@@ -292,4 +326,27 @@ public class MetalBat : MonoBehaviour, IWeapon
         }
     }
 
+    private void OnDrawGizmos()
+    {
+        DrawEffectRange();
+    }
+
+    void DrawEffectRange()
+    {
+        if (weaponManager.chargeTime > 0f && optionNo == 1)
+        {
+            dirToMouse = monsterFinder.dirToMouse;
+            float currentRadius = 3f + Mathf.Lerp(0f, maxDistance, weaponManager.chargeTime / 2f);
+
+            Vector3 viewAngleA = monsterFinder.DirFromAngle(-attackAngle / 2);
+            Vector3 viewAngleB = monsterFinder.DirFromAngle(attackAngle / 2);
+
+            Handles.color = Color.yellow;
+            Handles.DrawLine(transform.position + viewAngleA * 3f, transform.position + viewAngleA * currentRadius);
+            Handles.DrawLine(transform.position + viewAngleB * 3f, transform.position + viewAngleB * currentRadius);
+            Handles.DrawWireArc(transform.position, Vector3.up, viewAngleB, attackAngle, 3);
+            Handles.DrawWireArc(transform.position, Vector3.up, viewAngleB, attackAngle, currentRadius);
+
+        }
+    }
 }

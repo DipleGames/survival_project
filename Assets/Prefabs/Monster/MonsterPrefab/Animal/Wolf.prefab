@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 7712788725761189160}
   - component: {fileID: 8129587856583149474}
   - component: {fileID: 5294427540446526169}
+  - component: {fileID: 8978992067379187307}
   m_Layer: 7
   m_Name: MonsterImage
   m_TagString: Monster
@@ -133,6 +134,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   attackSound: {fileID: 8300000, guid: d124ad6d49301f94d814f34a4bc973f4, type: 3}
+--- !u!114 &8978992067379187307
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1770007820282190432}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c59889446ae288743b92f8f29cfe1230, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  monsterRenderer: {fileID: 6229552049790309985}
+  outline_Off: {fileID: 2100000, guid: bf5ee7f2e666e4146abbeefa79f367d3, type: 2}
+  outline_On: {fileID: 2100000, guid: 1eebad0e2d2800e4594edcf64867aacd, type: 2}
 --- !u!1 &2378124750920518384
 GameObject:
   m_ObjectHideFlags: 0

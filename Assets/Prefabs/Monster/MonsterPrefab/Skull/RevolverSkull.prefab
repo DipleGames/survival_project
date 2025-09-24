@@ -44,6 +44,7 @@ GameObject:
   - component: {fileID: 6229552049790309985}
   - component: {fileID: 7712788725761189160}
   - component: {fileID: 672954080284146275}
+  - component: {fileID: 45953628581153083}
   m_Layer: 7
   m_Name: MonsterImage
   m_TagString: Monster
@@ -155,6 +156,21 @@ MonoBehaviour:
   bulletPrefab: {fileID: 3246047406680868606, guid: 909d1d652f4abda4baec2518fda3a86f, type: 3}
   bulletPos: {fileID: 2757738577005860307}
   attackSound: {fileID: 8300000, guid: 2db751e0b5b0be443955204c2bc57ee3, type: 3}
+--- !u!114 &45953628581153083
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1770007820282190432}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c59889446ae288743b92f8f29cfe1230, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  monsterRenderer: {fileID: 6229552049790309985}
+  outline_Off: {fileID: 2100000, guid: bf5ee7f2e666e4146abbeefa79f367d3, type: 2}
+  outline_On: {fileID: 2100000, guid: 1eebad0e2d2800e4594edcf64867aacd, type: 2}
 --- !u!1 &2378124750920518384
 GameObject:
   m_ObjectHideFlags: 0
@@ -282,6 +298,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 359adba1a40804947a2ef8051c524904, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  monster: {fileID: 0}
   groundLayer:
     serializedVersion: 2
     m_Bits: 1024
@@ -294,8 +311,6 @@ MonoBehaviour:
   initMoveTime: 0
   initWaitTime: 0
   initSpeed: 0
-  lineRenderer: {fileID: 3613962486056287188}
-  segments: 0
 --- !u!135 &1258735451295334779
 SphereCollider:
   m_ObjectHideFlags: 0
