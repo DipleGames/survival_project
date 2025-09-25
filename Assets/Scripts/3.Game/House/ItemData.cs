@@ -16,10 +16,11 @@ public class ItemInfo
     public string takePercentByAcquisition;
     public int isConsumable;
     public int maxCount;
+    public float createTime;
     public string effect;
     public string decription;
 
-    public ItemInfo(int itemId, string itemName, int itemType, string acquisitions, string needMaterialTypes, string needMaterialCounts, string takeTime, string takePercent, int isConsumable, int maxCount, string effect, string decription)
+    public ItemInfo(int itemId, string itemName, int itemType, string acquisitions, string needMaterialTypes, string needMaterialCounts, string takeTime, string takePercent, int isConsumable, int maxCount, float createTime, string effect, string decription)
     {
         this.itemId = itemId;
         this.itemName = itemName;
@@ -31,6 +32,7 @@ public class ItemInfo
         this.takePercentByAcquisition = takePercent;
         this.isConsumable = isConsumable;
         this.maxCount = maxCount;
+        this.createTime = createTime;
         this.decription = decription;
         this.effect = effect;
     }
@@ -68,7 +70,7 @@ public class ItemData : Singleton<ItemData>
 
         for (int i = 0; i < items.Length; i++)
         {
-            ItemInfo newItem = new ItemInfo(0, "", 0, "", "", "", "", "", 0, 0, "", "");
+            ItemInfo newItem = new ItemInfo(0, "", 0, "", "", "", "", "", 0, 0, 0.0f, "", "");
             items[i] = newItem;
         }
 
@@ -128,7 +130,7 @@ public class ItemData : Singleton<ItemData>
 
         for (int j = beforeItems.Length; j < items.Length; j++)
         {
-            ItemInfo newItem = new ItemInfo(0, "", 0, "", "", "", "", "", 0, 0, "", "");
+            ItemInfo newItem = new ItemInfo(0, "", 0, "", "", "", "", "", 0, 0, 0.0f, "", "");
             items[j] = newItem;
         }
 

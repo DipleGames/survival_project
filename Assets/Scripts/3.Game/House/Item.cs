@@ -39,7 +39,16 @@ public enum MaterialType
     PurpleDye,
 }
 
-public enum ItemType { Facility, Consumable, Tool, Material, Piece, Weapon, BeachPuzzlePiece };
+public enum ItemType 
+{ 
+    Facility        ,
+    Consumable      ,
+    Tool            ,
+    Material        ,
+    Piece           ,
+    Weapon          ,
+    BeachPuzzlePiece,
+};
 
 public enum Acquisition
 {
@@ -61,20 +70,21 @@ public class Item
     public int ImageId { get; }
     public List<Acquisition> AcquisitionList { get; }
     public Dictionary<Acquisition, int> takeTimeByAcquisition { get; }
+    public int MaxCount { get; }
     public float CreateTime { get; }
     public bool IsConsumable { get; }
     public string ItemEffect {  get; }
     public string Description { get; }
 
-    /*public Item(ulong itemId, ItemType type, Dictionary<MaterialType, int> needMaterials, DiabolicItemInfo info)
+    /*public Item(ulong itemId, ItemType targetType, Dictionary<MaterialType, int> needMaterials, DiabolicItemInfo info)
     {
         ItemId = itemId;
         NeedMaterials = needMaterials;
-        Type = type;
+        Type = targetType;
         PieceId = info.ItemNum;
     }*/
 
-    public Item(int itemId, string itemName, int type, string needMaterialTypes, string needMaterialCounts, string takeTimes, string acquisitions, int isConsumable, string effect, string decription)
+    public Item(int itemId, string itemName, int type, string acquisitions, string needMaterialTypes, string needMaterialCounts, string takeTimes, string takePercent, int isConsumable, int maxCount, float createTime, string effect, string decription)
     {
         ItemId = itemId;
         ItemName = itemName;
@@ -117,6 +127,8 @@ public class Item
         takeTimeByAcquisition = tempTakeTimesByAcquisition;
 
         IsConsumable = Convert.ToBoolean(isConsumable);
+        MaxCount = maxCount;
+        CreateTime = createTime;
         ItemEffect = effect.Replace("\\n", "\n");
         Description = decription;
     }

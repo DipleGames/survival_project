@@ -101,9 +101,9 @@ public class GameManager : Singleton<GameManager>
 
     [Obsolete]
     public Dictionary<int, ItemInfo> itemInfos = new Dictionary<int, ItemInfo>(); // id - ItemInfo
-    /// <summary> 아이템 id - 정보</summary>
+    /// <summary> 모든 아이템 id - 정보</summary>
     public Dictionary<int, Item> Items = new Dictionary<int, Item>();
-    /// <summary> 아이템 id - 갯수 </summary>
+    /// <summary> 가진 아이템 id - 갯수 </summary>
     public Dictionary<int, int> haveItems = new Dictionary<int, int>();
 
     public Dictionary<MaterialType, int> idByMaterialType = new Dictionary<MaterialType, int>()
@@ -278,10 +278,10 @@ public class GameManager : Singleton<GameManager>
         for (int i = 0; i < itemInfos.Length; ++i)
         {
             //this.itemInfos.Add(itemInfos[i].itemId, itemInfos[i]);
-            Items.Add(itemInfos[i].itemId, new Item(itemInfos[i].itemId, itemInfos[i].itemName, itemInfos[i].itemType, itemInfos[i].needMaterialTypes, itemInfos[i].needMaterialCounts, itemInfos[i].takeTimeByAcquisition, itemInfos[i].acquisitions, itemInfos[i].isConsumable, itemInfos[i].effect, itemInfos[i].decription));
+            Items.Add(itemInfos[i].itemId, new Item(itemInfos[i].itemId, itemInfos[i].itemName, itemInfos[i].itemType, itemInfos[i].acquisitions, itemInfos[i].needMaterialTypes, itemInfos[i].needMaterialCounts, itemInfos[i].takeTimeByAcquisition, itemInfos[i].takePercentByAcquisition, itemInfos[i].isConsumable, itemInfos[i].maxCount, itemInfos[i].createTime, itemInfos[i].effect, itemInfos[i].decription));
 
             //f (itemInfos[i].itemId / 1000000 == 01 && !string.IsNullOrEmpty(itemInfos[i].needMaterialTypes))
-            itemDatas.Add(new Item(itemInfos[i].itemId, itemInfos[i].itemName, itemInfos[i].itemType, itemInfos[i].needMaterialTypes, itemInfos[i].needMaterialCounts, itemInfos[i].takeTimeByAcquisition, itemInfos[i].acquisitions, itemInfos[i].isConsumable, itemInfos[i].effect, itemInfos[i].decription));
+            itemDatas.Add(new Item(itemInfos[i].itemId, itemInfos[i].itemName, itemInfos[i].itemType, itemInfos[i].acquisitions, itemInfos[i].needMaterialTypes, itemInfos[i].needMaterialCounts, itemInfos[i].takeTimeByAcquisition, itemInfos[i].takePercentByAcquisition, itemInfos[i].isConsumable, itemInfos[i].maxCount, itemInfos[i].createTime, itemInfos[i].effect, itemInfos[i].decription));
 
         }
     }
