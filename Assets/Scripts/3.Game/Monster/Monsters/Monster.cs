@@ -170,6 +170,7 @@ public class Monster : MonoBehaviour
             IDamageable damageable = other.GetComponentInChildren<IDamageable>();
             if (damageable != null)
             {
+                if (other.CompareTag("House")) return; // 집에 데미지 적용 안함
                 damageable.Attacked(damage, null);
             }
         }
@@ -177,19 +178,13 @@ public class Monster : MonoBehaviour
 
     void Attack()
     {
-        if (isDead || !canAttack)
+        if (isDead || !canAttack || monsterMove.FocusObject != MonsterFocusObject.Player)
             return;
 
         if (monsterMove.FocusObject == MonsterFocusObject.Player)
         {
             xDistance = Mathf.Abs(character.transform.position.x - transform.position.x);
             zDistance = Mathf.Abs(character.transform.position.z - transform.position.z);
-        }
-
-        else if (monsterMove.FocusObject == MonsterFocusObject.House)
-        {
-            xDistance = Mathf.Abs(housePos.x - transform.position.x);
-            zDistance = Mathf.Abs(housePos.z - transform.position.z);
         }
 
         if (!isAttack && !gameManager.isClear)

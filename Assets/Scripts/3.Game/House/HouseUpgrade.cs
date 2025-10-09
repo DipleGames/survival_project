@@ -35,13 +35,17 @@ public class HouseUpgrade : MonoBehaviour
 
     public bool TryUpgrade()
     {
-        if (!CanUpgrade()) return false;
-        foreach (var material in CalUpgradeCost())
+        if (!CanUpgrade())
         {
-            int id = GameManager.Instance.idByMaterialType[material.Key];
-            GameManager.Instance.haveItems[id] -= material.Value;
-            if (GameManager.Instance.haveItems[id] < 0) GameManager.Instance.haveItems[id] = 0;
+            Debug.LogWarning("업그레이드 불가");
+            return false;
         }
+        foreach (var material in CalUpgradeCost())
+            {
+                int id = GameManager.Instance.idByMaterialType[material.Key];
+                GameManager.Instance.haveItems[id] -= material.Value;
+                if (GameManager.Instance.haveItems[id] < 0) GameManager.Instance.haveItems[id] = 0;
+            }
         houseManager.IncreaseLevel();
         return true;
     }

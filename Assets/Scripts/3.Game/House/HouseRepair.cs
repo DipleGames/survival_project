@@ -46,13 +46,17 @@ public class HouseRepair : MonoBehaviour, IDamageable
 
     public bool TryRepair()
     {
-        if (!CanRepair()) return false;
-        foreach (var material in CalRepairCost())
+        if (!CanRepair())
         {
-            int id = GameManager.Instance.idByMaterialType[material.Key];
-            GameManager.Instance.haveItems[id] -= material.Value;
-            if (GameManager.Instance.haveItems[id] < 0) GameManager.Instance.haveItems[id] = 0;
+            Debug.LogWarning("수리 불가");
+            return false;
         }
+        foreach (var material in CalRepairCost())
+            {
+                int id = GameManager.Instance.idByMaterialType[material.Key];
+                GameManager.Instance.haveItems[id] -= material.Value;
+                if (GameManager.Instance.haveItems[id] < 0) GameManager.Instance.haveItems[id] = 0;
+            }
         houseManager.RepairFull();
         return true;
     }

@@ -58,6 +58,7 @@ public class MonsterBullet : MonoBehaviour
             IDamageable damageable = other.GetComponentInChildren<IDamageable>();
             if (damageable != null)
             {
+                if (other.CompareTag("House")) return; // 집에 데미지 적용 안함
                 damageable.Attacked(realDamage, null);
                 DestroyBullet();
             }

@@ -63,7 +63,7 @@ public class MonsterMove : MonoBehaviour
         waitTime = initWaitTime;
 
         destination = housePos;
-        FocusObject = MonsterFocusObject.House;
+        FocusObject = MonsterFocusObject.Player;
     }
 
     private void OnEnable()

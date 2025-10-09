@@ -17,6 +17,7 @@ TagManager:
   - MouseInteraction
   - MonsterAttacked
   - MouseInteration
+  - House
   layers:
   - Default
   - TransparentFX
