@@ -73,4 +73,5 @@ crashlytics-build.properties
 
 
 # build info
-Assets/StreamingAssets/build_info*
+/Assets/StreamingAssets/build_info*
+/Assets/StreamingAssets/build_info*.meta
