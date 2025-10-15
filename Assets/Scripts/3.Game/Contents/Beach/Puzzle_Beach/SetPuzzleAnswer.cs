@@ -31,7 +31,7 @@ public class SetPuzzleAnswer : Singleton<SetPuzzleAnswer>
         GameManager gameManager = GameManager.Instance;
         foreach (var item in gameManager.Items)
         {
-            if(item.Value.Type == ItemType.BeachPuzzlePiece)
+            if(item.Value.CompareTypeExact(ItemType.BeachPuzzlePiece))
             {
                 shellID = item.Key;
                 break;
