@@ -20,7 +20,7 @@ AnimationClip:
   m_PPtrCurves:
   - curve:
     - time: 0
-      value: {fileID: -97869992, guid: c98b8194a2293684ea81ba4900a8ffa5, type: 3}
+      value: {fileID: 1122484240, guid: 51bb345e62ab12448ac1e0523dd8d48d, type: 3}
     - time: 0.083333336
       value: {fileID: -1590298425, guid: c98b8194a2293684ea81ba4900a8ffa5, type: 3}
     - time: 0.16666667
@@ -40,7 +40,7 @@ AnimationClip:
     - time: 0.75
       value: {fileID: 1711566006, guid: c98b8194a2293684ea81ba4900a8ffa5, type: 3}
     attribute: m_Sprite
-    path: 
+    path: MonsterImage
     classID: 212
     script: {fileID: 0}
   m_SampleRate: 12
@@ -51,14 +51,14 @@ AnimationClip:
   m_ClipBindingConstant:
     genericBindings:
     - serializedVersion: 2
-      path: 0
+      path: 1704285688
       attribute: 0
       script: {fileID: 0}
       typeID: 212
       customType: 23
       isPPtrCurve: 1
     pptrCurveMapping:
-    - {fileID: -97869992, guid: c98b8194a2293684ea81ba4900a8ffa5, type: 3}
+    - {fileID: 1122484240, guid: 51bb345e62ab12448ac1e0523dd8d48d, type: 3}
     - {fileID: -1590298425, guid: c98b8194a2293684ea81ba4900a8ffa5, type: 3}
     - {fileID: 509080360, guid: c98b8194a2293684ea81ba4900a8ffa5, type: 3}
     - {fileID: -263168644, guid: c98b8194a2293684ea81ba4900a8ffa5, type: 3}
@@ -94,7 +94,7 @@ AnimationClip:
   m_HasMotionFloatCurves: 0
   m_Events:
   - time: 0
-    functionName: Attack
+    functionName: AttackSound
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0

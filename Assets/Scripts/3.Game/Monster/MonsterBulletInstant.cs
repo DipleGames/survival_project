@@ -42,7 +42,7 @@ public class MonsterBulletInstant : MonoBehaviour
 
         if (weapon != null)
         {
-            transform.parent.GetComponent<MonsterMove>().RotateWeapon(dir);
+            transform.parent.GetComponent<Monster>().RotateWeapon(dir);
         }
 
         bullet.transform.position = new Vector3(bulletPos.position.x, 0, bulletPos.position.z);

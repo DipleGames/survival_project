@@ -1,34 +1,30 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.AI;
 using UnityEngine.Pool;
 
-public class Monster : MonoBehaviour
+public partial class Monster : MonoBehaviour, IDamageable
 {
     [SerializeField] SpriteRenderer rend;
     [SerializeField] Animator anim;
-    [SerializeField] Collider attackColl;
-    [SerializeField] BoxCollider hitCollder;
+    [SerializeField] BoxCollider hitCollider;
+    
     [SerializeField] Vector2 attackRange;
-    [SerializeField] float attackDelay;
-    [SerializeField] float moveDelay;
-    [SerializeField] public int attackCount;
     [SerializeField] AudioClip damagedSound;
 
-    int itemDropPercent;
-    int initAttackCount;
-
-    public int InitAttackCount => initAttackCount;
-    float moveSpeed;
-    float damage;
-
-    [HideInInspector] protected bool isDead = false, isAttack = false;
+    [HideInInspector] public bool isDead = false;
     public bool IsDead => isDead;
+    public bool isStun = false;
 
     public float hp;
     public float maxHp;
 
+    
+
     [HideInInspector] protected Vector3 initScale;
     [HideInInspector] public MonsterStat stat;
+
+    int itemDropPercent;
 
     private IObjectPool<Monster> managedPool;
 
@@ -43,29 +39,21 @@ public class Monster : MonoBehaviour
 
     public float Speed => moveSpeed;
 
-    protected float initSpeed = 0;
     float xDistance;
     float zDistance;
 
-    float initAttackDelay;
     float initMoveDelay;
-
-    public bool canAttack = true;
-    public bool canMove = true;
+    //public bool canMove = true;
 
     int initOrder;
 
-    public bool CanMove => canMove;
+    // public bool CanMove => canMove;
 
     public int monsterNum;
 
-    Vector3 housePos;
-
-    MonsterMove monsterMove;
-
     public bool isblowed = false;
 
-    MonsterOutline monsterOutline;
+    [SerializeField] MonsterOutline monsterOutline;
 
     private void Awake()
     {
@@ -73,17 +61,39 @@ public class Monster : MonoBehaviour
         gamesceneManager = GamesceneManager.Instance;
         character = Character.Instance;
         soundManager = SoundManager.Instance;
-
-        monsterMove = GetComponent<MonsterMove>();
+        damageUIManager = DamageUIManager.Instance;
+        
         monsterOutline = GetComponent<MonsterOutline>();
 
-        housePos = GameObject.Find("House").transform.position;
+        agent = GetComponent<NavMeshAgent>();
+        agent.updateRotation = false;
+
+        initScaleX = transform.localScale.x;
+        initColliderX = hitCollider.size.x;
+
+        if (attackCollider != null)
+            initWeaponColliderX = attackCollider.size.x;
+
+        /*initMoveTime = moveTime;
+        initWaitTime = waitTime;*/
+
+        moveTime = initMoveTime;
+        waitTime = initWaitTime;
+
+        playerPos = character.transform.position;
+        destination = playerPos;
+        FocusObject = MonsterFocusObject.Player;
+
+        impactRadius = 1f;
+        flyDelay = 0f;
 
         StartSetting();
     }
 
     private void OnDisable()
     {
+        canAttack = true;
+        agent.enabled = true;
         StopAllCoroutines();
     }
 
@@ -110,6 +120,7 @@ public class Monster : MonoBehaviour
         AttackEnd();
         AttackDelay();
         MoveDelay();
+        monsterMove();
     }
 
     public void InitMonsterSetting(bool isLeader)
@@ -118,29 +129,29 @@ public class Monster : MonoBehaviour
         damage = stat.monsterDamage * (1 + Mathf.Floor(gameManager.round / 30)) + Mathf.Floor(gameManager.round / 5) * 2f;*/
 
         hp = stat.monsterMaxHp;
-        damage = stat.monsterDamage;
         maxHp = hp;
+        damage = stat.monsterDamage;
+        isDead = false;
+        
         moveSpeed = stat.monsterSpeed;
         initSpeed = moveSpeed;
-        attackDelay = stat.attackDelay;
-        attackCount = stat.attackCount;
         moveDelay = stat.moveDelay;
-        initAttackDelay = attackDelay;
-        initAttackCount = attackCount;
         initMoveDelay = moveDelay;
         itemDropPercent = stat.itemDropPercent;
-        isDead = false;
-        isAttack = false;
-        canAttack = false;
         canMove = true;
+
+        initAttackCount = stat.attackCount;
+        attackCount = initAttackCount;
+
         anim.speed = 1f;
         transform.localScale = initScale;
         rend.color = initcolor;
         rend.sortingOrder = initOrder;
 
-        monsterMove.InitSetting(moveSpeed);
+        InitMonsterSetting(stat);
+        InitSetting(moveSpeed);
 
-        hitCollder.enabled = true;
+        hitCollider.enabled = true;
     }
 
     protected IEnumerator MonsterColorBlink()
@@ -160,36 +171,15 @@ public class Monster : MonoBehaviour
         rend.color = initcolor;
     }   
 
-    protected virtual void OnTriggerEnter(Collider other)
-    {
-        if(isDead) return;
-
-        if (other.CompareTag("Character"))
-        {
-            character.OnDamaged(damage, gameObject.transform.GetComponentInChildren<MonsterHit>().gameObject);
-        }
-
-        else if (other.GetComponentInChildren<IDamageable>() is House)
-        {
-            other.GetComponent<IDamageable>().Attacked(damage, null);
-        }
-    }
-
     void Attack()
     {
         if (isDead || !canAttack)
             return;
 
-        if (monsterMove.FocusObject == MonsterFocusObject.Player)
+        if (FocusObject == MonsterFocusObject.Player)
         {
             xDistance = Mathf.Abs(character.transform.position.x - transform.position.x);
             zDistance = Mathf.Abs(character.transform.position.z - transform.position.z);
-        }
-
-        else if (monsterMove.FocusObject == MonsterFocusObject.House)
-        {
-            xDistance = Mathf.Abs(housePos.x - transform.position.x);
-            zDistance = Mathf.Abs(housePos.z - transform.position.z);
         }
 
         if (!isAttack && !gameManager.isClear)
@@ -198,7 +188,7 @@ public class Monster : MonoBehaviour
             if (xDistance <= attackRange.x + 0.5f && zDistance <= attackRange.y+0.5f)
             {
                 isAttack = true;
-                monsterMove.agent.enabled = false;
+                agent.enabled = false;
                 canMove = false;
                 canAttack = false;
             }
@@ -222,20 +212,6 @@ public class Monster : MonoBehaviour
         }
     }
 
-    void AttackDelay()
-    {
-        if (isAttack || canAttack)
-            return;
-
-        attackDelay -= Time.deltaTime;
-
-        if(attackDelay <= 0)
-        {
-            canAttack = true;
-            attackDelay = initAttackDelay;
-        }
-    }
-
     void MoveDelay()
     {
         if (canMove || isAttack)
@@ -245,8 +221,8 @@ public class Monster : MonoBehaviour
 
         if(moveDelay <= 0)
         {
-            monsterMove.InitailizeCoolTime();
-            monsterMove.agent.enabled = true;
+            InitailizeCoolTime();
+            agent.enabled = true;
             canMove = true;
             moveDelay = initMoveDelay;
         }
@@ -260,7 +236,9 @@ public class Monster : MonoBehaviour
         {
             soundManager.PlaySFX(damagedSound);
             OnDead();
-            monsterOutline.SetOutLine(false);
+
+            if(monsterOutline != null)
+                monsterOutline.SetOutLine(false);
         }
 
         else
@@ -279,7 +257,7 @@ public class Monster : MonoBehaviour
             return;
 
         isDead = true;
-        monsterMove.agent.enabled = false;
+        agent.enabled = false;
         canMove = false;
         rend.sortingOrder = 0;
         anim.speed = 1f;
@@ -301,8 +279,8 @@ public class Monster : MonoBehaviour
         if (runningCoroutine != null)
             StopCoroutine(runningCoroutine);
 
-        if (attackColl != null)
-            attackColl.enabled = false;
+        if (attackCollider != null)
+            attackCollider.enabled = false;
 
         anim.SetTrigger("Die");
     }
@@ -331,8 +309,8 @@ public class Monster : MonoBehaviour
     public void DestroyMonster()
     {
         managedPool.Release(this);
-        monsterMove.agent.enabled = false;
-        hitCollder.enabled = false;
+        agent.enabled = false;
+        hitCollider.enabled = false;
     }
 
     

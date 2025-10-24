@@ -7,7 +7,6 @@ public class MonsterOutline : MonoBehaviour
     [SerializeField] SpriteRenderer monsterRenderer;
     [SerializeField] Material outline_Off;
     [SerializeField] Material outline_On;
-    Color outlineColor;
 
     // MaterialPropertyBlock mpb;
 

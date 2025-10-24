@@ -116,17 +116,20 @@ public class MetalBat : MonoBehaviour, IWeapon
                 chargeBar.gameObject.SetActive(true);
                 weaponManager.chargeTime = clickTime - 1f;
                 
-                // 차지공격 단일타겟 옵션인 경우
-                if (optionNo == (int)ChargeOptionNo.SingleTarget && weaponManager.chargeTime > 0f)
+                if(weaponManager.chargeTime > 0f)
                 {
-                    ChargeAttack_Option1_Targetting();
+                    // 차지공격 단일타겟 옵션인 경우
+                    if (optionNo == (int)ChargeOptionNo.SingleTarget)
+                    {
+                        ChargeAttack_Option1_Targetting();
+                    }
+                    // 차지공격 범위전체 옵션인 경우
+                    if (optionNo == (int)ChargeOptionNo.AttackRange)
+                    {
+                        EffectRange.gameObject.SetActive(true);
+                    }
                 }
-                // 차지공격 범위전체 옵션인 경우
-                if (optionNo == (int)ChargeOptionNo.AttackRange && weaponManager.chargeTime > 0f)
-                {
-                    EffectRange.gameObject.SetActive(true);
-
-                }
+                
             }
         }
         
@@ -156,7 +159,7 @@ public class MetalBat : MonoBehaviour, IWeapon
                         break;
                     case 2:
                         Debug.Log("모드: 차지공격2");
-                        ChargeAttack_Option2();
+                        // ChargeAttack_Option2();
                         break;
                 }
             }
@@ -206,10 +209,10 @@ public class MetalBat : MonoBehaviour, IWeapon
     // 공격처리 함수
     protected void AttackProcess(Collider moncol)
     {
-        Transform monster = moncol.transform.parent;
-        Vector3 direction = (monster.position - transform.position).normalized;
+        // Transform monster = moncol.transform.parent;
+        // Vector3 direction = (monster.position - transform.position).normalized;
 
-        if (moncol.GetComponent<MonsterHit>() != null)
+        if (moncol.transform.parent.GetComponent<Monster>() != null)
         {
             bool isCri = gameManager.status[Status.Critical] >= Random.Range(0f, 100f);
             float finalDamage = (damage + gameManager.status[Status.Damage] + gameManager.status[Status.CloseDamage] + gameManager.bloodDamage) * (100 + character.percentDamage) * 0.01f;
@@ -219,8 +222,8 @@ public class MetalBat : MonoBehaviour, IWeapon
             float hpNow = moncol.gameObject.GetComponentInParent<Monster>().hp;
             float realDamage = (weaponManager.chargeTime > 0f && hpNow <= finalDamage) ? hpNow - 1 : finalDamage;
 
-            moncol.GetComponent<IDamageable>().Attacked(realDamage, moncol.gameObject);
-            moncol.GetComponent<IDamageable>().RendDamageUI(realDamage, moncol.transform.position, true, isCri);
+            moncol.transform.parent.GetComponent<IDamageable>().Attacked(realDamage, moncol.gameObject);
+            moncol.transform.parent.GetComponent<IDamageable>().RendDamageUI(realDamage, moncol.transform.position, true, isCri);
         }
     }
 
@@ -235,7 +238,9 @@ public class MetalBat : MonoBehaviour, IWeapon
             foreach (Collider moncol in detectedList)
             {
                 AttackProcess(moncol);
-                moncol.GetComponent<MonsterHit>().GetStunned(stunDuration);
+
+                if (moncol.gameObject.activeSelf)
+                    moncol.transform.parent.GetComponent<Monster>().GetStunned(stunDuration);
             }
         }
     }
@@ -288,9 +293,9 @@ public class MetalBat : MonoBehaviour, IWeapon
                 float finalDamage = (damage + gameManager.status[Status.Damage] + gameManager.status[Status.CloseDamage] + gameManager.bloodDamage) * (100 + character.percentDamage) * 0.01f;
                 finalDamage *= (isCri ? 2 : 1);
 
-                if (monster.GetComponent<MonsterMove>() != null)
+                if (monster.GetComponent<Monster>() != null)
                 {
-                    StartCoroutine(monster.gameObject.GetComponent<MonsterMove>().FlyAway(direction, finalDistance, maxHeight, flyTime, finalDamage, isCri));
+                    StartCoroutine(monster.gameObject.GetComponent<Monster>().FlyAway(direction, finalDistance, maxHeight, flyTime, finalDamage, isCri));
                 }
             }
 
@@ -300,6 +305,7 @@ public class MetalBat : MonoBehaviour, IWeapon
     }
 
     // 2. 범위내 몬스터 전체 넉백처리       // 구현 중
+    /*
     protected void ChargeAttack_Option2()
     {
         detectedList = monsterFinder.FindMonster();
@@ -325,6 +331,7 @@ public class MetalBat : MonoBehaviour, IWeapon
             }
         }
     }
+    */
 
     private void OnDrawGizmos()
     {

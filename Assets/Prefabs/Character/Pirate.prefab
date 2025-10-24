@@ -6887,7 +6887,7 @@ Canvas:
   m_SortingBucketNormalizedSize: 0
   m_AdditionalShaderChannelsFlag: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 1
+  m_SortingOrder: 5
   m_TargetDisplay: 0
 --- !u!114 &7624567718263359972
 MonoBehaviour:
@@ -7499,7 +7499,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5285969229584558530, guid: 52bc5f922a4ac26439f19b5756badf38, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5285969229584558530, guid: 52bc5f922a4ac26439f19b5756badf38, type: 3}
       propertyPath: m_TagString
@@ -7594,7 +7594,7 @@ MonoBehaviour:
   maxDistance: 4
   maxHeight: 3
   flyTime: 1
-  stunDuration: 1
+  stunDuration: 5
   optionNo: 0
   clickTime: 0
   attackSounds:

@@ -36,7 +36,7 @@ AnimationClip:
     - time: 0.5833333
       value: {fileID: -1118344824, guid: e723aff49a40f6749ac3713e9eb13298, type: 3}
     attribute: m_Sprite
-    path: 
+    path: MonsterImage
     classID: 212
     script: {fileID: 0}
   m_SampleRate: 12
@@ -47,7 +47,7 @@ AnimationClip:
   m_ClipBindingConstant:
     genericBindings:
     - serializedVersion: 2
-      path: 0
+      path: 1704285688
       attribute: 0
       script: {fileID: 0}
       typeID: 212
@@ -88,7 +88,7 @@ AnimationClip:
   m_HasMotionFloatCurves: 0
   m_Events:
   - time: 0.16666667
-    functionName: Attack
+    functionName: AttackSound
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
