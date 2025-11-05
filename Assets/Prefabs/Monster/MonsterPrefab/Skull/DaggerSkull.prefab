@@ -95,10 +95,10 @@ BoxCollider:
   m_GameObject: {fileID: 1770007820282190432}
   m_Material: {fileID: 0}
   m_IsTrigger: 1
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
-  m_Size: {x: 0.114003, y: 0.37820378, z: 0.2}
-  m_Center: {x: -0.055822104, y: 0.015554059, z: 0}
+  m_Size: {x: 0.14, y: 0.37820378, z: 0.2}
+  m_Center: {x: -0.06, y: 0.015554059, z: 0}
 --- !u!114 &84227298182117294
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -210,6 +210,7 @@ MonoBehaviour:
   initAttackDelay: 0
   canAttack: 1
   isAttack: 0
+  attackCount: 0
   groundLayer:
     serializedVersion: 2
     m_Bits: 1024
@@ -226,13 +227,12 @@ MonoBehaviour:
   rend: {fileID: 6229552049790309985}
   anim: {fileID: 2288401723980846067}
   hitCollider: {fileID: 3223408100450381840}
-  attackRange: {x: 0.8, y: 1}
+  attackRange: {x: 0.5, y: 1}
   damagedSound: {fileID: 8300000, guid: d774e9a83edeb65478a50b9f4ca9364d, type: 3}
   isDead: 0
   isStun: 0
   hp: 0
   maxHp: 0
-  attackCount: 0
   stat:
     monsterNum: 0
     monsterName: 

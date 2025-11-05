@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 7380800176599615510}
   - component: {fileID: 6229552049790309985}
-  - component: {fileID: 7712788725761189160}
   - component: {fileID: 8129587856583149474}
   - component: {fileID: 8978992067379187307}
   m_Layer: 7
@@ -87,26 +86,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!95 &7712788725761189160
-Animator:
-  serializedVersion: 4
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1770007820282190432}
-  m_Enabled: 0
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 0659cec14a94c724f850dd1ecabc5394, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!65 &8129587856583149474
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -116,10 +95,10 @@ BoxCollider:
   m_GameObject: {fileID: 1770007820282190432}
   m_Material: {fileID: 0}
   m_IsTrigger: 1
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_Size: {x: 0.08, y: 0.11, z: 0.2}
-  m_Center: {x: -0.11, y: -0.01, z: 0}
+  m_Center: {x: -0.14, y: -0.01, z: 0}
 --- !u!114 &8978992067379187307
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -231,6 +210,7 @@ MonoBehaviour:
   initAttackDelay: 0
   canAttack: 1
   isAttack: 0
+  attackCount: 0
   groundLayer:
     serializedVersion: 2
     m_Bits: 1024
@@ -241,19 +221,18 @@ MonoBehaviour:
   initWaitTime: 1
   initSpeed: 0
   canMove: 1
-  moveTime: 0
-  waitTime: 0
+  moveTime: 1
+  waitTime: 1
   StunObject: {fileID: 5308752725718810127}
   rend: {fileID: 6229552049790309985}
   anim: {fileID: 1229307739800469911}
   hitCollider: {fileID: 3223408100450381840}
-  attackRange: {x: 0.8, y: 1}
+  attackRange: {x: 0.7, y: 0.5}
   damagedSound: {fileID: 8300000, guid: d774e9a83edeb65478a50b9f4ca9364d, type: 3}
   isDead: 0
   isStun: 0
   hp: 0
   maxHp: 0
-  attackCount: 0
   stat:
     monsterNum: 0
     monsterName: 

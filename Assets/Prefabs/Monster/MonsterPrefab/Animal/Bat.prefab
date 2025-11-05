@@ -95,7 +95,7 @@ BoxCollider:
   m_GameObject: {fileID: 1770007820282190432}
   m_Material: {fileID: 0}
   m_IsTrigger: 1
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_Size: {x: 0.06278495, y: 0.09744263, z: 0.2}
   m_Center: {x: -0.063810684, y: -0.036523223, z: -2.9351147e-16}
@@ -221,13 +221,13 @@ MonoBehaviour:
   initWaitTime: 1
   initSpeed: 0
   canMove: 1
-  moveTime: 0
-  waitTime: 0
+  moveTime: 1
+  waitTime: 1
   StunObject: {fileID: 7492295550717012590}
   rend: {fileID: 6229552049790309985}
   anim: {fileID: 7625098506364040579}
   hitCollider: {fileID: 3223408100450381840}
-  attackRange: {x: 0.8, y: 1}
+  attackRange: {x: 0.3, y: 0.4}
   damagedSound: {fileID: 8300000, guid: d774e9a83edeb65478a50b9f4ca9364d, type: 3}
   isDead: 0
   isStun: 0

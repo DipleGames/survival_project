@@ -245,6 +245,7 @@ public class MetalBat : MonoBehaviour, IWeapon
         }
     }
 
+    // 1-1. 차지공격 타겟팅
     void ChargeAttack_Option1_Targetting()
     {
         detectedOne = monsterFinder.FindNearest();

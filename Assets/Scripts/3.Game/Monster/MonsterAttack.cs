@@ -36,6 +36,50 @@ public partial class Monster
         }
     }
 
+    void Attack()
+    {
+        if (isDead || !canAttack)
+            return;
+
+        if (FocusObject == MonsterFocusObject.Player)
+        {
+            xDistance = Mathf.Abs(character.transform.position.x - transform.position.x);
+            zDistance = Mathf.Abs(character.transform.position.z - transform.position.z);
+        }
+
+        if (!isAttack && !gameManager.isClear)
+        {
+            //if (xDistance <= attackRange.x && zDistance <= attackRange.y)
+            if (xDistance <= attackRange.x + 0.45f && zDistance <= attackRange.y + 0.45f)
+            {
+                isAttack = true;
+                agent.enabled = false;
+                canMove = false;
+                canAttack = false;
+            }
+
+            anim.SetBool("isAttack", isAttack);
+        }
+
+    }
+
+    void AttackEnd()
+    {
+        if (!isAttack)
+            return;
+
+        if (anim.GetCurrentAnimatorStateInfo(0).IsName("Attack"))
+        {
+            if (anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.95f)
+            {
+                isAttack = false;
+                anim.SetBool("isAttack", isAttack);
+
+                attackCollider.enabled = false;
+            }
+        }
+    }
+
     void AttackSound()
     {
         soundManager.PlaySFX(attackSound);
@@ -43,7 +87,7 @@ public partial class Monster
 
     public void AttackDelay()
     {
-        if (isAttack || canAttack)
+        if (isAttack || canAttack || isStun)
             return;
 
         attackDelay -= Time.deltaTime;
@@ -52,7 +96,7 @@ public partial class Monster
         {
             canAttack = true;
             attackDelay = initAttackDelay;
-            attackCollider.enabled = true;
         }
     }
+
 }

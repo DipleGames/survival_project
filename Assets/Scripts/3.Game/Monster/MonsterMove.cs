@@ -44,6 +44,9 @@ public partial class Monster
     float impactRadius;
     float flyDelay;
 
+    Vector3[] corners;
+    int count = 1;
+
     [SerializeField] GameObject StunObject;
 
     private void OnEnable()
@@ -108,20 +111,27 @@ public partial class Monster
         }
     }
 
-    public void InitSetting(float speed)
-    {
-        initSpeed = speed;
-        agent.speed = initSpeed;
-    }
-
     public void InitailizeCoolTime()
     {
         waitTime = initWaitTime;
         moveTime = initMoveTime;
     }
 
-    Vector3[] corners;
-    int count = 1;
+    void MoveDelay()
+    {
+        if (canMove || isAttack)
+            return;
+
+        moveDelay -= Time.deltaTime;
+
+        if (moveDelay <= 0)
+        {
+            InitailizeCoolTime();
+            agent.enabled = true;
+            canMove = true;
+            moveDelay = initMoveDelay;
+        }
+    }
 
     void Flip()
     {
@@ -181,8 +191,6 @@ public partial class Monster
 
     public IEnumerator FlyAway(Vector3 flyDirection, float distance, float height, float duration, float damage, bool isCri)
     {
-        isblowed = true;
-
         Vector3 endPos = transform.position + (new Vector3(flyDirection.x, 0, flyDirection.z) * distance);
         endPos.y = transform.position.y;
 
@@ -195,26 +203,7 @@ public partial class Monster
             yield return null;
         }
 
-        // distance : 최소 1 ~ 최대 5
-        impactRadius = 0.5f + distance * 0.1f;         // 비거리에 따른 공격판정 범위변동
-        detactLayer = 1 << LayerMask.NameToLayer("MonsterAttaked");
-        var detected = Physics.OverlapSphere(transform.position, impactRadius, detactLayer);
-
-        if (detected != null)
-        {
-            foreach (Collider monster in detected)
-            {
-                if (isblowed) continue;
-
-                Attacked(damage * 0.7f, monster.gameObject);
-                RendDamageUI(damage * 0.7f, monster.transform.position, true, isCri);
-            }
-        }
-
-        
-        isblowed = false;
-        Attacked(damage * 0.7f, gameObject);
-        RendDamageUI(damage * 0.7f, transform.position, true, isCri);
+        AreaDamage(distance, isCri);
     }
 
     IEnumerator MoveParabolic(Vector3 startPos, Vector3 endPos, float maxHeight, float duration)
@@ -266,29 +255,6 @@ public partial class Monster
             time += Time.deltaTime;
             yield return null;
         }
-    }
-
-    public void Stunned(float duration)
-    {
-        StartCoroutine(StunCorutine(duration));
-    }
-
-    IEnumerator StunCorutine(float duration)
-    {
-        isStun = true;
-        agent.enabled = false;
-
-        if (StunObject)
-            StunObject.SetActive(true);
-
-        Debug.Log("initWaitTime:" + initWaitTime);
-        yield return new WaitForSeconds(duration);
-
-        if (StunObject)
-            StunObject.gameObject.SetActive(false);
-
-        agent.enabled = true;
-        isStun = false;
     }
 
 }

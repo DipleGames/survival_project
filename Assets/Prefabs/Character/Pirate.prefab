@@ -7594,7 +7594,7 @@ MonoBehaviour:
   maxDistance: 4
   maxHeight: 3
   flyTime: 1
-  stunDuration: 5
+  stunDuration: 3
   optionNo: 0
   clickTime: 0
   attackSounds:

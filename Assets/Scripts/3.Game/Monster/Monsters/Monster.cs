@@ -1,4 +1,5 @@
 using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Pool;
@@ -34,6 +35,7 @@ public partial class Monster : MonoBehaviour, IDamageable
     SoundManager soundManager;
 
     IEnumerator runningCoroutine;
+    IEnumerator stunCoroutine;
 
     Color initcolor;
 
@@ -43,11 +45,7 @@ public partial class Monster : MonoBehaviour, IDamageable
     float zDistance;
 
     float initMoveDelay;
-    //public bool canMove = true;
-
     int initOrder;
-
-    // public bool CanMove => canMove;
 
     public int monsterNum;
 
@@ -92,6 +90,7 @@ public partial class Monster : MonoBehaviour, IDamageable
 
     private void OnDisable()
     {
+        isStun = false;
         canAttack = true;
         agent.enabled = true;
         StopAllCoroutines();
@@ -116,6 +115,8 @@ public partial class Monster : MonoBehaviour, IDamageable
             CheckDieAnimation();
         }
 
+        if (isStun) return;
+
         Attack();
         AttackEnd();
         AttackDelay();
@@ -135,6 +136,7 @@ public partial class Monster : MonoBehaviour, IDamageable
         
         moveSpeed = stat.monsterSpeed;
         initSpeed = moveSpeed;
+        agent.speed = initSpeed;
         moveDelay = stat.moveDelay;
         initMoveDelay = moveDelay;
         itemDropPercent = stat.itemDropPercent;
@@ -148,10 +150,13 @@ public partial class Monster : MonoBehaviour, IDamageable
         rend.color = initcolor;
         rend.sortingOrder = initOrder;
 
-        InitMonsterSetting(stat);
-        InitSetting(moveSpeed);
-
+        isStun = false;
         hitCollider.enabled = true;
+
+        attackCollider.enabled = false;
+
+        if (StunObject.activeSelf)
+            StunObject.SetActive(false);
     }
 
     protected IEnumerator MonsterColorBlink()
@@ -169,86 +174,11 @@ public partial class Monster : MonoBehaviour, IDamageable
         }
 
         rend.color = initcolor;
-    }   
-
-    void Attack()
-    {
-        if (isDead || !canAttack)
-            return;
-
-        if (FocusObject == MonsterFocusObject.Player)
-        {
-            xDistance = Mathf.Abs(character.transform.position.x - transform.position.x);
-            zDistance = Mathf.Abs(character.transform.position.z - transform.position.z);
-        }
-
-        if (!isAttack && !gameManager.isClear)
-        {
-            //if (xDistance <= attackRange.x && zDistance <= attackRange.y)
-            if (xDistance <= attackRange.x + 0.5f && zDistance <= attackRange.y+0.5f)
-            {
-                isAttack = true;
-                agent.enabled = false;
-                canMove = false;
-                canAttack = false;
-            }
-        }
-
-        anim.SetBool("isAttack", isAttack);
     }
 
-    void AttackEnd()
+    public void ChangeOutline(Color color)
     {
-        if (!isAttack)
-            return;
-
-        if (anim.GetCurrentAnimatorStateInfo(0).IsName("Attack"))
-        {
-            if (anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.95f)
-            {
-                isAttack = false;
-                anim.SetBool("isAttack", isAttack);
-            }
-        }
-    }
-
-    void MoveDelay()
-    {
-        if (canMove || isAttack)
-            return;
-
-        moveDelay -= Time.deltaTime;
-
-        if(moveDelay <= 0)
-        {
-            InitailizeCoolTime();
-            agent.enabled = true;
-            canMove = true;
-            moveDelay = initMoveDelay;
-        }
-    }
-
-    public void OnDamaged(float damage)
-    {
-        hp -= damage;
-
-        if (hp <= 0)
-        {
-            soundManager.PlaySFX(damagedSound);
-            OnDead();
-
-            if(monsterOutline != null)
-                monsterOutline.SetOutLine(false);
-        }
-
-        else
-        {
-            if (runningCoroutine != null)
-                StopCoroutine(runningCoroutine);
-
-            runningCoroutine = MonsterColorBlink();
-            StartCoroutine(runningCoroutine);
-        }
+        rend.material.SetColor("_SolidOutline", color);
     }
 
     public void OnDead()
@@ -262,6 +192,7 @@ public partial class Monster : MonoBehaviour, IDamageable
         rend.sortingOrder = 0;
         anim.speed = 1f;
         rend.color = Color.white;
+        isStun = false;
 
         if (itemDropPercent > 0 && hp <= 0)
         {
@@ -276,11 +207,16 @@ public partial class Monster : MonoBehaviour, IDamageable
             }
         }
 
+        if (attackCollider != null)
+            attackCollider.enabled = false;
+
         if (runningCoroutine != null)
             StopCoroutine(runningCoroutine);
 
-        if (attackCollider != null)
-            attackCollider.enabled = false;
+        if (stunCoroutine != null)
+            StopCoroutine(stunCoroutine);
+
+        // StunObject.SetActive(false);
 
         anim.SetTrigger("Die");
     }
@@ -296,11 +232,6 @@ public partial class Monster : MonoBehaviour, IDamageable
         }
     }
 
-    public void ChangeOutline(Color color)
-    {
-        rend.material.SetColor("_SolidOutline", color);
-    }
-
     public void SetManagedPool(IObjectPool<Monster> pool)
     {
         managedPool = pool;
@@ -313,5 +244,46 @@ public partial class Monster : MonoBehaviour, IDamageable
         hitCollider.enabled = false;
     }
 
-    
+    public void Stunned(float duration)
+    {
+        if (stunCoroutine != null)
+            StopCoroutine(stunCoroutine);
+
+        stunCoroutine = StunCorutine(duration);
+        StartCoroutine(stunCoroutine);
+    }
+
+    // 스턴상태 적용
+    IEnumerator StunCorutine(float duration)
+    {
+        isStun = true;
+        canMove = false;
+        agent.enabled = false;
+        canAttack = false;
+        isAttack = false;
+
+        anim.SetBool("isStun", isStun);
+        anim.SetBool("isWalk", canMove);
+        anim.SetBool("isAttack", isAttack);
+        attackCollider.enabled = false;
+
+        if (StunObject)
+            StunObject.SetActive(true);
+
+        Debug.Log("initWaitTime:" + initWaitTime);
+        yield return CoroutineCaching.WaitForSeconds(duration);
+
+        if (StunObject)
+            StunObject.SetActive(false);
+
+        isStun = false;
+        canMove = true;
+        agent.enabled = true;
+        canAttack = true;
+
+        anim.SetBool("isStun", isStun);
+        anim.SetBool("isWalk", agent.enabled);
+        anim.SetBool("isWalk", canAttack);
+    }
+
 }
