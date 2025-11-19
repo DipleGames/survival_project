@@ -4,7 +4,13 @@ using UnityEngine;
 
 public class CreateDesk : MonoBehaviour, IMouseInteraction
 {
-    [SerializeField] GameObject createPanel;
+    [SerializeField] CreatePanel createPanel;
+
+    void Start()
+    {
+        if (createPanel == null)
+            createPanel = FindObjectOfType<CreatePanel>(true); // 비활성 포함 찾기
+    }
 
     public void CanInteraction(bool _canInteraction)
     {
@@ -19,12 +25,12 @@ public class CreateDesk : MonoBehaviour, IMouseInteraction
     public void InteractionLeftButtonFuc(GameObject hitObject)
     {
         createPanel.GetComponent<CreatePanel>().SetCreateAcquisition(Acquisition.CraftTable);
-        createPanel.SetActive(true);
+        createPanel.gameObject.SetActive(true);
     }
 
     public void InteractionRightButtonFuc(GameObject hitObject)
     {
-        throw new System.NotImplementedException();
+        Debug.Log($"우클릭 함수 호출됨: {gameObject.name}");
     }
 
     public bool ReturnCanInteraction()

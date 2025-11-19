@@ -48,7 +48,7 @@ public class MonsterBullet : MonoBehaviour
             DestroyBullet();
         }
 
-        else if(other.tag == "Obstacle")
+        else if (other.tag == "Obstacle")
         {
             DestroyBullet();
         }

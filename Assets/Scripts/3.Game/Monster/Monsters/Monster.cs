@@ -1,5 +1,4 @@
 using System.Collections;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Pool;
@@ -250,7 +249,7 @@ public partial class Monster : MonoBehaviour, IDamageable
         StartCoroutine(stunCoroutine);
     }
 
-    // 스턴상태 적용
+    // �턴�태 �용
     IEnumerator StunCorutine(float duration)
     {
         isStun = true;

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/Scripts/3.Game/House/RepairRequirement.cs.meta
+guid: 83f7dea6b3b8b374d81bfbdb7df268a1
+========
+guid: b2edcdaa8a422b445ae91a3d8abe973d
+>>>>>>>> origin/KRH:Assets/Scripts/3.Game/House/ContentUnlock.cs.meta
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
