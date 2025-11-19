@@ -7,13 +7,14 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: MonsterOutLine
+  m_Name: MonsterOutline_Red
   m_Shader: {fileID: 4800000, guid: 62505ee61d20098489c6f861ed25cce1, type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords:
+  - _CONNECTEDALPHA_ON
   - _OUTLINEENABLED_ON
   - _OUTLINEMODE_SOLID
-  - _OUTLINEPOSITION_INSIDE_UNDER_SPRITE
+  - _OUTLINEPOSITION_OUTSIDE
   - _OUTLINESHAPE_CONTOUR
   - _TILEMODE_STRETCH
   m_LightmapFlags: 4
@@ -76,7 +77,7 @@ Material:
     - _Angle: 45
     - _BumpScale: 1
     - _ColorMask: 15
-    - _ConnectedAlpha: 0
+    - _ConnectedAlpha: 1
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
@@ -89,7 +90,7 @@ Material:
     - _OcclusionStrength: 1
     - _OutlineEnabled: 1
     - _OutlineMode: 0
-    - _OutlinePosition: 0
+    - _OutlinePosition: 2
     - _OutlineShape: 0
     - _Parallax: 0.02
     - _SmoothnessTextureChannel: 0
@@ -100,7 +101,7 @@ Material:
     - _StencilOp: 0
     - _StencilReadMask: 255
     - _StencilWriteMask: 255
-    - _Thickness: 0
+    - _Thickness: 10
     - _TileMode: 0
     - _UVSec: 0
     - _UseUIAlphaClip: 0
@@ -112,7 +113,7 @@ Material:
     - _Flip: {r: 1, g: 1, b: 1, a: 1}
     - _GradientOutline1: {r: 0, g: 0, b: 0, a: 1}
     - _GradientOutline2: {r: 0, g: 0, b: 0, a: 1}
-    - _ImageOutline: {r: 1, g: 1, b: 1, a: 1}
+    - _ImageOutline: {r: 1, g: 1, b: 1, a: 0}
     - _RendererColor: {r: 1, g: 1, b: 1, a: 1}
     - _SolidOutline: {r: 1, g: 0, b: 0, a: 1}
   m_BuildTextureStacks: []

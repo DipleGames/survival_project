@@ -1,21 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SocialPlatforms;
 
-public class MonsterHit : MonoBehaviour, IDamageable
+public partial class Monster : IDamageable
 {
     DamageUIManager damageUIManager;
-    Monster monster;
-
-    private void Awake()
-    {
-        monster = transform.parent.gameObject.GetComponent<Monster>();
-        damageUIManager = DamageUIManager.Instance;
-    }
 
     public void Attacked(float damage, GameObject hitObject)
     {
-        transform.parent.GetComponent<Monster>().OnDamaged(damage);
+        OnDamaged(damage);
     }
 
     public void RendDamageUI(float damage, Vector3 rendPos, bool canCri, bool isCri)
@@ -25,35 +20,54 @@ public class MonsterHit : MonoBehaviour, IDamageable
 
     public void GetStunned(float duration)
     {
-        // Coroutine으로 처리해야 하는가?
-
-        monster.canAttack = false;
-        monster.canMove = false;
-
-        float time = 0f;
-        while(time < duration)
-        {
-            time += Time.deltaTime;
-        }
-
-        monster.canAttack = true;
-        monster.canMove = true;
+        Stunned(duration);
     }
 
-    IEnumerator StunCorutine(float duration)
+    public void OnDamaged(float damage)
     {
-        monster.canAttack = false;
-        monster.canMove = false;
+        hp -= damage;
 
-        float time = 0f;
-        while (time < duration)
+        if (hp <= 0)
         {
-            time += Time.deltaTime;
-            yield return null;
+            soundManager.PlaySFX(damagedSound);
+            OnDead();
+
+            if (monsterOutline != null)
+                monsterOutline.SetOutLine(false);
         }
 
-        monster.canAttack = true;
-        monster.canMove = true;
+        else
+        {
+            if (runningCoroutine != null)
+                StopCoroutine(runningCoroutine);
+
+            runningCoroutine = MonsterColorBlink();
+            StartCoroutine(runningCoroutine);
+        }
+    }
+
+    void AreaDamage(float distance, bool isCri)
+    {
+        impactRadius = 0.5f + distance * 0.1f;
+        detactLayer = 1 << LayerMask.NameToLayer("MonsterAttaked");
+        var detected = Physics.OverlapSphere(transform.position, impactRadius, detactLayer);
+
+        Debug.Log("impactRadius: " + impactRadius);
+        Debug.Log("detected List: " + detected.Length);
+
+        if (detected != null)
+        {
+            Debug.Log("detectedOne: " + detected.GetValue(0));
+
+            foreach (BoxCollider monster in detected)
+            {
+                Transform target = monster.transform.parent;
+                Debug.Log("target: " + target.gameObject.name);
+
+                target.GetComponent<Monster>().Attacked(damage * 0.7f, monster.gameObject);
+                target.GetComponent<Monster>().RendDamageUI(damage * 0.7f, monster.transform.position, true, isCri);
+            }
+        }
     }
 
 }

@@ -18,12 +18,14 @@ public class MonsterFinder : MonoBehaviour
 
     Ray ray;
     Vector3 mouseWorldPos;
+    public Vector3 dirToMouse;
 
     // WeaponManager weaponManager;
 
     private void Awake()
     {
         // weaponManager = WeaponManager.Instance;
+        detactAngle = GetComponent<MetalBat>().attackAngle;
         detactedMonsters = new List<Collider>();
     }
 
@@ -84,6 +86,7 @@ public class MonsterFinder : MonoBehaviour
                 }
                 else if (targetDist > tempDist)
                 {
+                    targetDist = tempDist;
                     detactedOne = monster;
                 }
             }
@@ -120,7 +123,7 @@ public class MonsterFinder : MonoBehaviour
 
     public Vector3 DirFromAngle(float angleInDegrees)
     {
-        Vector3 dirToMouse = mouseWorldPos - transform.position;
+        dirToMouse = mouseWorldPos - transform.position;
         float angle = Mathf.Atan2(dirToMouse.z, dirToMouse.x) * Mathf.Rad2Deg;
 
         float finalAngle = angle + angleInDegrees;

@@ -6887,7 +6887,7 @@ Canvas:
   m_SortingBucketNormalizedSize: 0
   m_AdditionalShaderChannelsFlag: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 1
+  m_SortingOrder: 5
   m_TargetDisplay: 0
 --- !u!114 &7624567718263359972
 MonoBehaviour:
@@ -7499,7 +7499,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5285969229584558530, guid: 52bc5f922a4ac26439f19b5756badf38, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5285969229584558530, guid: 52bc5f922a4ac26439f19b5756badf38, type: 3}
       propertyPath: m_TagString
@@ -7571,6 +7571,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1048576
   detactedMonsters: []
+  dirToMouse: {x: 0, y: 0, z: 0}
 --- !u!114 &7186334355576954676
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7583,16 +7584,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37aa6134662408645821a05f6c6d75c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  monsterFinder: {fileID: 5768575177139739798}
   chargeBar: {fileID: 3030168731133240046}
   landingPoint: {fileID: 184522926920208228}
   EffectRange: {fileID: 889960987539849669}
   damage: 15
   batDelay: 0.9
+  attackAngle: 100
   maxDistance: 4
   maxHeight: 3
   flyTime: 1
-  stunDuration: 1
-  isOption_One: 1
+  stunDuration: 3
+  optionNo: 0
   clickTime: 0
   attackSounds:
   - {fileID: 8300000, guid: 3738c6f6e2fcd0b41ac3c105b54e650f, type: 3}

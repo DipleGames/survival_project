@@ -1,9 +1,7 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
-using UnityEngine.SocialPlatforms;
-using static UnityEngine.Rendering.HableCurve;
+using UnityEngine.UIElements;
 
 public enum MonsterFocusObject
 {
@@ -11,15 +9,10 @@ public enum MonsterFocusObject
     Player
 }
 
-public class MonsterMove : MonoBehaviour
-{
-    [SerializeField] Monster monster;
+public partial class Monster
+{   
     [SerializeField] LayerMask groundLayer;
-    [SerializeField] BoxCollider boxCollider;
-    [SerializeField] BoxCollider weaponBoxCollider;
-    [SerializeField] Animator anim;
     [SerializeField] GameObject weapon;
-    [SerializeField] SphereCollider characterDetectCollider;
 
     float initScaleX;
     float initColliderX;
@@ -28,16 +21,22 @@ public class MonsterMove : MonoBehaviour
     [HideInInspector] public NavMeshAgent agent;
 
     Vector3 dir;
-    Vector3 housePos;
+    Vector3 playerPos;
     Vector3 destination;
+
+    [Header("Stat")]
+    [SerializeField] float moveDelay;
+    [HideInInspector] float moveSpeed;
 
     [Header("Setting")]
     [SerializeField] float initMoveTime;
     [SerializeField] float initWaitTime;
-    [SerializeField] float initSpeed;
-   
-    float moveTime;
-    float waitTime;
+    [SerializeField] float initSpeed = 0;
+
+    public bool canMove = true;
+
+    [SerializeField] float moveTime;
+    [SerializeField] float waitTime;
 
     public MonsterFocusObject FocusObject { get; private set; }
 
@@ -45,35 +44,10 @@ public class MonsterMove : MonoBehaviour
     float impactRadius;
     float flyDelay;
 
-    Character character;
+    Vector3[] corners;
+    int count = 1;
 
-    private void Awake()
-    {
-        character = Character.Instance;
-        agent = GetComponent<NavMeshAgent>();
-
-        housePos = GameObject.Find("House").transform.position;
-
-        agent.updateRotation = false;
-
-        initScaleX = transform.localScale.x;
-        initColliderX = boxCollider.size.x;
-
-        if (weaponBoxCollider != null)
-            initWeaponColliderX = weaponBoxCollider.size.x;
-
-        /*initMoveTime = moveTime;
-        initWaitTime = waitTime;*/
-
-        moveTime = initMoveTime;
-        waitTime = initWaitTime;
-
-        destination = housePos;
-        FocusObject = MonsterFocusObject.House;
-
-        impactRadius = 1f;
-        flyDelay = 0f;
-    }
+    [SerializeField] GameObject StunObject;
 
     private void OnEnable()
     {
@@ -81,17 +55,28 @@ public class MonsterMove : MonoBehaviour
         waitTime = initWaitTime;
     }
 
-    private void Update()
+    private void Move()
     {
         anim.SetBool("isWalk", agent.enabled);
 
-        if (!GetComponent<Monster>().CanMove || GetComponent<Monster>().IsDead)
+        if (!canMove || IsDead)
         {
             agent.enabled = false;
             return;
         }
 
         Flip();
+
+        ExecuteMove();
+        WaitMoveDelay();
+    }
+
+    private void ExecuteMove()
+    {
+        if (isStun)
+            return;
+
+        destination = character.transform.position;
 
         if (agent.enabled)
         {
@@ -110,44 +95,21 @@ public class MonsterMove : MonoBehaviour
                 }
             }
         }
-
         else
         {
             if (initWaitTime != 0)
             {
+
                 waitTime -= Time.deltaTime;
 
                 if (waitTime <= 0)
                 {
                     agent.enabled = true;
+                    
                     moveTime = initMoveTime;
                 }
             }
         }
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.CompareTag("Character"))
-        {
-            FocusObject = MonsterFocusObject.Player;
-            destination = character.transform.position;
-        }
-    }
-
-    private void OnTriggerExit(Collider other)
-    {
-        if (other.CompareTag("Character"))
-        {
-            FocusObject = MonsterFocusObject.House;
-            destination = housePos;
-        }
-    }
-
-    public void InitSetting(float speed)
-    {
-        initSpeed = speed;
-        agent.speed = initSpeed;
     }
 
     public void InitailizeCoolTime()
@@ -156,8 +118,21 @@ public class MonsterMove : MonoBehaviour
         moveTime = initMoveTime;
     }
 
-    Vector3[] corners;
-    int count = 1;
+    void WaitMoveDelay()
+    {
+        if (canMove || isAttack)
+            return;
+
+        moveDelay -= Time.deltaTime;
+
+        if (moveDelay <= 0)
+        {
+            InitailizeCoolTime();
+            agent.enabled = true;
+            canMove = true;
+            moveDelay = initMoveDelay;
+        }
+    }
 
     void Flip()
     {
@@ -187,12 +162,13 @@ public class MonsterMove : MonoBehaviour
         transform.localScale = new Vector3(scaleX, transform.localScale.y, transform.localScale.z);
 
         float colliderX = dir.x > 0 ? -initColliderX : initColliderX;
-        boxCollider.size = new Vector3(colliderX, boxCollider.size.y, boxCollider.size.z);
 
-        if (weaponBoxCollider != null)
+        hitCollider.size = new Vector3(colliderX, hitCollider.size.y, hitCollider.size.z);
+
+        if (attackCollider != null)
         {
             float weaponColliderX = dir.x > 0 ? -initWeaponColliderX : initWeaponColliderX;
-            weaponBoxCollider.size = new Vector3(weaponColliderX, weaponBoxCollider.size.y, weaponBoxCollider.size.z);
+            attackCollider.size = new Vector3(weaponColliderX, attackCollider.size.y, attackCollider.size.z);
         }
 
         //rend.flipX = dir.x > 0;
@@ -214,16 +190,8 @@ public class MonsterMove : MonoBehaviour
             weapon.transform.rotation *= Quaternion.Euler(180, 0, 0);
     }
 
-    private void OnDrawGizmos()
-    {
-        Gizmos.color = Color.green;
-        Gizmos.DrawWireSphere(transform.position + characterDetectCollider.center, characterDetectCollider.radius);
-    }
-
     public IEnumerator FlyAway(Vector3 flyDirection, float distance, float height, float duration, float damage, bool isCri)
     {
-        GetComponentInParent<Monster>().isblowed = true;
-
         Vector3 endPos = transform.position + (new Vector3(flyDirection.x, 0, flyDirection.z) * distance);
         endPos.y = transform.position.y;
 
@@ -236,27 +204,7 @@ public class MonsterMove : MonoBehaviour
             yield return null;
         }
 
-        // distance : 최소 1 ~ 최대 5
-        impactRadius = 0.5f + distance * 0.1f;         // 비거리에 따른 공격판정 범위변동
-        detactLayer = 1 << LayerMask.NameToLayer("MonsterAttaked");
-        var detected = Physics.OverlapSphere(transform.position, impactRadius, detactLayer);
-
-        if (detected != null)
-        {
-            foreach (Collider monster in detected)
-            {
-                if (monster == boxCollider) continue;
-                if (monster.GetComponentInParent<Monster>().isblowed) continue;
-
-                monster.GetComponent<IDamageable>().Attacked(damage * 0.7f, monster.gameObject);
-                monster.GetComponent<IDamageable>().RendDamageUI(damage * 0.7f, monster.transform.position, true, isCri);
-            }
-        }
-
-        
-        GetComponentInParent<Monster>().isblowed = false;
-        GetComponentInChildren<IDamageable>().Attacked(damage * 0.7f, gameObject);
-        GetComponentInChildren<IDamageable>().RendDamageUI(damage * 0.7f, transform.position, true, isCri);
+        AreaDamage(distance, isCri);
     }
 
     IEnumerator MoveParabolic(Vector3 startPos, Vector3 endPos, float maxHeight, float duration)
@@ -310,10 +258,4 @@ public class MonsterMove : MonoBehaviour
         }
     }
 
-    private void OnDisable()
-    {
-        GetComponent<Monster>().canAttack = true;
-        agent.enabled = true;
-        StopAllCoroutines();
-    }
 }

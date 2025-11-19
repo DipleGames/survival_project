@@ -79,7 +79,6 @@ public class Character : Singleton<Character>
     GamesceneManager gamesceneManager;
     SoundManager soundManager;
     WeaponManager weaponManager;
-    WeaponChanger weaponChanger;
 
     public bool IsFlip => rendUpper.flipX;
 
@@ -112,7 +111,6 @@ public class Character : Singleton<Character>
         gameManager = GameManager.Instance;
         soundManager = SoundManager.Instance;
         weaponManager = WeaponManager.Instance;
-        weaponChanger = WeaponChanger.Instance;
 
         maxRecoveryGauge = 80;
         initMaxRecGauge = maxRecoveryGauge;

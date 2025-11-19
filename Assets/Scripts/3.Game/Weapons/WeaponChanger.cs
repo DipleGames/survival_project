@@ -4,7 +4,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class WeaponChanger : Singleton<WeaponChanger>
+public class WeaponChanger : MonoBehaviour
 {
     [Header("Image")]
     [SerializeField] protected Sprite[] weaponImages;
@@ -25,11 +25,8 @@ public class WeaponChanger : Singleton<WeaponChanger>
     GameManager gameManager;
     WeaponManager weaponManager;
 
-    protected override void Awake()
+    protected void Awake()
     {
-        base.Awake();
-        DontDestroyOnLoad(this);
-
         character = Character.Instance;
         soundManager = SoundManager.Instance;
         gameManager = GameManager.Instance;

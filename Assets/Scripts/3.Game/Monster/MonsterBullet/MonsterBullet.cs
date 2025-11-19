@@ -44,18 +44,12 @@ public class MonsterBullet : MonoBehaviour
         {
             //realDamage = bulletDamage * (1 + Mathf.Floor(gameManager.round / 30)) + Mathf.Floor(gameManager.round / 5) * 2f;
             realDamage = bulletDamage;
-            other.transform.parent.GetComponent<Character>().OnDamaged(realDamage, parentObject.GetComponentInChildren<MonsterHit>().gameObject);
+            other.transform.parent.GetComponent<Character>().OnDamaged(realDamage, parentObject.gameObject);
             DestroyBullet();
         }
 
         else if(other.tag == "Obstacle")
         {
-            DestroyBullet();
-        }
-
-        else if(other.GetComponentInChildren<IDamageable>() is House)
-        {
-            other.GetComponent<IDamageable>().Attacked(realDamage, null);
             DestroyBullet();
         }
     }
