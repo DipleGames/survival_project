@@ -55,7 +55,7 @@ public partial class Monster
         waitTime = initWaitTime;
     }
 
-    private void monsterMove()
+    private void Move()
     {
         anim.SetBool("isWalk", agent.enabled);
 
@@ -68,6 +68,7 @@ public partial class Monster
         Flip();
 
         ExecuteMove();
+        WaitMoveDelay();
     }
 
     private void ExecuteMove()
@@ -117,7 +118,7 @@ public partial class Monster
         moveTime = initMoveTime;
     }
 
-    void MoveDelay()
+    void WaitMoveDelay()
     {
         if (canMove || isAttack)
             return;

@@ -38,6 +38,13 @@ public partial class Monster
 
     void Attack()
     {
+        StartAttack();
+        EndAttack();
+        TickAttackDelay();
+    }
+
+    void StartAttack()
+    {
         if (isDead || !canAttack)
             return;
 
@@ -60,10 +67,9 @@ public partial class Monster
 
             anim.SetBool("isAttack", isAttack);
         }
-
     }
 
-    void AttackEnd()
+    void EndAttack()
     {
         if (!isAttack)
             return;
@@ -85,7 +91,7 @@ public partial class Monster
         soundManager.PlaySFX(attackSound);
     }
 
-    public void AttackDelay()
+    public void TickAttackDelay()
     {
         if (isAttack || canAttack || isStun)
             return;
@@ -98,5 +104,4 @@ public partial class Monster
             attackDelay = initAttackDelay;
         }
     }
-
 }

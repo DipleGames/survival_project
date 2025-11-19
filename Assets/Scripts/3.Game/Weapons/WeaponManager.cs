@@ -33,14 +33,9 @@ public class WeaponManager : Singleton<WeaponManager>
     [SerializeField] public SpriteRenderer[] weaponRenderer;
     public int rangeMode;
 
-    Character character;
-    WeaponChanger weaponChanger;
 
     private void Start()
     {
-        character = Character.Instance;
-        weaponChanger = WeaponChanger.Instance;
-
         currentIndex = 0;
         canAttack = false;
         delayTime = changeDelay;

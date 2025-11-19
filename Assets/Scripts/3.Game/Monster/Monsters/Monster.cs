@@ -118,10 +118,7 @@ public partial class Monster : MonoBehaviour, IDamageable
         if (isStun) return;
 
         Attack();
-        AttackEnd();
-        AttackDelay();
-        MoveDelay();
-        monsterMove();
+        Move();
     }
 
     public void InitMonsterSetting(bool isLeader)
