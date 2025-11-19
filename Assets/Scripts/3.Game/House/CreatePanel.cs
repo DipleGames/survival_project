@@ -58,12 +58,14 @@ public class CreatePanel : MonoBehaviour
     {
         Item[] createItemList = gameManager.itemDatas.Where(x => x.AcquisitionList.Contains(acquisition)).ToArray();
 
+        ItemType tempType = (ItemType)(1 << createType);
+
         for (int i = 0; i < createItemListParent.childCount; ++i)
             createItemListParent.GetChild(i).gameObject.SetActive(false);
 
         for (int i = 0; i < createItemList.Length; i++)
         {
-            if (createItemList[i].Type != (ItemType)createType)
+            if (!createItemList[i].CompareType(tempType, false))
                 continue;
 
             GameObject itemList = null;
@@ -162,7 +164,7 @@ public class CreatePanel : MonoBehaviour
             Debug.Log($"{gameManager.Items[GameManager.Instance.idByMaterialType[material.Key]].ItemName}: {material.Value * createCount}개 소모");
         }
 
-        //item.AddItem();
+        //itemUI.AddItem();
         GameManager.Instance.haveItems[item.ItemId] += createCount;
 
         SetCreateItemPanelInfo();

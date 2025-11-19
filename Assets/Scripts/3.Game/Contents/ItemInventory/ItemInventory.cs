@@ -54,9 +54,10 @@ public class ItemInventory : MonoBehaviour
     {
         int index = 0;
 
+        ItemType tempType = (ItemType)(1 << type);
         foreach (var item in gameManager.haveItems)
         {
-            if (gameManager.Items[item.Key].Type == (ItemType)type)
+            if (gameManager.Items[item.Key].CompareType(tempType, false))
             {
                 slots[index].SetSlot(gameManager.Items[item.Key]);
                 index++;

@@ -100,7 +100,8 @@ public class ItemDictionay : MonoBehaviour
 
         for (int i = 0; i < items.Count; ++i)
         {
-            if ((int)items[i].Type == category)
+            ItemType tempType = (ItemType)(1 << category);
+            if (items[i].CompareType(tempType, true))
             {
                 itemsByCategory.Add(items[i]);
                 if (dicIndex == 1)

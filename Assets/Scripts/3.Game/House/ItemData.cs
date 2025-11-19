@@ -1,14 +1,16 @@
 using System;
 using System.IO;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Purchasing.MiniJSON;
 
 [System.Serializable]
 public class ItemInfo
 {
+    // json�일 변�명�과 �치�야
     public int itemId;
     public string itemName;
-    public int itemType;
+    /*int*/ public string itemType;
     public string acquisitions;
     public string needMaterialTypes;
     public string needMaterialCounts;
@@ -16,10 +18,26 @@ public class ItemInfo
     public string takePercentByAcquisition;
     public int isConsumable;
     public int maxCount;
+    public float createTime;
+    public int preyType;
     public string effect;
     public string decription;
 
-    public ItemInfo(int itemId, string itemName, int itemType, string acquisitions, string needMaterialTypes, string needMaterialCounts, string takeTime, string takePercent, int isConsumable, int maxCount, string effect, string decription)
+    public ItemInfo(
+        int itemId, 
+        string itemName, 
+        /*int*/ string itemType, 
+        string acquisitions, 
+        string needMaterialTypes, 
+        string needMaterialCounts, 
+        string takeTime, 
+        string takePercent, 
+        int isConsumable, 
+        int maxCount, 
+        float createTime, 
+        int preyType, 
+        string effect, 
+        string decription)
     {
         this.itemId = itemId;
         this.itemName = itemName;
@@ -31,6 +49,8 @@ public class ItemInfo
         this.takePercentByAcquisition = takePercent;
         this.isConsumable = isConsumable;
         this.maxCount = maxCount;
+        this.createTime = createTime;
+        this.preyType = preyType;
         this.decription = decription;
         this.effect = effect;
     }
@@ -68,7 +88,7 @@ public class ItemData : Singleton<ItemData>
 
         for (int i = 0; i < items.Length; i++)
         {
-            ItemInfo newItem = new ItemInfo(0, "", 0, "", "", "", "", "", 0, 0, "", "");
+            ItemInfo newItem = new ItemInfo(0, "", /*0*/"", "", "", "", "", "", 0, 0, 0.0f, 0, "", "");
             items[i] = newItem;
         }
 
@@ -82,7 +102,7 @@ public class ItemData : Singleton<ItemData>
         sw.Write(text);
         sw.Close();
 
-        Debug.Log("파일 저장 완료");
+        Debug.Log("�일 ��료");
     }
 
     [ContextMenu("RefreshJsonFile")]
@@ -128,7 +148,7 @@ public class ItemData : Singleton<ItemData>
 
         for (int j = beforeItems.Length; j < items.Length; j++)
         {
-            ItemInfo newItem = new ItemInfo(0, "", 0, "", "", "", "", "", 0, 0, "", "");
+            ItemInfo newItem = new ItemInfo(0, "", /*0*/"", "", "", "", "", "", 0, 0, 0.0f, 0, "", "");
             items[j] = newItem;
         }
 
@@ -145,7 +165,8 @@ public class ItemData : Singleton<ItemData>
 
         itemInfos = items;
 
-        Debug.Log("아이템 데이터 로드 완료");
+        Debug.Log("�이�이로드 �료");
+        EditorUtility.SetDirty(this);
     }
 
     private string LoadFile(string fileName)

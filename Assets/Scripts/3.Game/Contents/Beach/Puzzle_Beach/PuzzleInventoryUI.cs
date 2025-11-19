@@ -29,7 +29,7 @@ public class PuzzleInventoryUI : MonoBehaviour
 
         foreach (var item in gameManager.haveItems)
         {
-            if (gameManager.Items[item.Key].Type == type)
+            if (gameManager.Items[item.Key].CompareType(type, false))
             {
                 GameObject puzzlePiece = Instantiate(puzzlePieceObject, slotpanels[index]);
                 if(puzzlePiece.TryGetComponent(out PuzzlePiece piece))

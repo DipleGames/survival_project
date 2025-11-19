@@ -90,7 +90,7 @@ public class GameManager : Singleton<GameManager>
     public Dictionary<Status, int> status = new Dictionary<Status, int>();
     public Dictionary<SpecialStatus, bool> specialStatus = new Dictionary<SpecialStatus, bool>();
 
-    public string[] statNames = { "최대 체력", "공격력", "근거리 공격력", "원거리 공격력", "회복 수치", "방어력", "공격 속도", "이동 속도", "크리티컬", "회피율" };
+    public string[] statNames = { "최� 체력", "공격, "근거�공격, "�거�공격, "�복 �치", "방어, "공격 �도", "�동 �도", "�리�컬", "�피 };
 
     public int totalBulletCount;
 
@@ -102,9 +102,9 @@ public class GameManager : Singleton<GameManager>
 
     [Obsolete]
     public Dictionary<int, ItemInfo> itemInfos = new Dictionary<int, ItemInfo>(); // id - ItemInfo
-    /// <summary> 아이템 id - 정보</summary>
+    /// <summary> �이id - �보</summary>
     public Dictionary<int, Item> Items = new Dictionary<int, Item>();
-    /// <summary> 아이템 id - 갯수 </summary>
+    /// <summary> �이id - 갈� </summary>
     public Dictionary<int, int> haveItems = new Dictionary<int, int>();
 
     public Dictionary<MaterialType, int> idByMaterialType = new Dictionary<MaterialType, int>()
@@ -125,9 +125,9 @@ public class GameManager : Singleton<GameManager>
 
     public Dictionary<Acquisition, string> aquisitionName = new Dictionary<Acquisition, string>()
     {
-        {Acquisition.CraftTable, "제작대"}, {Acquisition.Logging, "벌목"}, {Acquisition.Fishing, "낚시"},
-        {Acquisition.Bush, "채집" }, {Acquisition.FishPot, "통발"}, {Acquisition.CampFire, "모닥불"},
-        {Acquisition.Item, "아이템 사용" }
+        {Acquisition.CraftTable, "�작�"}, {Acquisition.Logging, "벌목"}, {Acquisition.Fishing, "�시"},
+        {Acquisition.Bush, "채집" }, {Acquisition.FishPot, "�발"}, {Acquisition.CampFire, "모닥�},
+        {Acquisition.Item, "�이�용" }
     };
 
     public List<Item> itemDatas = new List<Item>();
@@ -279,10 +279,40 @@ public class GameManager : Singleton<GameManager>
         for (int i = 0; i < itemInfos.Length; ++i)
         {
             //this.itemInfos.Add(itemInfos[i].itemId, itemInfos[i]);
-            Items.Add(itemInfos[i].itemId, new Item(itemInfos[i].itemId, itemInfos[i].itemName, itemInfos[i].itemType, itemInfos[i].needMaterialTypes, itemInfos[i].needMaterialCounts, itemInfos[i].takeTimeByAcquisition, itemInfos[i].acquisitions, itemInfos[i].isConsumable, itemInfos[i].effect, itemInfos[i].decription));
+            Items.Add(itemInfos[i].itemId, new Item(
+                itemInfos[i].itemId, 
+                itemInfos[i].itemName, 
+                itemInfos[i].itemType, 
+                itemInfos[i].acquisitions, 
+                itemInfos[i].needMaterialTypes, 
+                itemInfos[i].needMaterialCounts, 
+                itemInfos[i].takeTimeByAcquisition, 
+                itemInfos[i].takePercentByAcquisition, 
+                itemInfos[i].isConsumable, 
+                itemInfos[i].maxCount, 
+                itemInfos[i].createTime, 
+                itemInfos[i].preyType, 
+                itemInfos[i].effect, 
+                itemInfos[i].decription
+                ));
 
             //f (itemInfos[i].itemId / 1000000 == 01 && !string.IsNullOrEmpty(itemInfos[i].needMaterialTypes))
-            itemDatas.Add(new Item(itemInfos[i].itemId, itemInfos[i].itemName, itemInfos[i].itemType, itemInfos[i].needMaterialTypes, itemInfos[i].needMaterialCounts, itemInfos[i].takeTimeByAcquisition, itemInfos[i].acquisitions, itemInfos[i].isConsumable, itemInfos[i].effect, itemInfos[i].decription));
+            itemDatas.Add(new Item(
+                itemInfos[i].itemId, 
+                itemInfos[i].itemName, 
+                itemInfos[i].itemType, 
+                itemInfos[i].acquisitions, 
+                itemInfos[i].needMaterialTypes, 
+                itemInfos[i].needMaterialCounts, 
+                itemInfos[i].takeTimeByAcquisition, 
+                itemInfos[i].takePercentByAcquisition, 
+                itemInfos[i].isConsumable, 
+                itemInfos[i].maxCount, 
+                itemInfos[i].createTime, 
+                itemInfos[i].preyType, 
+                itemInfos[i].effect, 
+                itemInfos[i].decription
+                ));
 
         }
     }
