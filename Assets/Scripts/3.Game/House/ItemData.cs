@@ -7,10 +7,10 @@ using UnityEngine.Purchasing.MiniJSON;
 [System.Serializable]
 public class ItemInfo
 {
-    // json�일 변�명�과 �치�야
+    // json파일 내 변수명들과 일치해야함
     public int itemId;
     public string itemName;
-    /*int*/ public string itemType;
+    public string itemType;     // int
     public string acquisitions;
     public string needMaterialTypes;
     public string needMaterialCounts;
@@ -26,7 +26,7 @@ public class ItemInfo
     public ItemInfo(
         int itemId, 
         string itemName, 
-        /*int*/ string itemType, 
+        string itemType,    // int
         string acquisitions, 
         string needMaterialTypes, 
         string needMaterialCounts, 
@@ -102,7 +102,7 @@ public class ItemData : Singleton<ItemData>
         sw.Write(text);
         sw.Close();
 
-        Debug.Log("�일 ��료");
+        Debug.Log("파일 저장 완료");
     }
 
     [ContextMenu("RefreshJsonFile")]
@@ -165,7 +165,7 @@ public class ItemData : Singleton<ItemData>
 
         itemInfos = items;
 
-        Debug.Log("�이�이로드 �료");
+        Debug.Log("아이템 데이터 로드 완료");
         EditorUtility.SetDirty(this);
     }
 

@@ -194,7 +194,7 @@ public partial class Monster
         Vector3 endPos = transform.position + (new Vector3(flyDirection.x, 0, flyDirection.z) * distance);
         endPos.y = transform.position.y;
 
-        StartCoroutine(MoveParabolic(transform.position, endPos, height, duration));    // �물�동
+        StartCoroutine(MoveParabolic(transform.position, endPos, height, duration));    // щЪ대룞
         
         flyDelay = 0f;
         while (flyDelay < duration)
@@ -246,9 +246,9 @@ public partial class Monster
     IEnumerator DrawLandingPoint(Vector3 landingPoint, float duration)
     {
         float time = 0f;
-        
-        // 착�지�브�트 ��성�여 관리할 �
-        // �ㅈ�ㄱ�ㄴ�ㄹ
+
+        // 착지지점 오브젝트 풀을 생성하여 관리할 것
+        // ㅂㅈㄷㄱㅁㄴㅇㄹ
 
         while (time < duration)
         {

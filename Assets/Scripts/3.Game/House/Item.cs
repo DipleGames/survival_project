@@ -52,7 +52,7 @@ public enum ItemType
     Preyable = 1 << 7,
 };
 
-// ItemType tempType = (ItemType)(1 << { 기존 ItemType변�명 }); ;
+// ItemType tempType = (ItemType)(1 << { 湲곗〈 ItemType蹂섎챸 }); ;
 
 //public enum ItemType
 //{
@@ -80,8 +80,8 @@ public class Item
 
     /// <summary>
     /// XXXXXX
-    /// ^^    : 01 = �이
-    ///   ^^  : �이종류 구분
+    /// ^^    : 01 = 꾩씠
+    ///   ^^  : 꾩씠醫낅쪟 援щ텇
     /// </summary>
     public int ItemId { get; }
     public string ItemName { get; }
@@ -221,10 +221,10 @@ public class Item
     }
 
     /// <summary>
-    /// �비교 �산 
+    /// 타입 비교 연산 
     /// </summary>
-    /// <param name="targetType">비교비트 마스�/param>
-    /// <param name="andLogic">targetType모두 만족�야�는지, �나�도 만족�면 �는지</param>
+    /// <param name="targetType">비교할 비트 마스크 타입</param>
+    /// <param name="andLogic">targetType을 모두 만족해야하는지, 하나라도 만족하면 되는지</param>
     /// <returns></returns>
     public bool CompareType(ItemType targetType, bool andLogic)
     {

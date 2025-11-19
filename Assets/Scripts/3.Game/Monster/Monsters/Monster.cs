@@ -245,12 +245,12 @@ public partial class Monster : MonoBehaviour, IDamageable
         if (stunCoroutine != null)
             StopCoroutine(stunCoroutine);
 
-        stunCoroutine = StunCorutine(duration);
+        stunCoroutine = StunCoroutine(duration);
         StartCoroutine(stunCoroutine);
     }
 
-    // �턴�태 �용
-    IEnumerator StunCorutine(float duration)
+    // 스턴상태 적용
+    IEnumerator StunCoroutine(float duration)
     {
         isStun = true;
         canMove = false;

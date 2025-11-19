@@ -8,20 +8,20 @@ public class House : MonoBehaviour, IMouseInteraction, IDamageable
     [System.Serializable]
     public class MaterialCost
     {
-        public MaterialType type;   // �요�료
+        public MaterialType type;   // 필요한 재료
         public int amount;          // 개수
     }
     [System.Serializable]
     public class ActiveRange {
-        public int left = 0, right = 0, up = 0, down = 0; // �함 범위(�방향 � �끝 �함)
+        public int left = 0, right = 0, up = 0, down = 0; // 포함 범위(각 방향 칸 수, 양끝 포함)
     }
     [System.Serializable]
     public class LevelRecipe
     {
-        public List<MaterialCost> costs = new List<MaterialCost>(); // �우�벨�료
-        public GameObject house;    // �벨�른 �마다�형(�단 그림�어 �외)
-        public ActiveRange activeRange = new ActiveRange(); // �벨�른 �동 범위
-        public int houseDurability = 0; // �벨�른 짴구
+        public List<MaterialCost> costs = new List<MaterialCost>(); // 하우스 레벨업 재료
+        public GameObject house;    // 레벨에 따른 집 마다의 외형(일단 그림이 없어 제외)
+        public ActiveRange activeRange = new ActiveRange(); // 레벨에 따른 활동 범위
+        public int houseDurability = 0; // 레벨에 따른 집 내구도
     }
     //[SerializeField] GameObject createDesk;
     [SerializeField] private int houseLevel = 0;
@@ -45,7 +45,7 @@ public class House : MonoBehaviour, IMouseInteraction, IDamageable
         if (groundTilemap != null)
             currentRange = groundTilemap.WorldToCell(transform.position);
         else
-            Debug.LogWarning("groundTilemap비어�습�다. 범위 체크가 비활�화�니");
+            Debug.LogWarning("groundTilemap이 비어있습니다. 범위 체크가 비활성화됩니다.");
     }
 
     void ApplyRecipe()
@@ -67,7 +67,7 @@ public class House : MonoBehaviour, IMouseInteraction, IDamageable
     {
         if (houseLevel >= levelRecipes.Count - 1)
         {
-            Debug.Log("�� 최� �벨�니");
+            Debug.Log("이미 최대 레벨입니다.");
             return;
         }
         if (!IsSatisfiedRequirement())
@@ -76,7 +76,7 @@ public class House : MonoBehaviour, IMouseInteraction, IDamageable
         }
         UseMaterial();
         houseLevel++;
-        Debug.Log($"�재 �우�벨: {houseLevel}");
+        Debug.Log($"현재 하우스 레벨: {houseLevel}");
         ApplyRecipe();
         SpawnHouse();
         currentDurability = maxDurability;
@@ -88,19 +88,19 @@ public class House : MonoBehaviour, IMouseInteraction, IDamageable
     {
         if (requireMaterials.Count == 0)
         {
-            Debug.Log("�그�이�패: �시�� 존재�� �음");
+            Debug.Log("업그레이드 실패: 레시피가 존재하지 않음");
             return false;
         }
         foreach (var material in requireMaterials)
         {
             if (!GameManager.Instance.haveItems.ContainsKey(GameManager.Instance.idByMaterialType[material.Key]))
             {
-                Debug.LogWarning($"�그�이�패: 보유 �료 �셔�리�� �음-{material.Key}");
+                Debug.LogWarning($"업그레이드 실패: 보유 재료 딕셔너리에 키가 없음-{material.Key}");
                 return false;
             }
             if (GameManager.Instance.haveItems[GameManager.Instance.idByMaterialType[material.Key]] < material.Value)
             {
-                Debug.Log("�그�이�패: �료 부�);
+                Debug.Log("업그레이드 실패: 재료 부족");
                 return false;
             }
         }
@@ -126,7 +126,7 @@ public class House : MonoBehaviour, IMouseInteraction, IDamageable
         var prefab = levelRecipes[houseLevel].house;
         if (!prefab)
         {
-            Debug.LogWarning($"{houseLevel} �우�형 �리�이 비어�습�다.");
+            Debug.LogWarning($"{houseLevel} 하우스 외형 프리팹이 비어있습니다.");
             return;
         }
         currentHouse = Instantiate(
@@ -202,7 +202,7 @@ public class House : MonoBehaviour, IMouseInteraction, IDamageable
             int matId = GameManager.Instance.idByMaterialType[kv.Key];
             if (!GameManager.Instance.haveItems.TryGetValue(matId, out int have) || have < kv.Value)
             {
-                Debug.Log("�리 �패: �료 부�);
+                Debug.Log("수리 실패: 재료 부족");
                 return false;
             }
         }
@@ -212,7 +212,7 @@ public class House : MonoBehaviour, IMouseInteraction, IDamageable
             GameManager.Instance.haveItems[matId] -= kv.Value;
         }
         currentDurability = maxDurability;
-        Debug.Log("�리 �료: �구최�치로 �복");
+        Debug.Log("수리 완료: 내구도 최대치로 회복");
         return true;
     }
 
@@ -245,11 +245,11 @@ public class House : MonoBehaviour, IMouseInteraction, IDamageable
     {
         if (currentDurability <= 0) return;
         currentDurability -= (Mathf.CeilToInt(damage));
-        Debug.Log($"�재 짴구 {currentDurability}");
+        Debug.Log($"현재 집 내구도: {currentDurability}");
         if (currentDurability <= 0)
         {
             currentDurability = 0;
-            Debug.Log("집이 �과�었�니");
+            Debug.Log("집이 파과되었습니다.");
             //gameObject.SetActive(false);
         }
     }
