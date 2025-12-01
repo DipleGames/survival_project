@@ -5,220 +5,36 @@ using UnityEngine.Tilemaps;
 
 public class House : MonoBehaviour, IMouseInteraction, IDamageable
 {
-    [System.Serializable]
-    public class MaterialCost
-    {
-        public MaterialType type;   // 필요한 재료
-        public int amount;          // 개수
-    }
-    [System.Serializable]
-    public class ActiveRange {
-        public int left = 0, right = 0, up = 0, down = 0; // 포함 범위(각 방향 칸 수, 양끝 포함)
-    }
-    [System.Serializable]
-    public class LevelRecipe
-    {
-        public List<MaterialCost> costs = new List<MaterialCost>(); // 하우스 레벨업 재료
-        public GameObject house;    // 레벨에 따른 집 마다의 외형(일단 그림이 없어 제외)
-        public ActiveRange activeRange = new ActiveRange(); // 레벨에 따른 활동 범위
-        public int houseDurability = 0; // 레벨에 따른 집 내구도
-    }
-    //[SerializeField] GameObject createDesk;
-    [SerializeField] private int houseLevel = 0;
-    [SerializeField] private List<LevelRecipe> levelRecipes = new List<LevelRecipe>();
-    private Dictionary<MaterialType, int> requireMaterials = new();
-    private GameObject currentHouse;
-    [SerializeField] private Transform houseTransform;
-    [SerializeField] private Tilemap groundTilemap;
-    private Vector3Int currentRange;
-    [SerializeField] int currentDurability = 0;
-    public int maxDurability =>
-    (houseLevel >= 0 && houseLevel < levelRecipes.Count && levelRecipes[houseLevel].houseDurability > 0) ?
-    levelRecipes[houseLevel].houseDurability : 30;
-
+    private bool isPlayerInHouse = false;
     void Start()
     {
-        if (!houseTransform) houseTransform = this.transform;
-        ApplyRecipe();
-        SpawnHouse();
-        currentDurability = maxDurability;
-        if (groundTilemap != null)
-            currentRange = groundTilemap.WorldToCell(transform.position);
-        else
-            Debug.LogWarning("groundTilemap이 비어있습니다. 범위 체크가 비활성화됩니다.");
+        
     }
-
-    void ApplyRecipe()
+    
+    private void OnTriggerEnter(Collider other)
     {
-        requireMaterials.Clear();
-
-        if(houseLevel < 0 || houseLevel >= levelRecipes.Count) return;
-
-        foreach (var cost in levelRecipes[houseLevel].costs)
+        if (other.CompareTag("Character"))
         {
-            if (requireMaterials.TryGetValue(cost.type, out int prev))
-                requireMaterials[cost.type] = prev + cost.amount;
-            else
-                requireMaterials.Add(cost.type, cost.amount);
+            isPlayerInHouse = true;
         }
     }
 
-    void CreateHouse()
+    private void OnTriggerExit(Collider other)
     {
-        if (houseLevel >= levelRecipes.Count - 1)
+        if (other.CompareTag("Character"))
         {
-            Debug.Log("이미 최대 레벨입니다.");
-            return;
-        }
-        if (!IsSatisfiedRequirement())
-        {
-            return;
-        }
-        UseMaterial();
-        houseLevel++;
-        Debug.Log($"현재 하우스 레벨: {houseLevel}");
-        ApplyRecipe();
-        SpawnHouse();
-        currentDurability = maxDurability;
-        if (groundTilemap != null)
-            currentRange = groundTilemap.WorldToCell(transform.position);
-    }
-
-    bool IsSatisfiedRequirement()
-    {
-        if (requireMaterials.Count == 0)
-        {
-            Debug.Log("업그레이드 실패: 레시피가 존재하지 않음");
-            return false;
-        }
-        foreach (var material in requireMaterials)
-        {
-            if (!GameManager.Instance.haveItems.ContainsKey(GameManager.Instance.idByMaterialType[material.Key]))
-            {
-                Debug.LogWarning($"업그레이드 실패: 보유 재료 딕셔너리에 키가 없음-{material.Key}");
-                return false;
-            }
-            if (GameManager.Instance.haveItems[GameManager.Instance.idByMaterialType[material.Key]] < material.Value)
-            {
-                Debug.Log("업그레이드 실패: 재료 부족");
-                return false;
-            }
-        }
-        return true;
-    }
-
-    void UseMaterial()
-    {
-        foreach (var material in requireMaterials)
-        {
-            GameManager.Instance.haveItems[GameManager.Instance.idByMaterialType[material.Key]] -= material.Value;
+            isPlayerInHouse = false;
         }
     }
 
-    void SpawnHouse()
+    public bool GetIsPlayerInHouse()
     {
-        if (currentHouse)
-        {
-            Destroy(currentHouse);
-            currentHouse = null;
-        }
-        if (houseLevel < 0 || houseLevel >= levelRecipes.Count) return;
-        var prefab = levelRecipes[houseLevel].house;
-        if (!prefab)
-        {
-            Debug.LogWarning($"{houseLevel} 하우스 외형 프리팹이 비어있습니다.");
-            return;
-        }
-        currentHouse = Instantiate(
-            prefab,
-            houseTransform.position,
-            houseTransform.rotation,
-            houseTransform
-        );
-    }
-
-    public bool CanInteractAtWorld(Vector3 worldPos)
-    {
-        if (!groundTilemap) return true;
-        var cell = groundTilemap.WorldToCell(worldPos);
-        return CanInteractAtCell(cell);
-    }
-
-    public bool CanInteractAtCell(Vector3Int cell)
-    {
-        if (levelRecipes == null || levelRecipes.Count == 0) return true;
-        var range = levelRecipes[houseLevel].activeRange;
-        int dx = cell.x - currentRange.x;
-        int dy = cell.y - currentRange.y;
-        bool insideX = (-range.left  <= dx) && (dx <= range.right);
-        bool insideY = (-range.down  <= dy) && (dy <= range.up);
-        return insideX && insideY;
-    }
-
-    private float GetLostRatio()
-    {
-        int max = Mathf.Max(1, maxDurability);
-        int lost = Mathf.Clamp(max - currentDurability, 0, max);
-        return (float)lost / max;
-    }
-    public Dictionary<MaterialType, int> CalcRepairCost()
-    {
-        var cost = new Dictionary<MaterialType, int>();
-        if (houseLevel <= 0 || levelRecipes.Count == 0) return cost;
-        int idx = Mathf.Clamp(houseLevel - 1, 0, Mathf.Max(0, levelRecipes.Count - 1));
-        float ratio = GetLostRatio();
-        if (ratio <= 0f) return cost;
-        foreach (var material in levelRecipes[idx].costs)
-        {
-            if (material.amount <= 0) continue;
-            int needed = Mathf.CeilToInt(material.amount * ratio);
-            if (needed == 0) needed = 1;
-            if (cost.ContainsKey(material.type)) cost[material.type] += needed;
-            else cost.Add(material.type, needed);
-        }
-        return cost;
-    }
-
-    public bool CanRepair()
-    {
-        if (houseLevel <= 0) return false;
-        var cost = CalcRepairCost();
-        if (cost.Count == 0) return false;
-        foreach (var kv in cost)
-        {
-            int matId = GameManager.Instance.idByMaterialType[kv.Key];
-            if (!GameManager.Instance.haveItems.TryGetValue(matId, out int have) || have < kv.Value)
-                return false;
-        }
-        return true;
-    }
-
-    public bool Repair()
-    {
-        var cost = CalcRepairCost();
-        if (cost.Count == 0) return false;
-        foreach (var kv in cost)
-        {
-            int matId = GameManager.Instance.idByMaterialType[kv.Key];
-            if (!GameManager.Instance.haveItems.TryGetValue(matId, out int have) || have < kv.Value)
-            {
-                Debug.Log("수리 실패: 재료 부족");
-                return false;
-            }
-        }
-        foreach (var kv in cost)
-        {
-            int matId = GameManager.Instance.idByMaterialType[kv.Key];
-            GameManager.Instance.haveItems[matId] -= kv.Value;
-        }
-        currentDurability = maxDurability;
-        Debug.Log("수리 완료: 내구도 최대치로 회복");
-        return true;
+        return isPlayerInHouse;
     }
 
     public void InteractionLeftButtonFuc(GameObject hitObject)
     {
-        CreateHouse();
+
     }
 
     public void InteractionRightButtonFuc(GameObject hitObject)
@@ -243,15 +59,7 @@ public class House : MonoBehaviour, IMouseInteraction, IDamageable
 
     public void Attacked(float damage, GameObject hitObject)
     {
-        if (currentDurability <= 0) return;
-        currentDurability -= (Mathf.CeilToInt(damage));
-        Debug.Log($"현재 집 내구도: {currentDurability}");
-        if (currentDurability <= 0)
-        {
-            currentDurability = 0;
-            Debug.Log("집이 파과되었습니다.");
-            //gameObject.SetActive(false);
-        }
+        Debug.Log("House Attacked");
     }
 
     public void RendDamageUI(float damage, Vector3 rendPos, bool canCri, bool isCri)

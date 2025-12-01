@@ -178,27 +178,33 @@ public class Monster : MonoBehaviour
 
     void Attack()
     {
-        if (isDead || !canAttack || monsterMove.FocusObject != MonsterFocusObject.Player)
+        if (isDead || !canAttack || monsterMove.FocusObject == MonsterFocusObject.Nothing)
             return;
 
-        if (monsterMove.FocusObject == MonsterFocusObject.Player)
+        if (monsterMove.FocusObject == MonsterFocusObject.House)
+        {
+
+            isAttack = true;
+            monsterMove.agent.enabled = false;
+            canMove = false;
+            canAttack = false;
+        }
+        else if (monsterMove.FocusObject == MonsterFocusObject.Player)
         {
             xDistance = Mathf.Abs(character.transform.position.x - transform.position.x);
             zDistance = Mathf.Abs(character.transform.position.z - transform.position.z);
-        }
-
-        if (!isAttack && !gameManager.isClear)
-        {
-            //if (xDistance <= attackRange.x && zDistance <= attackRange.y)
-            if (xDistance <= attackRange.x + 0.5f && zDistance <= attackRange.y+0.5f)
+            if (!isAttack && !gameManager.isClear)
             {
-                isAttack = true;
-                monsterMove.agent.enabled = false;
-                canMove = false;
-                canAttack = false;
+                //if (xDistance <= attackRange.x && zDistance <= attackRange.y)
+                if (xDistance <= attackRange.x + 0.5f && zDistance <= attackRange.y+0.5f)
+                {
+                    isAttack = true;
+                    monsterMove.agent.enabled = false;
+                    canMove = false;
+                    canAttack = false;
+                }
             }
         }
-
         anim.SetBool("isAttack", isAttack);
     }
 

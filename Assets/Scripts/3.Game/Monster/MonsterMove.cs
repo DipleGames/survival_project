@@ -5,7 +5,8 @@ using UnityEngine.AI;
 public enum MonsterFocusObject
 {
     House,
-    Player
+    Player,
+    Nothing
 }
 
 public class MonsterMove : MonoBehaviour
@@ -40,12 +41,17 @@ public class MonsterMove : MonoBehaviour
     Vector3 destination;
     public MonsterFocusObject FocusObject { get; private set; }
 
+    [SerializeField]
+    private House house;
+    [SerializeField]
+    float houseAttackRange = 0.3f;
+
     private void Awake()
     {
         character = Character.Instance;
         gameManager = GameManager.Instance;
         agent = GetComponent<NavMeshAgent>();
-
+        house = GameObject.Find("House").GetComponent<House>();
         housePos = GameObject.Find("House").transform.position;
 
         agent.updateRotation = false;
@@ -63,7 +69,6 @@ public class MonsterMove : MonoBehaviour
         waitTime = initWaitTime;
 
         destination = housePos;
-        FocusObject = MonsterFocusObject.Player;
     }
 
     private void OnEnable()
@@ -86,8 +91,24 @@ public class MonsterMove : MonoBehaviour
 
         if (agent.enabled)
         {
-            //destination = character.transform.position;
-
+            if (house.GetIsPlayerInHouse())
+            {
+                float distToHouse = Vector3.Distance(transform.position, housePos);
+                if (distToHouse <= houseAttackRange)
+                {
+                    FocusObject = MonsterFocusObject.House;
+                }
+                else
+                {
+                    FocusObject = MonsterFocusObject.Nothing;
+                }
+                destination = housePos;
+            }
+            else
+            {
+                FocusObject = MonsterFocusObject.Player;
+                destination = character.transform.position;
+            }
             agent.SetDestination(destination);
 
             if (initMoveTime != 0)
@@ -119,20 +140,20 @@ public class MonsterMove : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Character"))
-        {
-            FocusObject = MonsterFocusObject.Player;
-            destination = character.transform.position;
-        }
+        // if (other.CompareTag("Character"))
+        // {
+        //     FocusObject = MonsterFocusObject.Player;
+        //     destination = character.transform.position;
+        // }
     }
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.CompareTag("Character"))
-        {
-            FocusObject = MonsterFocusObject.House;
-            destination = housePos;
-        }
+        // if (other.CompareTag("Character"))
+        // {
+        //     FocusObject = MonsterFocusObject.House;
+        //     destination = housePos;
+        // }
     }
 
     public void InitSetting(float speed)
