@@ -205,12 +205,16 @@ public class Fishing : Singleton<Fishing>
         if (rand < high)
         {
             gameManager.fishLowGradeCount++;
+            GetExtraFishBySubstatus(true);
+
             catchFishImage.sprite = fishTypeImage[0];
         }
 
         else
         {
             gameManager.fishHighGradeCount++;
+            GetExtraFishBySubstatus(false);
+
             catchFishImage.sprite = fishTypeImage[1];
 
             rand = Random.Range(0, 100);
@@ -228,6 +232,7 @@ public class Fishing : Singleton<Fishing>
 #endif
         }
     }
+
 
     void GetRandomPiece()
     {
@@ -280,6 +285,34 @@ public class Fishing : Singleton<Fishing>
         pieceCard.gameObject.SetActive(true);
         ItemManager.Instance.AddItem(itemList[rand]);
     }
+    private void GetExtraFishBySubstatus(bool isLowGradeFish)
+    {
+        float addChance = gameManager.substatus[SubStatus.Fishing_AdditionalChance];
+        int addAmount = (int)gameManager.substatus[SubStatus.Fishing_AdditionalAmount];
+        int addAmountByChance = (int)gameManager.substatus[SubStatus.Fishing_AdditionalAmount_ByChance];
+
+        int extraCount = 0;
+
+        if (addChance > 99.99f)
+        {
+            extraCount += addAmount;
+        }
+
+        float rand = Random.Range(0f, 100f);
+        if (addChance > rand)
+        {
+            extraCount += addAmountByChance;
+        }
+
+        if (extraCount == 0)
+            return;
+
+        if (isLowGradeFish)
+            gameManager.fishLowGradeCount += extraCount;
+        else
+            gameManager.fishHighGradeCount += extraCount;
+    }
+
 
     public IEnumerator CatchingStart()
     {

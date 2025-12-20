@@ -48,7 +48,7 @@ public class PuzzleController : MonoBehaviour
         if (piece != null)
             slot.SetIndex((int)piece.Index);
         //else
-        //    slot.SetIndex(-1);
+        //    preySlot.SetIndex(-1);
     }
 
     // 버튼에서 호출

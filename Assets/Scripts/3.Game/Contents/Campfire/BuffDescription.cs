@@ -15,27 +15,27 @@ public class BuffDescription : MonoBehaviour
         gameObject.SetActive(false);
     }
 
-    public void SetBuffTextInfo(Buff buff, int buff1, int buff2 = 0, int buff3 = 0)
+    public void SetBuffTextInfo(OldBuff buff, int buff1, int buff2 = 0, int buff3 = 0)
     {
         string descText = "물고기를 구워먹고 생긴 버프.\n";
 
         switch(buff)
         {
-            case Buff.MAXHEALTH:
+            case OldBuff.MAXHEALTH:
                 descText += $"최대 체력이 {buff1}% 증가한다..";
                 break;
 
-            case Buff.POWER:
+            case OldBuff.POWER:
                 descText += $"공격력이 {buff1}%, 방어력이 {buff2}% 증가한다.";
                 break;
 
-            case Buff.SPEED:
+            case OldBuff.SPEED:
                 descText += $"이동 속도가 {buff1}%, 회피율이 {buff2}% 증가한다.";
                 if(buff3 != 0)
                     descText += $"\n대쉬 스킬이 추가된다.";
                 break;
 
-            case Buff.RECOVERY_HEALTH:
+            case OldBuff.RECOVERY_HEALTH:
                 descText += $"회복 게이지의 회복량이 {buff1}% 증가한다.";
                 break;
         }

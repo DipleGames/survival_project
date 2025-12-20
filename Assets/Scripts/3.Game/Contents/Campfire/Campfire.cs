@@ -34,8 +34,8 @@ public class Campfire : MonoBehaviour, IMouseInteraction
     bool canCookFish = false;
     Vector3 fireInitScale;
 
-    Dictionary<Buff, int> buffValues = new Dictionary<Buff, int>();
-    Buff beforeBuff = Buff.COUNT;
+    Dictionary<OldBuff, int> buffValues = new Dictionary<OldBuff, int>();
+    OldBuff beforeBuff = OldBuff.COUNT;
 
     Dictionary<Debuff, int> debuffValues = new Dictionary<Debuff, int>();
 
@@ -58,9 +58,9 @@ public class Campfire : MonoBehaviour, IMouseInteraction
 
         fireInitScale = fireImage.transform.localScale;
 
-        for (int i = 0; i < (int)Buff.COUNT; i++)
+        for (int i = 0; i < (int)OldBuff.COUNT; i++)
         {
-            buffValues.Add((Buff)i, 1);
+            buffValues.Add((OldBuff)i, 1);
             debuffValues.Add((Debuff)i, 0);
         }
 
@@ -119,11 +119,11 @@ public class Campfire : MonoBehaviour, IMouseInteraction
         {
             if (i != (int)beforeBuff)
             {
-                buffValues[(Buff)i] = 0;
+                buffValues[(OldBuff)i] = 0;
             }
         }
 
-        if (beforeBuff == Buff.SPEED && buffValues[Buff.SPEED] == 3)
+        if (beforeBuff == OldBuff.SPEED && buffValues[OldBuff.SPEED] == 3)
         {
             StartCoroutine(GameSceneUI.Instance.IActiveTutoPanel(TutoType.DashTuto, dashTutoImage));
         }
@@ -133,22 +133,22 @@ public class Campfire : MonoBehaviour, IMouseInteraction
 
     void SettingBuff()
     {
-        character.maxHp = Mathf.RoundToInt(character.maxHp * (100 + mxHps[buffValues[Buff.MAXHEALTH]]) * 0.01f);
+        character.maxHp = Mathf.RoundToInt(character.maxHp * (100 + mxHps[buffValues[OldBuff.MAXHEALTH]]) * 0.01f);
         //character.hp = character.maxHp;
 
-        character.recoverHpRatio += reHps[buffValues[Buff.RECOVERY_HEALTH]];
+        character.recoverHpRatio += reHps[buffValues[OldBuff.RECOVERY_HEALTH]];
 
-        character.speed *= (100 + speeds[buffValues[Buff.SPEED]]) * 0.01f;
-        character.avoid += avoids[buffValues[Buff.SPEED]];
-        //gameManager.dashCount = buffValues[Buff.SPEED] == 3 ? 1 : 0;
+        character.speed *= (100 + speeds[buffValues[OldBuff.SPEED]]) * 0.01f;
+        character.avoid += avoids[buffValues[OldBuff.SPEED]];
+        //gameManager.dashCount = buffValues[OldBuff.SPEED] == 3 ? 1 : 0;
 #if UNITY_EDITOR
 #else
         gameManager.dashCount = dash[buffValues[Buff.SPEED]];
         character.dashCount = gameManager.dashCount;
 #endif
 
-        character.percentDamage += dmgs[buffValues[Buff.POWER]];
-        character.defence += dfs[buffValues[Buff.POWER]];
+        character.percentDamage += dmgs[buffValues[OldBuff.POWER]];
+        character.defence += dfs[buffValues[OldBuff.POWER]];
     }
 
     public void ToNightScene()
@@ -172,13 +172,13 @@ public class Campfire : MonoBehaviour, IMouseInteraction
 
     public void OffBuffNDebuff()
     {
-        for (int i = 0; i < (int)Buff.COUNT; i++)
+        for (int i = 0; i < (int)OldBuff.COUNT; i++)
         {
-            buffValues[(Buff)i] = 0;
+            buffValues[(OldBuff)i] = 0;
             debuffValues[(Debuff)i] = 0;
         }
 
-        beforeBuff = Buff.COUNT;
+        beforeBuff = OldBuff.COUNT;
 
         SettingBuff();
 
@@ -232,7 +232,7 @@ public class Campfire : MonoBehaviour, IMouseInteraction
         //interactionUI.SetActive(false);
         canInteraction = false;
 
-        Buff buffType = (Buff)Random.Range(0, (int)Buff.COUNT);
+        OldBuff buffType = (OldBuff)Random.Range(0, (int)OldBuff.COUNT);
 
         if (gameManager.fishHighGradeCount > 0)
         {
@@ -260,20 +260,20 @@ public class Campfire : MonoBehaviour, IMouseInteraction
 
         switch (buffType)
         {
-            case Buff.MAXHEALTH:
-                buffDescriptionPanel.SetBuffTextInfo(buffType, mxHps[buffValues[Buff.MAXHEALTH]]);
+            case OldBuff.MAXHEALTH:
+                buffDescriptionPanel.SetBuffTextInfo(buffType, mxHps[buffValues[OldBuff.MAXHEALTH]]);
                 break;
 
-            case Buff.POWER:
-                buffDescriptionPanel.SetBuffTextInfo(buffType, dmgs[buffValues[Buff.POWER]], dfs[buffValues[Buff.POWER]]);
+            case OldBuff.POWER:
+                buffDescriptionPanel.SetBuffTextInfo(buffType, dmgs[buffValues[OldBuff.POWER]], dfs[buffValues[OldBuff.POWER]]);
                 break;
 
-            case Buff.SPEED:
-                buffDescriptionPanel.SetBuffTextInfo(buffType, speeds[buffValues[Buff.SPEED]], avoids[buffValues[Buff.SPEED]], dash[buffValues[Buff.SPEED]]);
+            case OldBuff.SPEED:
+                buffDescriptionPanel.SetBuffTextInfo(buffType, speeds[buffValues[OldBuff.SPEED]], avoids[buffValues[OldBuff.SPEED]], dash[buffValues[OldBuff.SPEED]]);
                 break;
 
-            case Buff.RECOVERY_HEALTH:
-                buffDescriptionPanel.SetBuffTextInfo(buffType, reHps[buffValues[Buff.RECOVERY_HEALTH]]);
+            case OldBuff.RECOVERY_HEALTH:
+                buffDescriptionPanel.SetBuffTextInfo(buffType, reHps[buffValues[OldBuff.RECOVERY_HEALTH]]);
                 break;
         }
 

@@ -18,6 +18,14 @@ public enum Status
     Avoid,
 }
 
+public enum SubStatus
+{
+    Fishing_AdditionalChance,
+    Fishing_AdditionalAmount_ByChance,
+    Fishing_AdditionalAmount
+
+}
+
 public enum SpecialStatus
 {
     DoubleAxe,
@@ -87,6 +95,7 @@ public class GameManager : Singleton<GameManager>
     public Vector3 characterSpawnPos = new Vector3(0, 0, -56f);
 
     public Dictionary<Status, int> status = new Dictionary<Status, int>();
+    public Dictionary<SubStatus, float> substatus = new Dictionary<SubStatus, float>();
     public Dictionary<SpecialStatus, bool> specialStatus = new Dictionary<SpecialStatus, bool>();
 
     public string[] statNames = { "최대 체력", "공격력", "근거리 공격력", "원거리 공격력", "회복 수치", "방어력", "공격 속도", "이동 속도", "크리티컬", "회피율" };
@@ -239,6 +248,11 @@ public class GameManager : Singleton<GameManager>
         status.Add(Status.MoveSpeed, speed);
         status.Add(Status.Critical, critical);
         status.Add(Status.Avoid, avoid);
+
+        for (int i = 0; i < Enum.GetValues(typeof(SubStatus)).Length; i++)
+        {
+            substatus.Add((SubStatus)i, 0);
+        }
 
         for (int i = 0; i < (int)SpecialStatus.Count; ++i)
         {
