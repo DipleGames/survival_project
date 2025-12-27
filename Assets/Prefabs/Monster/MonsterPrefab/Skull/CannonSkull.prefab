@@ -278,7 +278,7 @@ NavMeshAgent:
   m_AutoRepath: 1
   m_Height: 0.1
   m_BaseOffset: 0
-  m_WalkableMask: 3
+  m_WalkableMask: 1
   m_ObstacleAvoidanceType: 4
 --- !u!114 &405998318861722249
 MonoBehaviour:
@@ -299,6 +299,7 @@ MonoBehaviour:
   initAttackDelay: 0
   canAttack: 1
   isAttack: 0
+  attackCount: 0
   groundLayer:
     serializedVersion: 2
     m_Bits: 1024
@@ -321,7 +322,6 @@ MonoBehaviour:
   isStun: 0
   hp: 0
   maxHp: 0
-  attackCount: 0
   stat:
     monsterNum: 0
     monsterName: 

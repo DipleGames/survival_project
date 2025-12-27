@@ -266,6 +266,7 @@ MonoBehaviour:
   initAttackDelay: 0
   canAttack: 1
   isAttack: 0
+  attackCount: 0
   groundLayer:
     serializedVersion: 2
     m_Bits: 1024
@@ -288,7 +289,6 @@ MonoBehaviour:
   isStun: 0
   hp: 0
   maxHp: 0
-  attackCount: 0
   stat:
     monsterNum: 0
     monsterName: 

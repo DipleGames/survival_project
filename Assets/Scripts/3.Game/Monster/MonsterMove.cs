@@ -104,7 +104,6 @@ public partial class Monster
                 if (waitTime <= 0)
                 {
                     agent.enabled = true;
-                    
                     moveTime = initMoveTime;
                 }
             }
