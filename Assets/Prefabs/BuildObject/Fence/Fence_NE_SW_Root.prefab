@@ -25,7 +25,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1832975659924653139}
   m_LocalRotation: {x: -0, y: -0, z: 0.23344533, w: 0.9723699}
-  m_LocalPosition: {x: 1, y: 0.56200016, z: 0}
+  m_LocalPosition: {x: 1, y: 0.62, z: 0}
   m_LocalScale: {x: 2.5000005, y: 0.20000005, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -73,7 +73,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1837288855533039065}
   m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: -1, y: 0, z: -1.062}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -97,8 +97,8 @@ MonoBehaviour:
   requiredCell: 3
   buildType: 1
   buildArea: []
-  hasUniqueArea: 1
-  NE_SW: 1
+  isBuilt: 0
+  lineType: 0
 --- !u!1 &3265885562063604121
 GameObject:
   m_ObjectHideFlags: 0
@@ -171,7 +171,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 2
   m_Sprite: {fileID: 21300000, guid: 34ca4d636d780854c9b040e5b65da098, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0

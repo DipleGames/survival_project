@@ -21,7 +21,7 @@ public class GridMapper : Singleton<GridMapper>
             
             // 2. 그리드 셀 인덱스 구하기 (Unity Grid가 XZ를 지원하면 바로 변환)
             cellIndex = grid.WorldToCell(mouseXZPos);
-            Debug.Log($"{cellIndex}");
+            //Debug.Log($"{cellIndex}");
             
             // 3. 셀 중심 좌표 구하기
             cellCenterPos = grid.GetCellCenterWorld(cellIndex);

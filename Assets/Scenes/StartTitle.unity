@@ -5490,7 +5490,7 @@ MonoBehaviour:
   damageStorage: {fileID: 1692643827}
   monsterBulletStorage: {fileID: 457507069}
   landingPoints: {fileID: 0}
-  characterPrefab: {fileID: 289213144344291185, guid: 8d77a8f4167ea0b469ec40c27f9686ea, type: 3}
+  characterPrefab: {fileID: 6961024099164173366, guid: 29fe01a1b191b774e9e4429d776b7a19, type: 3}
   gameDayTime: 1000
   gameNightTime: 111
   round: 0

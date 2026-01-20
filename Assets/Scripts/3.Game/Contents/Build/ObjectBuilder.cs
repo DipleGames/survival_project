@@ -1,8 +1,10 @@
 using System.Collections.Generic;
 using System;
 using UnityEngine;
+using UnityEditor;
+using Unity.VisualScripting;
 
-public class ObjectBuilder : MonoBehaviour
+public class ObjectBuilder : Singleton<ObjectBuilder>
 {
     private BuildExceptionManager buildExceptionManager;
 
@@ -30,8 +32,9 @@ public class ObjectBuilder : MonoBehaviour
 
     public bool isBuildMode = false;
 
-    void Awake()
+    protected override void Awake()
     {
+        base.Awake();
         for(int i=0; i<9; i++)
         {
             var cell = Instantiate(selectedCell);
@@ -44,6 +47,7 @@ public class ObjectBuilder : MonoBehaviour
 
     void Update()
     {
+        // 임시 코드 -> 나중에 기획 보고 수정 예정
         if(Input.GetKeyDown(KeyCode.Alpha1))
         {    
             isBuildMode = true;
@@ -65,6 +69,11 @@ public class ObjectBuilder : MonoBehaviour
 
         if(!isBuildMode) return; 
         OnBuildMode();
+
+        if(Input.GetKeyDown(KeyCode.Q))
+        {
+            QuitBuildMode();
+        }
 
         // 4. 클릭 시 실제 설치
         if(Input.GetMouseButtonDown(0)) 
@@ -112,16 +121,46 @@ public class ObjectBuilder : MonoBehaviour
     {
         for(int i=0; i<buildArea.Count; i++)
         {
-            selecetedCellPool[i].transform.position = GridMapper.Instance.grid.GetCellCenterWorld(buildArea[i]); // 선택된 셀 표시
+            selecetedCellPool[i].transform.position = GridMapper.Instance.grid.GetCellCenterWorld(buildArea[i]);
+            SpriteRenderer selectedCellSR = selecetedCellPool[i].GetComponent<SpriteRenderer>();
+            if(builtCells.Contains(buildArea[i]))
+            {
+                Color color = selectedCellSR.color;
+                color = Color.red;
+                color.a = 0.5f;
+                selectedCellSR.color = color;
+            }
+            else
+            {
+                Color color = selectedCellSR.color;
+                color = Color.black;
+                color.a = 0.3f;
+                selectedCellSR.color = color;
+            }
         }
     }
 
     void BuildObject(GameObject selectedObject, Vector3 targetPos)
     {
+        bool isContains = false;
+        for(int i=0; i<buildArea.Count; i++)
+        {
+            if(builtCells.Contains(buildArea[i]))
+            {
+                isContains = true;
+                break;
+            }
+        }
+
+        if(isContains)
+        {
+            Debug.Log("이 영역엔 설치할 수 없습니다.");
+            return;
+        }
+
         GameObject obj = Instantiate(selectedObject, targetPos, Quaternion.Euler(90,0,0));
         obj.transform.SetParent(builtObjectsRoot.transform);
         BuildableObject buildableObject = obj.GetComponent<BuildableObject>();
-        buildableObject.isBuilt = true;
 
         Destroy(previewObject);
 
@@ -131,7 +170,18 @@ public class ObjectBuilder : MonoBehaviour
             selecetedCellPool[i].SetActive(false);
         }
 
+        buildableObject.isBuilt = true;
         isBuildMode = false;
+    }
+
+    public void DismantleObject(GameObject gameObject)
+    {
+        List<Vector3Int> buildArea = gameObject.GetComponent<BuildableObject>().buildArea;
+        for(int i=0; i<buildArea.Count; i++)
+        {
+            builtCells.Remove(buildArea[i]);
+        }
+        Destroy(gameObject); 
     }
 
     void SelectObject(GameObject selectedObject)
@@ -156,5 +206,15 @@ public class ObjectBuilder : MonoBehaviour
         {
             selecetedCellPool[i].SetActive(true);
         }
+    }
+
+    void QuitBuildMode()
+    {
+        for(int i=0; i<buildArea.Count; i++)
+        {
+            selecetedCellPool[i].SetActive(false);
+        }
+        Destroy(previewObject);
+        isBuildMode = false;
     }
 }

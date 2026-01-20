@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Tilemaps;
@@ -90,6 +91,9 @@ public class GameSceneUI : Singleton<GameSceneUI>
     [SerializeField] Text tutoText;
     [SerializeField] Image tutoImage;
     [SerializeField] GameObject tutoImagePanel;
+
+    [Header("Tower")]
+    [SerializeField] public GameObject towerWindow;
 
     Color initTimeColor;
 
@@ -502,5 +506,19 @@ public class GameSceneUI : Singleton<GameSceneUI>
 
         yield return CoroutineCaching.WaitForSeconds(2);
         pieceCard.gameObject.SetActive(false);
+    }
+
+    public void OnTowerWindow(TowerModel towerModel) // 타워 패널 키는 기능
+    {
+        TowerView towerView = towerWindow.GetComponent<TowerView>();
+
+        towerView.InitTowerModel(towerModel);
+        towerView.SetTowerView();
+        towerWindow.SetActive(true);
+    }
+
+    public void OffTowerWindow() // 타워 패널 닫는 기능
+    {
+        towerWindow.SetActive(false);
     }
 }
