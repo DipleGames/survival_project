@@ -4,39 +4,38 @@ using UnityEngine;
 public enum PathResult
 {
     Success,
-
-    Blocked,   // 목표 못감 + 막고 있는 셀(울타리) 찾음
+    Blocked,
 }
+
 public class AStarPathfinder : MonoBehaviour
 {
     [SerializeField] private GridManager gridManager;
     public PathControllTower pathControllTower;
     public PathResult pathResult;
 
+    // 기존 시그니처 유지
     public bool TryFindPath(Vector3 startWorld, Vector3 targetWorld, out Vector3[] waypoints)
+        => TryFindPath(startWorld, targetWorld, 1, out waypoints);
+
+    // 몬스터 크기 적용 버전
+    public bool TryFindPath(Vector3 startWorld, Vector3 targetWorld, int agentSize, out Vector3[] waypoints)
     {
         waypoints = null;
 
         Node startNode = gridManager.WorldToNode(startWorld);
         Node targetNode = gridManager.WorldToNode(targetWorld);
 
-        // if (!startNode.IsWalkable || !targetNode.IsWalkable)
-        // {
-        //     Debug.Log("실패");
-        //     return false;
-        // }
-
-        if (!targetNode.IsWalkable) // 도착지점만 신경
+        if (!gridManager.IsAreaWalkable(new Vector2Int(targetNode.GridX, targetNode.GridY), agentSize))
         {
-            Debug.Log("실패");
+            pathResult = PathResult.Blocked;
             return false;
         }
 
-        // OpenSet: 간단히 List로 (성능 필요하면 Heap/우선순위큐로 교체)
+        // Open/Closed
         List<Node> openSet = new List<Node>(gridManager.MaxSize);
         HashSet<Node> closedSet = new HashSet<Node>();
 
-        // 비용 초기화(간단 처리)
+        // (간단) 시작 비용 초기화
         startNode.GCost = 0;
         startNode.HCost = GetDistance(startNode, targetNode);
         startNode.Parent = null;
@@ -59,17 +58,21 @@ public class AStarPathfinder : MonoBehaviour
             if (current == targetNode)
             {
                 waypoints = RetraceWaypoints(startNode, targetNode);
+                pathResult = PathResult.Success;
                 return waypoints != null && waypoints.Length > 0;
             }
 
             foreach (Node neighbor in gridManager.GetNeighbors(current))
             {
-                if (!neighbor.IsWalkable || closedSet.Contains(neighbor))
+                if (closedSet.Contains(neighbor))
+                    continue;
+
+                // size + 대각 코너끼임 방지 포함
+                if (!gridManager.CanTraverse(current, neighbor, agentSize))
                     continue;
 
                 int newCost = current.GCost + GetDistance(current, neighbor);
 
-                // open에 없으면 무조건 갱신
                 if (!openSet.Contains(neighbor) || newCost < neighbor.GCost)
                 {
                     neighbor.GCost = newCost;
@@ -82,9 +85,9 @@ public class AStarPathfinder : MonoBehaviour
             }
         }
 
+        pathResult = PathResult.Blocked;
         return false;
     }
-
 
     private Vector3[] RetraceWaypoints(Node start, Node end)
     {
@@ -95,25 +98,23 @@ public class AStarPathfinder : MonoBehaviour
         {
             path.Add(current);
             current = current.Parent;
-            if (current == null) return null; // 안전장치
+            if (current == null) return null;
         }
 
         path.Reverse();
 
-        List<Vector3> waypoints = new List<Vector3>(path.Count);
+        Vector3[] waypoints = new Vector3[path.Count];
         for (int i = 0; i < path.Count; i++)
-            waypoints.Add(path[i].WorldPos);
+            waypoints[i] = path[i].WorldPos;
 
-        return waypoints.ToArray();
+        return waypoints;
     }
-
 
     private int GetDistance(Node a, Node b)
     {
         int dstX = Mathf.Abs(a.GridX - b.GridX);
         int dstY = Mathf.Abs(a.GridY - b.GridY);
 
-        // 대각선 14, 직선 10 (전형적인 A*)
         if (dstX > dstY) return 14 * dstY + 10 * (dstX - dstY);
         return 14 * dstX + 10 * (dstY - dstX);
     }

@@ -5,27 +5,26 @@ using UnityEngine;
 public class GridManager : MonoBehaviour
 {
     [Header("Isometric Tile (World Units)")]
-    public float TileWidth  = 2f;   // 가로 2
-    public float TileHeight = 1f;   // 세로 1 (XZ 평면에서 Z축 방향 스케일)
+    public float TileWidth = 2f;
+    public float TileHeight = 1f;
 
     [Header("Grid Size (in tiles)")]
-    public int GridSizeI = 50;      // i 방향 타일 개수
-    public int GridSizeJ = 50;      // j 방향 타일 개수
+    public int GridSizeI = 50;
+    public int GridSizeJ = 50;
 
     [Header("Origin (tile index to world mapping)")]
-    public Vector2Int OriginIJ = new Vector2Int(0, 0); // (0,0) 타일이 놓일 기준
+    public Vector2Int OriginIJ = new Vector2Int(0, 0);
 
     [Header("Optional: Physics-based unwalkable check")]
     public bool UsePhysicsUnwalkable = false;
     public LayerMask UnwalkableMask;
-    public float PhysicsCheckRadius = 0.2f; // 타일 중심에서 체크 반경
+    public float PhysicsCheckRadius = 0.2f;
 
     [Header("Neighbors")]
-    public bool UseDiagonal = true;  // 8방 허용 여부
+    public bool UseDiagonal = true;
 
     private Node[,] _grid;
 
-    // 막힌 노드 좌표(i,j)
     private readonly HashSet<Vector2Int> _blockedNodeCoords = new HashSet<Vector2Int>();
     public List<Vector2Int> blockedNodeList = new List<Vector2Int>();
 
@@ -39,11 +38,6 @@ public class GridManager : MonoBehaviour
         CreateGrid();
     }
 
-    /// <summary>
-    /// (i,j) -> 월드(X,Z) 이소메트릭 변환
-    /// worldX = (i - j) * (w/2)
-    /// worldZ = (i + j) * (h/2)
-    /// </summary>
     private Vector3 IJToWorld(int i, int j)
     {
         int ii = i - OriginIJ.x;
@@ -52,30 +46,22 @@ public class GridManager : MonoBehaviour
         float x = (ii - jj) * HalfW;
         float z = (ii + jj) * HalfH;
 
-        // transform.position을 "그리드 원점"으로 사용
         return transform.position + new Vector3(x, 0f, z);
     }
 
-    /// <summary>
-    /// 월드 -> (i,j) 역변환
-    /// i = (z/(h/2) + x/(w/2)) / 2
-    /// j = (z/(h/2) - x/(w/2)) / 2
-    /// </summary>
     private Vector2Int WorldToIJ(Vector3 world)
     {
         Vector3 local = world - transform.position;
 
-        // 분모 0 방지
         float invHalfW = Mathf.Approximately(HalfW, 0f) ? 0f : (1f / HalfW);
         float invHalfH = Mathf.Approximately(HalfH, 0f) ? 0f : (1f / HalfH);
 
-        float a = local.z * invHalfH; // = i + j
-        float b = local.x * invHalfW; // = i - j
+        float a = local.z * invHalfH;
+        float b = local.x * invHalfW;
 
         float iFloat = (a + b) * 0.5f;
         float jFloat = (a - b) * 0.5f;
 
-        // “가장 가까운 타일”로 매핑
         int i = Mathf.RoundToInt(iFloat) + OriginIJ.x;
         int j = Mathf.RoundToInt(jFloat) + OriginIJ.y;
 
@@ -90,22 +76,17 @@ public class GridManager : MonoBehaviour
         {
             for (int j = 0; j < GridSizeJ; j++)
             {
-                Vector3 worldPoint = IJToWorld(i, j) + new Vector3(0,0,0.5f);
+                Vector3 worldPoint = IJToWorld(i, j) + new Vector3(0, 0, 0.5f);
 
                 bool walkable = true;
 
-                // 1) 좌표 기반 블록 우선
                 if (_blockedNodeCoords.Contains(new Vector2Int(i, j)))
                 {
                     walkable = false;
                 }
-                else
+                else if (UsePhysicsUnwalkable)
                 {
-                    // 2) 옵션: Physics 기반 체크
-                    if (UsePhysicsUnwalkable)
-                    {
-                        walkable = !Physics.CheckSphere(worldPoint, PhysicsCheckRadius, UnwalkableMask);
-                    }
+                    walkable = !Physics.CheckSphere(worldPoint, PhysicsCheckRadius, UnwalkableMask);
                 }
 
                 _grid[i, j] = new Node(walkable, worldPoint, i, j);
@@ -113,9 +94,6 @@ public class GridManager : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// 노드 좌표(i,j)를 직접 넘겨 막힘을 설정한다.
-    /// </summary>
     public void SetBlockedByNodeCoords(IEnumerable<Vector2Int> blockedNodeCoords, bool rebuildAll = false)
     {
         _blockedNodeCoords.Clear();
@@ -126,15 +104,10 @@ public class GridManager : MonoBehaviour
             _blockedNodeCoords.Add(c);
         }
 
-        if (rebuildAll)
-            CreateGrid();
-        else
-            ApplyBlockedToGrid();
+        if (rebuildAll) CreateGrid();
+        else ApplyBlockedToGrid();
     }
 
-    /// <summary>
-    /// 월드 좌표 목록을 받아 해당 노드들을 "막힘"으로 설정한다.
-    /// </summary>
     public void SetBlockedByWorldPositions(IEnumerable<Vector3> blockedWorldPositions, bool rebuildAll = false)
     {
         _blockedNodeCoords.Clear();
@@ -145,53 +118,39 @@ public class GridManager : MonoBehaviour
             _blockedNodeCoords.Add(new Vector2Int(n.GridX, n.GridY));
         }
 
-        if (rebuildAll)
-            CreateGrid();
-        else
-            ApplyBlockedToGrid();
+        if (rebuildAll) CreateGrid();
+        else ApplyBlockedToGrid();
     }
 
     private void ApplyBlockedToGrid()
     {
         if (_grid == null) return;
+
         blockedNodeList = _blockedNodeCoords.ToList();
+
         for (int i = 0; i < GridSizeI; i++)
         {
             for (int j = 0; j < GridSizeJ; j++)
             {
                 bool walkable = !_blockedNodeCoords.Contains(new Vector2Int(i, j));
-
-                _grid[i, j] = new Node(walkable, _grid[i, j].WorldPos, i, j);
+                _grid[i, j].IsWalkable = walkable;
             }
         }
     }
 
-    // public Node WorldToNode(Vector3 worldPosition)
-    // {
-    //     Vector2Int ij = WorldToIJ(worldPosition);
-
-    //     int i = Mathf.Clamp(ij.x, 0, GridSizeI - 1);
-    //     int j = Mathf.Clamp(ij.y, 0, GridSizeJ - 1);
-    //     Debug.Log($"{i}, {j}");
-    //     return _grid[i, j];
-    // }
-
     public Node WorldToNode(Vector3 worldPosition)
     {
-        // 1) 월드 -> (iFloat, jFloat) "실수" 좌표로 변환 (Round/Clamp X)
         Vector2 ijf = WorldToIJFloat(worldPosition);
 
-        // 2) 주변 4칸 후보 구성 (floor 기준)
         int i0 = Mathf.FloorToInt(ijf.x);
         int j0 = Mathf.FloorToInt(ijf.y);
 
-        // 후보 4개
         Node best = null;
         float bestDistSq = float.PositiveInfinity;
 
-        TryPick(i0,     j0);
+        TryPick(i0, j0);
         TryPick(i0 + 1, j0);
-        TryPick(i0,     j0 + 1);
+        TryPick(i0, j0 + 1);
         TryPick(i0 + 1, j0 + 1);
 
         if (best == null)
@@ -210,9 +169,8 @@ public class GridManager : MonoBehaviour
 
             Node n = _grid[i, j];
 
-            // xz기준
             Vector3 a = worldPosition; a.y = 0f;
-            Vector3 b = n.WorldPos;    b.y = 0f;
+            Vector3 b = n.WorldPos; b.y = 0f;
 
             float d2 = (a - b).sqrMagnitude;
             if (d2 < bestDistSq)
@@ -223,7 +181,6 @@ public class GridManager : MonoBehaviour
         }
     }
 
-    // WorldToIJ()랑 동일한 역변환인데, RoundToInt 하지 않고 실수 좌표를 반환
     private Vector2 WorldToIJFloat(Vector3 world)
     {
         Vector3 local = world - transform.position;
@@ -231,15 +188,14 @@ public class GridManager : MonoBehaviour
         float invHalfW = Mathf.Approximately(HalfW, 0f) ? 0f : (1f / HalfW);
         float invHalfH = Mathf.Approximately(HalfH, 0f) ? 0f : (1f / HalfH);
 
-        float a = local.z * invHalfH; // = i + j
-        float b = local.x * invHalfW; // = i - j
+        float a = local.z * invHalfH;
+        float b = local.x * invHalfW;
 
         float iFloat = (a + b) * 0.5f + OriginIJ.x;
         float jFloat = (a - b) * 0.5f + OriginIJ.y;
 
         return new Vector2(iFloat, jFloat);
     }
-
 
     public Vector2Int WorldToNodeCoord(Vector3 worldPosition)
     {
@@ -272,7 +228,6 @@ public class GridManager : MonoBehaviour
         }
         else
         {
-            // 4방
             TryAdd(i + 1, j);
             TryAdd(i - 1, j);
             TryAdd(i, j + 1);
@@ -288,9 +243,57 @@ public class GridManager : MonoBehaviour
         }
     }
 
-    
+    public bool IsInBounds(Vector2Int c)
+        => c.x >= 0 && c.y >= 0 && c.x < GridSizeI && c.y < GridSizeJ;
 
-    // ---- (선택) 디버그 Gizmo: 다이아 격자 표시 ----
+    /// <summary>
+    /// size=1이면 해당 셀만,
+    /// size=2이면 anchor(좌하단) 기준 2×2가 전부 walkable일 때만 true
+    /// </summary>
+    public bool IsAreaWalkable(Vector2Int anchor, int size)
+    {
+        size = Mathf.Max(1, size);
+
+        for (int dy = 0; dy < size; dy++)
+        {
+            for (int dx = 0; dx < size; dx++)
+            {
+                Vector2Int c = new Vector2Int(anchor.x + dx, anchor.y + dy);
+                if (!IsInBounds(c)) return false;
+                if (!_grid[c.x, c.y].IsWalkable) return false;
+            }
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// from -> to 이동 가능? (footprint + 대각 코너끼임 방지)
+    /// </summary>
+    public bool CanTraverse(Node from, Node to, int size)
+    {
+        Vector2Int toC = new Vector2Int(to.GridX, to.GridY);
+        if (!IsAreaWalkable(toC, size))
+            return false;
+
+        int dx = to.GridX - from.GridX;
+        int dy = to.GridY - from.GridY;
+
+        bool isDiagonal = (dx != 0 && dy != 0);
+        if (UseDiagonal && isDiagonal)
+        {
+            // 코너 컷 방지: 가로/세로 step도 가능해야 함
+            Vector2Int stepA = new Vector2Int(from.GridX + dx, from.GridY);
+            Vector2Int stepB = new Vector2Int(from.GridX, from.GridY + dy);
+
+            if (!IsAreaWalkable(stepA, size)) return false;
+            if (!IsAreaWalkable(stepB, size)) return false;
+        }
+
+        return true;
+    }
+
+    // ---- Gizmo ----
     [Header("Gizmos")]
     public bool DrawGizmos = true;
     public float GizmoY = 0.05f;
@@ -321,10 +324,10 @@ public class GridManager : MonoBehaviour
 
     private void DrawDiamond(Vector3 center, float halfW, float halfH)
     {
-        Vector3 top    = center + new Vector3(0f, 0f,  halfH);
-        Vector3 right  = center + new Vector3( halfW, 0f, 0f);
+        Vector3 top = center + new Vector3(0f, 0f, halfH);
+        Vector3 right = center + new Vector3(halfW, 0f, 0f);
         Vector3 bottom = center + new Vector3(0f, 0f, -halfH);
-        Vector3 left   = center + new Vector3(-halfW, 0f, 0f);
+        Vector3 left = center + new Vector3(-halfW, 0f, 0f);
 
         Gizmos.DrawLine(top, right);
         Gizmos.DrawLine(right, bottom);

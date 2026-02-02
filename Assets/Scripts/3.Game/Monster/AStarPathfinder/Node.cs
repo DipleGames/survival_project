@@ -2,10 +2,10 @@ using UnityEngine;
 
 public class Node
 {
-    public bool IsWalkable { get; }
+    public bool IsWalkable { get; set; }
     public Vector3 WorldPos { get; }
     public int GridX { get; }
-    public int GridY { get; } // (GridY = world Z)
+    public int GridY { get; }
 
     // A*
     public int GCost;
@@ -20,5 +20,14 @@ public class Node
         WorldPos = worldPos;
         GridX = gridX;
         GridY = gridY;
+
+        ResetPathData();
+    }
+
+    public void ResetPathData()
+    {
+        GCost = int.MaxValue;
+        HCost = 0;
+        Parent = null;
     }
 }

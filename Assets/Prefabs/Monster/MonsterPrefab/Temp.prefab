@@ -108,6 +108,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1510071930853536767}
   - component: {fileID: 6461025389136659033}
+  - component: {fileID: 2096926165293459710}
   - component: {fileID: 3949911103735166422}
   - component: {fileID: 7828934387692548527}
   - component: {fileID: 1951589397681885157}
@@ -147,7 +148,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   anim: {fileID: 3949911103735166422}
-  spriteRenderer: {fileID: 0}
+  spriteRenderer: {fileID: 3973507159403768985}
+  monsterModel: {fileID: 2096926165293459710}
   target: {fileID: 0}
   pathfinder: {fileID: 0}
   MoveSpeed: 1.5
@@ -158,6 +160,20 @@ MonoBehaviour:
   fence: {fileID: 0}
   DrawPathGizmos: 1
   GizmoPointRadius: 0.12
+--- !u!114 &2096926165293459710
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4467421750204432247}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ece8686b28f6d54faf9ca238bff2f12, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _monsterHP: 10
+  _monsterSize: 1
 --- !u!95 &3949911103735166422
 Animator:
   serializedVersion: 4

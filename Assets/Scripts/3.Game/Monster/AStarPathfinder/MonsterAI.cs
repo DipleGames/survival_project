@@ -8,6 +8,8 @@ public class MonsterAI : MonoBehaviour
     public Animator anim;
     public SpriteRenderer spriteRenderer;
 
+    public MonsterModel monsterModel;
+
     [Header("Refs")]
     [SerializeField] private Transform target;          // Player
     [SerializeField] private AStarPathfinder pathfinder;
@@ -31,18 +33,16 @@ public class MonsterAI : MonoBehaviour
 
     private bool isTouch = false;
 
-    private void Awake()
+    private void OnEnable()
     {
         player = GameObject.FindWithTag("Character");
-    }
-
-    private void Start()
-    {
+        pathfinder = GameObject.Find("PathSystem").GetComponent<AStarPathfinder>();
         target = player.transform;
 
         _lastTargetPos = target.position;
         RequestPath();
     }
+
 
     private void Update()
     {
@@ -66,13 +66,13 @@ public class MonsterAI : MonoBehaviour
         {
             if(!isTouch)
             {
-                transform.position += (pathfinder.pathControllTower.baseCamp.transform.position - transform.position).normalized * MoveSpeed * Time.deltaTime;
+                FollowBaseCamp();
             }
         }
     }
     private void RequestPath()
     {
-        if (pathfinder.TryFindPath(transform.position, target.position, out Vector3[] waypoints))
+        if (pathfinder.TryFindPath(transform.position, target.position, monsterModel.MonsterSize, out Vector3[] waypoints))
         {
             _path = waypoints;
             _pathIndex = 0;
@@ -94,6 +94,12 @@ public class MonsterAI : MonoBehaviour
 
         if (Vector3.Distance(transform.position, waypoint) <= WaypointReachDist)
             _pathIndex++;
+    }
+
+    private void FollowBaseCamp()
+    {
+        transform.position += (pathfinder.pathControllTower.baseCamp.transform.position - transform.position).normalized * MoveSpeed * Time.deltaTime;
+        anim.SetBool("isWalk", true);
     }
 
     private void Filp(Vector3 dir)
