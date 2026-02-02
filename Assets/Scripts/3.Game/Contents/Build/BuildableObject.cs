@@ -22,6 +22,7 @@ public abstract class BuildableObject : MonoBehaviour
     public int requiredCell;
     public BuildType buildType;
     public List<Vector3Int> buildArea = new List<Vector3Int>();
+    public List<Vector3Int> fullBuildArea;
     public bool isBuilt = false;
 
     public abstract List<Vector3Int> GetBuildArea(Vector3Int cellIndex);

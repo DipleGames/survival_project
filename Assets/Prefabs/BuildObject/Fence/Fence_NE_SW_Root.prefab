@@ -58,9 +58,11 @@ GameObject:
   m_Component:
   - component: {fileID: 3611063518698362224}
   - component: {fileID: 709768917639561694}
+  - component: {fileID: -2681229970287576066}
+  - component: {fileID: 8388087658452565361}
   m_Layer: 0
   m_Name: Fence_NE_SW_Root
-  m_TagString: Untagged
+  m_TagString: Fence
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -99,6 +101,32 @@ MonoBehaviour:
   buildArea: []
   isBuilt: 0
   lineType: 0
+--- !u!114 &-2681229970287576066
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1837288855533039065}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4d44fb5af238cd34a896dd321e3a8a93, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _fenceHP: 30
+--- !u!65 &8388087658452565361
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1837288855533039065}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 2.3649724, y: 1.0513142, z: 1}
+  m_Center: {x: 0.9903749, y: 0.5285421, z: 4.0560935e-16}
 --- !u!1 &3265885562063604121
 GameObject:
   m_ObjectHideFlags: 0

@@ -18,6 +18,7 @@ TagManager:
   - MonsterAttacked
   - MouseInteration
   - House
+  - Fence
   layers:
   - Default
   - TransparentFX
