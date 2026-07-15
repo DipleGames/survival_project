@@ -114,6 +114,7 @@ GameObject:
   - component: {fileID: 4918108379380069775}
   - component: {fileID: 289213144344291184}
   - component: {fileID: 2030790823311812204}
+  - component: {fileID: 2241369871795938460}
   - component: {fileID: 6647390453161408462}
   m_Layer: 6
   m_Name: Pirate
@@ -131,7 +132,7 @@ Transform:
   m_GameObject: {fileID: 289213144344291185}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: -0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 5780085628578121744}
@@ -232,8 +233,6 @@ MonoBehaviour:
   getItemUI: {fileID: 9083610162007046966}
   tamedPet: {fileID: 7444320351319460353}
   isDead: 0
-  x: 0
-  z: 0
   weaponParent: {fileID: 4566666533326533890}
   canWeaponChange: 1
   currentWeaponIndex: 0
@@ -268,6 +267,21 @@ MonoBehaviour:
   layerMask:
     serializedVersion: 2
     m_Bits: 262144
+--- !u!114 &2241369871795938460
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 289213144344291185}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 277bd4fd3fca5a045bbaf08305af161b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  player: {fileID: 315125761682846038}
+  selectedCrop: {fileID: 0}
+  tempCrop: {fileID: 11400000, guid: f0c88cd51a0064647ab3d1c5e4cf92a1, type: 2}
 --- !u!210 &6647390453161408462
 SortingGroup:
   m_ObjectHideFlags: 0

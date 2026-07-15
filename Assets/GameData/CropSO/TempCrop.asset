@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11aef99b835d6a34682f82c92c31f243, type: 3}
+  m_Name: TempCrop
+  m_EditorClassIdentifier: 
+  cropName: TempCrop
+  growthTime: 10
+  seedTile: {fileID: 11400000, guid: bb3522218e38482419c05ec7c42513a1, type: 2}
+  sproutTile: {fileID: 11400000, guid: df1189226a4abfc419f358677a65ade9, type: 2}
+  growingTile: {fileID: 11400000, guid: ca7f55651af1fe54b90190e35b73adf5, type: 2}
+  matureTile: {fileID: 11400000, guid: 11bb6fb1bb2de3f48aa2c04b2d1748fa, type: 2}
+  harvestableTile: {fileID: 11400000, guid: e2b8da3f75c7340439030328c0ccb8c4, type: 2}
