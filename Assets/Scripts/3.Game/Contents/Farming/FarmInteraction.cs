@@ -27,7 +27,7 @@ public class FarmInteraction : MonoBehaviour
         if (_mainCamera == null)
             return;
 
-        if(!FarmSystem.Instance.isFarmMode)
+        if(!TilemapFarmSystem.Instance.isFarmMode)
             return;
 
         if (Input.GetKeyDown(KeyCode.T))
@@ -61,7 +61,7 @@ public class FarmInteraction : MonoBehaviour
             return;
         }
 
-        FarmSystem.Instance.Cultivate(targetCell);
+        TilemapFarmSystem.Instance.Cultivate(targetCell);
     }
 
     private void TryPlant()
@@ -73,7 +73,7 @@ public class FarmInteraction : MonoBehaviour
             return;
         }
 
-        FarmSystem.Instance.Plant(targetCell, selectedCrop);
+        TilemapFarmSystem.Instance.Plant(targetCell, selectedCrop);
     }
 
     private void TryWater()
@@ -83,7 +83,7 @@ public class FarmInteraction : MonoBehaviour
         if (!CanInteract(targetCell))
             return;
 
-        FarmSystem.Instance.Water(targetCell);
+        TilemapFarmSystem.Instance.Water(targetCell);
     }
 
     private void TryHarvest()
@@ -93,7 +93,7 @@ public class FarmInteraction : MonoBehaviour
         if (!CanInteract(targetCell))
             return;
 
-        FarmSystem.Instance.Harvest(targetCell);
+        TilemapFarmSystem.Instance.Harvest(targetCell);
     }
 
     private Vector3Int GetMouseCellPosition()
@@ -105,7 +105,7 @@ public class FarmInteraction : MonoBehaviour
         if (groundPlane.Raycast(ray, out float distance))
         {
             Vector3 worldPos = ray.GetPoint(distance);
-            return FarmSystem.Instance.groundTilemap.WorldToCell(worldPos);
+            return TilemapFarmSystem.Instance.fieldTilemap.WorldToCell(worldPos);
         }
 
         return Vector3Int.zero;
@@ -113,7 +113,7 @@ public class FarmInteraction : MonoBehaviour
     
     private bool CanInteract(Vector3Int targetCell)
     {
-        Vector3Int playerCell = FarmSystem.Instance.groundTilemap.WorldToCell(player.transform.position);
+        Vector3Int playerCell = TilemapFarmSystem.Instance.fieldTilemap.WorldToCell(player.transform.position);
 
         int diffX = Mathf.Abs(targetCell.x - playerCell.x);
         int diffY = Mathf.Abs(targetCell.y - playerCell.y);

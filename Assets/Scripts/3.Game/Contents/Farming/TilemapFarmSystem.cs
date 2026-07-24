@@ -2,17 +2,26 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-public enum FarmTileState
-{
-    Empty,
-    Cultivated,
-    Occupied
-}
 
-public class FarmSystem : Singleton<FarmSystem>
+public class TilemapFarmSystem : Singleton<TilemapFarmSystem>, IFarmSystem
 {
+    public enum FarmTileState
+    {
+        Empty,
+        Cultivated,
+        Occupied
+    }
+
+    public enum FarmWorkResult 
+    {
+        Planted,
+        Watered,
+        Harvested,
+        NoWork
+    }
+
     [Header("타일맵")]
-    public Tilemap groundTilemap;
+    public Tilemap fieldTilemap;
     public Tilemap wetOverlayTilemap;
     public Tilemap cropTilemap;
 
@@ -48,6 +57,9 @@ public class FarmSystem : Singleton<FarmSystem>
 
     public void Cultivate(Vector3Int pos)
     {
+        if (!IsFarmableTile(pos)) // 밭 (경작할수있는 땅이아니면 리턴)
+            return;
+
         if (_farmTileDict.TryGetValue(pos, out FarmTileState state))
         {
             if (state != FarmTileState.Empty)
@@ -56,7 +68,7 @@ public class FarmSystem : Singleton<FarmSystem>
 
         _farmTileDict[pos] = FarmTileState.Cultivated;
 
-        groundTilemap.SetTile(pos, cultivatedTile);
+        fieldTilemap.SetTile(pos, cultivatedTile);
         wetOverlayTilemap.SetTile(pos, null);
         cropTilemap.SetTile(pos, null);
 
@@ -66,6 +78,9 @@ public class FarmSystem : Singleton<FarmSystem>
     public void Plant(Vector3Int pos, CropSO cropSO)
     {
         if (cropSO == null)
+            return;
+        
+        if (!IsFarmableTile(pos)) // 밭 (경작할수있는 땅이아니면 리턴)
             return;
 
         if (!_farmTileDict.TryGetValue(pos, out FarmTileState state))
@@ -93,6 +108,9 @@ public class FarmSystem : Singleton<FarmSystem>
 
     public void Water(Vector3Int pos)
     {
+        if (!IsFarmableTile(pos)) // 밭 (경작할수있는 땅이아니면 리턴)
+            return;
+
         if (_cropDict.TryGetValue(pos, out CropData crop))
         {
             Debug.Log($"{crop}에 물을 주었다");
@@ -106,6 +124,9 @@ public class FarmSystem : Singleton<FarmSystem>
 
     public void Harvest(Vector3Int pos)
     {
+        if (!IsFarmableTile(pos)) // 밭 (경작할수있는 땅이아니면 리턴)
+            return;
+
         if (!_cropDict.TryGetValue(pos, out CropData crop))
             return;
 
@@ -117,7 +138,7 @@ public class FarmSystem : Singleton<FarmSystem>
 
         cropTilemap.SetTile(pos, null);
         wetOverlayTilemap.SetTile(pos, null);
-        groundTilemap.SetTile(pos, cultivatedTile);
+        fieldTilemap.SetTile(pos, cultivatedTile);
     }
 
     public void UpdateCropTile(Vector3Int pos, CropData crop)
@@ -136,7 +157,12 @@ public class FarmSystem : Singleton<FarmSystem>
         };
 
         cropTilemap.SetTile(pos, tile);
-        groundTilemap.SetTile(pos, cultivatedTile);
+        fieldTilemap.SetTile(pos, cultivatedTile);
+    }
+
+    public bool IsFarmableTile(Vector3Int pos)
+    {
+        return fieldTilemap.HasTile(pos);
     }
 
     public void ResetWater(Vector3Int pos)

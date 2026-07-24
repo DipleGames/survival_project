@@ -31,7 +31,7 @@ public class HighlightSystem : Singleton<HighlightSystem>
         if (player == null)
             return;
 
-        if (!FarmSystem.Instance.isFarmMode)
+        if (!TilemapFarmSystem.Instance.isFarmMode)
         {
             ClearHighlight();
             return;
@@ -94,7 +94,7 @@ public class HighlightSystem : Singleton<HighlightSystem>
         if (groundPlane.Raycast(ray, out float distance))
         {
             Vector3 worldPos = ray.GetPoint(distance);
-            return FarmSystem.Instance.groundTilemap.WorldToCell(worldPos);
+            return TilemapFarmSystem.Instance.fieldTilemap.WorldToCell(worldPos);
         }
 
         return Vector3Int.zero;
@@ -103,7 +103,7 @@ public class HighlightSystem : Singleton<HighlightSystem>
     private bool CanInteract(Vector3Int targetCell)
     {
         Vector3Int playerCell =
-            FarmSystem.Instance.groundTilemap.WorldToCell(player.transform.position);
+            TilemapFarmSystem.Instance.fieldTilemap.WorldToCell(player.transform.position);
 
         int diffX = Mathf.Abs(targetCell.x - playerCell.x);
         int diffY = Mathf.Abs(targetCell.y - playerCell.y);

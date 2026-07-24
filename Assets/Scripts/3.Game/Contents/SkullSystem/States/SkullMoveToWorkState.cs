@@ -31,15 +31,9 @@ public class SkullMoveToWorkState : IState
             return;
         }
 
-        Vector3 targetPosition =
-            WorkAreaManager.Instance.GetWorldPosition(
-                _targetArea.CellPosition
-            );
+        Vector3 targetPosition = WorkAreaManager.Instance.GetWorldPosition(_targetArea.CellPosition);
 
-        float distance = Vector3.Distance(
-            _skull.transform.position,
-            targetPosition
-        );
+        float distance = Vector3.Distance(_skull.transform.position, targetPosition);
 
         if (distance <= 0.2f)
         {
@@ -47,11 +41,9 @@ public class SkullMoveToWorkState : IState
             return;
         }
 
-        Vector3 direction =
-            (targetPosition - _skull.transform.position).normalized;
+        Vector3 direction = (targetPosition - _skull.transform.position).normalized;
 
-        _skull.transform.position +=
-            direction * 3f * Time.deltaTime;
+        _skull.transform.position += direction * 3f * Time.deltaTime;
     }
 
     public void Exit()

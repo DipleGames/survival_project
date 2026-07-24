@@ -17,6 +17,8 @@ public class WorkAreaManager : Singleton<WorkAreaManager>
     [SerializeField] private Tilemap _workTilemap;
 
     private readonly Dictionary<Vector3Int, WorkAreaData> _workAreas = new();
+    public Dictionary<Vector3Int, WorkAreaData> WorkAreas => _workAreas;
+    public List<Vector3Int> farmAreaList = new();
 
     public void RegisterWorkArea(Vector3Int cellPosition, WorkType workType)
     {
@@ -29,6 +31,16 @@ public class WorkAreaManager : Singleton<WorkAreaManager>
         WorkAreaData workArea = new WorkAreaData(cellPosition, workType);
 
         _workAreas.Add(cellPosition, workArea);
+        switch(workArea.WorkType)
+        {
+            case WorkType.Farming:
+                farmAreaList.Add(cellPosition);
+                break;
+            case WorkType.Mining:
+                break;
+            case WorkType.Fishing:
+                break;
+        }
         Debug.Log($"{cellPosition.x}, {cellPosition.y} 에 {workType}을 등록하였습니다.");
     }
 
