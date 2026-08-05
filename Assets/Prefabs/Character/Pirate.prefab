@@ -115,6 +115,7 @@ GameObject:
   - component: {fileID: 289213144344291184}
   - component: {fileID: 2030790823311812204}
   - component: {fileID: 6647390453161408462}
+  - component: {fileID: 7353061674129308411}
   m_Layer: 6
   m_Name: Pirate
   m_TagString: Character
@@ -122,6 +123,20 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &7353061674129308411
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 289213144344291185}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e34737d763ae59b499d1cefc90951421, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  moveSpeed: 3
+  facingRenderers: []
 --- !u!4 &289213144344291195
 Transform:
   m_ObjectHideFlags: 0
@@ -232,8 +247,6 @@ MonoBehaviour:
   getItemUI: {fileID: 9083610162007046966}
   tamedPet: {fileID: 7444320351319460353}
   isDead: 0
-  x: 0
-  z: 0
   weaponParent: {fileID: 4566666533326533890}
   canWeaponChange: 1
   currentWeaponIndex: 0

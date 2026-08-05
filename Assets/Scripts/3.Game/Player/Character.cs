@@ -177,7 +177,7 @@ public class Character : Singleton<Character>
 
             isRun = false;
 
-            if (currentHp > 0 && agent.enabled)
+            if (currentHp > 0 && agent.enabled && agent.isOnNavMesh)
                 Move();
 
             anim.SetFloat("moveSpeed", MovementAnimationSpeed);
@@ -369,6 +369,12 @@ public class Character : Singleton<Character>
 
     void Move()
     {
+        if (agent == null || !agent.enabled || !agent.isOnNavMesh)
+        {
+            isRun = false;
+            return;
+        }
+
         bool xInput = (Input.GetKey((KeyCode)PlayerPrefs.GetInt("Key_Left"))) 
             || (Input.GetKey((KeyCode)PlayerPrefs.GetInt("Key_Right")));
         bool zInput = (Input.GetKey((KeyCode)PlayerPrefs.GetInt("Key_Up"))) || (Input.GetKey((KeyCode)PlayerPrefs.GetInt("Key_Down")));
