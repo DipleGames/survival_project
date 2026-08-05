@@ -54,6 +54,7 @@ public class Character : Singleton<Character>
     [SerializeField] GameObject tamedPet;
 
     bool isRun, isAttacked = false;
+    bool externalMovementVisualControl;
     bool isAvoid = false;
     [HideInInspector] public bool isDead = false;
 
@@ -86,6 +87,7 @@ public class Character : Singleton<Character>
     SoundManager soundManager;
 
     public bool IsFlip => rendUpper.flipX;
+    public float MovementAnimationSpeed => 1f + (speed * 0.1f);
 
     Vector3 initParticleScale;
 
@@ -165,8 +167,11 @@ public class Character : Singleton<Character>
             if (!isCanControll)
             {
                 Flip();
-                isRun = false;
-                anim.SetBool("isRun", isRun);
+                if (!externalMovementVisualControl)
+                {
+                    isRun = false;
+                    anim.SetBool("isRun", isRun);
+                }
                 return;
             }
 
@@ -175,9 +180,21 @@ public class Character : Singleton<Character>
             if (currentHp > 0 && agent.enabled)
                 Move();
 
-            anim.SetFloat("moveSpeed", 1 + (speed * 0.1f));
+            anim.SetFloat("moveSpeed", MovementAnimationSpeed);
             anim.SetBool("isRun", isRun);
         }
+    }
+
+    public void SetFacingLeft(bool faceLeft)
+    {
+        if (rendUpper != null) rendUpper.flipX = faceLeft;
+        if (rendLower != null) rendLower.flipX = faceLeft;
+    }
+
+    public void SetExternalMovementVisualControl(bool enabled)
+    {
+        externalMovementVisualControl = enabled;
+        if (!enabled && anim != null) anim.SetBool("isRun", false);
     }
 
     public void UpdateStat()

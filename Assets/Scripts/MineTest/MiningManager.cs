@@ -69,9 +69,9 @@ namespace MineTest
         private void Awake()
         {
             if (worldCamera == null) worldCamera = Camera.main;
-            if (player == null) player = FindFirstObjectByType<MineTestPlayerController>();
+            if (player == null) player = FindObjectOfType<MineTestPlayerController>();
             if (ground == null)
-                ground = FindObjectsByType<Tilemap>(FindObjectsSortMode.None)
+                ground = FindObjectsOfType<Tilemap>()
                     .FirstOrDefault(map => map.name.Equals("ground", System.StringComparison.OrdinalIgnoreCase));
 
             pickaxeDurability = initialPickaxeDurability;

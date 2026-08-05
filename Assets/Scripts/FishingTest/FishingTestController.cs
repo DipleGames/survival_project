@@ -160,7 +160,7 @@ namespace FishingTest
 
         private void RefreshTilemaps()
         {
-            Tilemap[] all = FindObjectsByType<Tilemap>(FindObjectsSortMode.None);
+            Tilemap[] all = FindObjectsOfType<Tilemap>();
             if (waterTilemaps == null || waterTilemaps.Length == 0) waterTilemaps = all.Where(IsWater).ToArray();
             landTilemaps = all.Where(map => map != null && !IsWater(map)).ToArray();
             RebuildWaterBodies();

@@ -65,10 +65,10 @@ public static class MineTestSceneBuilder
     public static void Validate()
     {
         var scene = EditorSceneManager.OpenScene(ScenePath, OpenSceneMode.Single);
-        Tilemap ground = Object.FindObjectsByType<Tilemap>(FindObjectsSortMode.None)
+        Tilemap ground = Object.FindObjectsOfType<Tilemap>()
             .FirstOrDefault(map => map.name == "ground");
-        MiningManager manager = Object.FindFirstObjectByType<MiningManager>();
-        MineTestPlayerController player = Object.FindFirstObjectByType<MineTestPlayerController>();
+        MiningManager manager = Object.FindObjectOfType<MiningManager>();
+        MineTestPlayerController player = Object.FindObjectOfType<MineTestPlayerController>();
         if (ground == null || manager == null || player == null)
             throw new System.InvalidOperationException("MineTest 필수 오브젝트가 누락되었습니다.");
 
