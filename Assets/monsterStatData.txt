@@ -1,0 +1,92 @@
+{
+    "stats": [
+        {
+            "monsterNum": 101,
+            "monsterName": "암살 해적",
+            "monsterMaxHp": 50.0,
+            "monsterDamage": 8.0,
+            "monsterSpeed": 4.5,
+            "attackDelay": 0.7,
+            "attackCount": 1,
+            "moveDelay": 1.0,
+            "itemDropPercent": 0
+        },
+        {
+            "monsterNum": 102,
+            "monsterName": "대포 해적",
+            "monsterMaxHp": 100.0,
+            "monsterDamage": 15.0,
+            "monsterSpeed": 1.0,
+            "attackDelay": 2.0,
+            "attackCount": 1,
+            "moveDelay": 0.7,
+            "itemDropPercent": 0
+        },
+        {
+            "monsterNum": 103,
+            "monsterName": "리볼버 해적",
+            "monsterMaxHp": 50.0,
+            "monsterDamage": 8.0,
+            "monsterSpeed": 2.4,
+            "attackDelay": 2.0,
+            "attackCount": 1,
+            "moveDelay": 0.7,
+            "itemDropPercent": 4
+        },
+        {
+            "monsterNum": 201,
+            "monsterName": "암살 해적",
+            "monsterMaxHp": 70.0,
+            "monsterDamage": 10.0,
+            "monsterSpeed": 6.0,
+            "attackDelay": 0.5,
+            "attackCount": 1,
+            "moveDelay": 0.7,
+            "itemDropPercent": 0
+        },
+        {
+            "monsterNum": 202,
+            "monsterName": "대포 해적",
+            "monsterMaxHp": 250.0,
+            "monsterDamage": 20.0,
+            "monsterSpeed": 1.0,
+            "attackDelay": 3.0,
+            "attackCount": 1,
+            "moveDelay": 0.7,
+            "itemDropPercent": 0
+        },
+        {
+            "monsterNum": 203,
+            "monsterName": "리볼버 해적",
+            "monsterMaxHp": 70.0,
+            "monsterDamage": 12.0,
+            "monsterSpeed": 2.7,
+            "attackDelay": 2.0,
+            "attackCount": 3,
+            "moveDelay": 0.9,
+            "itemDropPercent": 5
+        },
+        {
+            "monsterNum": 104,
+            "monsterName": "늑대",
+            "monsterMaxHp": 70.0,
+            "monsterDamage": 12.0,
+            "monsterSpeed": 2.7,
+            "attackDelay": 2.0,
+            "attackCount": 1,
+            "moveDelay": 0.9,
+            "itemDropPercent": 0
+        },
+        {
+            "monsterNum": 105,
+            "monsterName": "박쥐",
+            "monsterMaxHp": 70.0,
+            "monsterDamage": 12.0,
+            "monsterSpeed": 2.7,
+            "attackDelay": 2.0,
+            "attackCount": 1,
+            "moveDelay": 0.9,
+            "itemDropPercent": 0
+        }
+    ]
+}

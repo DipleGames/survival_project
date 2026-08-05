@@ -1,0 +1,82 @@
+{
+    "stats": [
+        {
+            "statName": "하투",
+            "statType": "최대 체력",
+            "statSprite": "Health",
+            "statValue": 3.0
+        },
+        {
+            "statName": "자양강장제",
+            "statType": "체력 회복",
+            "statSprite": "ReHealth",
+            "statValue": 0.1
+        },
+        {
+            "statName": "송곳니",
+            "statType": "체력 흡수",
+            "statSprite": "AbHealth",
+            "statValue": 0.1
+        },
+        {
+            "statName": "쉴드 치기",
+            "statType": "방어력",
+            "statSprite": "Defence",
+            "statValue": 0.2
+        },
+        {
+            "statName": "완력",
+            "statType": "물리 공격력",
+            "statSprite": "WDamage",
+            "statValue": 0.3
+        },
+        {
+            "statName": "마력 포션",
+            "statType": "마법 공격력",
+            "statSprite": "MDamage",
+            "statValue": 0.3
+        },
+        {
+            "statName": "재련",
+            "statType": "근거리 공격력",
+            "statSprite": "SDamage",
+            "statValue": 0.3
+        },
+        {
+            "statName": "능지",
+            "statType": "원거리 공격력",
+            "statSprite": "LDamage",
+            "statValue": 0.3
+        },
+        {
+            "statName": "슉 슈슉",
+            "statType": "공격 속도",
+            "statSprite": "AtSpeed",
+            "statValue": 0.1
+        },
+        {
+            "statName": "신발",
+            "statType": "이동 속도",
+            "statSprite": "Speed",
+            "statValue": 0.1
+        },
+        {
+            "statName": "네잎클로버",
+            "statType": "행운",
+            "statSprite": "Luck",
+            "statValue": 2.5
+        },
+         {
+            "statName": "사륜안",
+            "statType": "사거리",
+            "statSprite": "Range",
+            "statValue": 0.3
+        },
+        {
+            "statName": "대가리",
+            "statType": "크리티컬",
+            "statSprite": "Critical",
+            "statValue": 2
+        }
+    ]
+}

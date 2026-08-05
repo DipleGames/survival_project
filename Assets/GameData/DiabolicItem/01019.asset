@@ -1,0 +1,53 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5fab9a0293a87af439ca27dbaa59a391, type: 3}
+  m_Name: 01019
+  m_EditorClassIdentifier: 
+  itemNum: 1019
+  weightValue: 0
+  itemSprite: {fileID: -1225091315, guid: 3b793b2dc0178e748803e47df858e561, type: 3}
+  itemName: "\uC740\uBE5B \uD0C4\uD658"
+  equipSound: {fileID: 8300000, guid: b837ac1620e99804f904538082317d72, type: 3}
+  maxHp: 0
+  damage: 0
+  closeDamage: 0
+  longDamage: 0
+  recoverHp: 0
+  defence: 0
+  attackSpeed: 0
+  speed: 0
+  critical: 0
+  avoid: 0
+  isDoubleAxe: 0
+  isRum: 0
+  isAmmoPouch: 0
+  isHandMirror: 0
+  isRustyHarpoon: 0
+  isBaitWarm: 0
+  isGrape: 0
+  isTabatiere: 0
+  isSoulMate: 0
+  isInvincible: 0
+  isSilverBullet: 1
+  isBloodMadness: 0
+  isRottenCheese: 0
+  isTurtle: 0
+  isMirror: 0
+  maxCount: 1
+  itemShape:
+    _width: 1
+    _height: 1
+    _shape: 01
+  specialStatInfo: "\uCD1D\uC54C\uC744 \uBAA8\uB450 \uC18C\uBAA8\uD558\uC9C0 \uC54A\uC740
+    \uC0C1\uD0DC\uC77C \uB54C,\n\uBC29\uC5B4\uB825 <color=lime>5</color> \uC99D\uAC00."
+  description: "\uD558\uB298\uC774 \uB9D1\uB2E4. \uC88B\uC740 \uC608\uAC10\uC774
+    \uB4DC\uB294\uAD70."
