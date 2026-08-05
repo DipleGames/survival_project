@@ -73,7 +73,6 @@ public class Character : Singleton<Character>
 
     [HideInInspector] public bool isCanControll = true;
     [HideInInspector] public bool canFlip = true;
-    bool externalMovementVisualControl;
 
     bool isTamingPet = false;
     int getPetRound = 0;
@@ -87,20 +86,6 @@ public class Character : Singleton<Character>
     SoundManager soundManager;
 
     public bool IsFlip => rendUpper.flipX;
-    public float MovementAnimationSpeed => 1f + (speed * 0.1f);
-
-    public void SetExternalMovementVisualControl(bool controlled)
-    {
-        externalMovementVisualControl = controlled;
-    }
-
-    public void SetFacingLeft(bool faceLeft)
-    {
-        if (rendUpper != null)
-            rendUpper.flipX = faceLeft;
-        if (rendLower != null)
-            rendLower.flipX = faceLeft;
-    }
 
     Vector3 initParticleScale;
 
@@ -179,9 +164,6 @@ public class Character : Singleton<Character>
         {
             if (!isCanControll)
             {
-                if (externalMovementVisualControl)
-                    return;
-
                 Flip();
                 isRun = false;
                 anim.SetBool("isRun", isRun);
@@ -193,7 +175,7 @@ public class Character : Singleton<Character>
             if (currentHp > 0 && agent.enabled)
                 Move();
 
-            anim.SetFloat("moveSpeed", MovementAnimationSpeed);
+            anim.SetFloat("moveSpeed", 1 + (speed * 0.1f));
             anim.SetBool("isRun", isRun);
         }
     }
