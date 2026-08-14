@@ -22,9 +22,8 @@ namespace MineTest
 
         [Header("Interaction")]
         [SerializeField, Min(0.1f)] private float miningRadius = 3f;
-        [SerializeField, Min(0.05f)] private float miningDuration = 2f;
+        [SerializeField, Min(1)] private int miningAnimationLoops = 2;
         [SerializeField, Min(1)] private int damagePerHit = 10;
-        [SerializeField] private bool useAnimationEvent;
         [SerializeField] private LayerMask miningRaycastMask = ~0;
 
         [Header("Auto movement")]
@@ -111,7 +110,11 @@ namespace MineTest
             miningRoutine = null;
             autoMoving = false;
             activeNode = null;
-            if (player != null) player.MovementLocked = false;
+            if (player != null)
+            {
+                player.RestoreDefaultAnimation();
+                player.MovementLocked = false;
+            }
             HideHoverVisuals();
             RestoreNodeOpacity();
         }
@@ -207,6 +210,8 @@ namespace MineTest
 
         private void BeginMiningSequence()
         {
+            Vector3 toNode = activeNode.transform.position - player.transform.position;
+            player.SetFacingFromWorldX(toNode.x);
             miningRoutine = StartCoroutine(MiningSequence());
         }
 
@@ -217,21 +222,20 @@ namespace MineTest
             if (player != null)
             {
                 player.StopMovementVisual();
+                player.RestoreDefaultAnimation();
                 player.MovementLocked = false;
             }
         }
 
         private IEnumerator MiningSequence()
         {
-            if (useAnimationEvent)
-            {
-                while (!hitApplied) yield return null;
-            }
-            else
-            {
-                yield return new WaitForSeconds(miningDuration);
-                ApplyMiningHit();
-            }
+            player.StartMiningAnimation();
+            yield return null;
+            while (activeNode != null && !player.HasCompletedMiningLoops(miningAnimationLoops))
+                yield return null;
+
+            ApplyMiningHit();
+            player.RestoreDefaultAnimation();
 
             activeNode = null;
             miningRoutine = null;

@@ -5,11 +5,15 @@ namespace MineTest
     [DisallowMultipleComponent]
     public sealed class MineTestPlayerController : MonoBehaviour
     {
+        private const string MiningStateName = "Logging";
+
         [SerializeField, Min(0.1f)] private float moveSpeed = 3f;
         [SerializeField] private SpriteRenderer[] facingRenderers;
+        [SerializeField] private RuntimeAnimatorController miningAnimatorController;
 
         private Character character;
         private Animator animator;
+        private RuntimeAnimatorController defaultAnimatorController;
         private bool movementLocked;
         private bool ownsCharacterLock;
         private bool previousControl;
@@ -42,6 +46,31 @@ namespace MineTest
             if (animator != null) animator.SetBool("isRun", false);
         }
 
+        public void StartMiningAnimation()
+        {
+            if (animator == null || miningAnimatorController == null) return;
+            animator.runtimeAnimatorController = miningAnimatorController;
+
+            animator.SetBool("isRun", false);
+            animator.SetBool("isLogging", true);
+            animator.Update(0f);
+        }
+
+        public bool HasCompletedMiningLoops(int loopCount)
+        {
+            if (animator == null) return true;
+            AnimatorStateInfo state = animator.GetCurrentAnimatorStateInfo(0);
+            return state.IsName(MiningStateName) && state.normalizedTime >= loopCount;
+        }
+
+        public void RestoreDefaultAnimation()
+        {
+            if (animator == null) return;
+            if (HasParameter("isLogging")) animator.SetBool("isLogging", false);
+            if (defaultAnimatorController != null)
+                animator.runtimeAnimatorController = defaultAnimatorController;
+        }
+
         public void SetFacingFromWorldX(float worldX)
         {
             if (Mathf.Abs(worldX) > 0.001f)
@@ -52,8 +81,17 @@ namespace MineTest
         {
             character = GetComponent<Character>();
             animator = character != null ? character.anim : GetComponentInChildren<Animator>(true);
+            if (animator != null) defaultAnimatorController = animator.runtimeAnimatorController;
             if (facingRenderers == null || facingRenderers.Length == 0)
                 facingRenderers = GetComponentsInChildren<SpriteRenderer>(true);
+        }
+
+        private bool HasParameter(string parameterName)
+        {
+            if (animator == null) return false;
+            foreach (AnimatorControllerParameter parameter in animator.parameters)
+                if (parameter.name == parameterName) return true;
+            return false;
         }
 
         private void Update()
@@ -74,6 +112,7 @@ namespace MineTest
         private void OnDisable()
         {
             movementLocked = false;
+            RestoreDefaultAnimation();
             ReleaseCharacterLock();
         }
 
