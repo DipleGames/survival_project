@@ -5,8 +5,11 @@
 
 1. 기존 낚시 시스템 변경 (낚시 전용 화면으로 넘어가서 진행하는 것이 아닌 인게임 내에서 바로 낚시 컨텐츠를 진행할 수 있도록 매커니즘 변경 및 적용)
 
+ 설명 - https://app.notion.com/p/389b0947ba1780e6b64ce149da021c99?source=copy_link
+
 2. 채광 시스템 추가
 
+ 설명 - https://app.notion.com/p/3bcb0947ba17809e8352fcc73fe506a5?source=copy_link
 
 ### 2026.06.17 ~ 
 
