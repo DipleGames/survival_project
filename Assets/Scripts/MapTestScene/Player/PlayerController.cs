@@ -12,5 +12,6 @@ public class PlayerController : MonoBehaviour
         Vector3 dir = new Vector3(h, v, 0).normalized;
 
         transform.position += dir * _moveSpeed * Time.deltaTime;
+
     }
 }

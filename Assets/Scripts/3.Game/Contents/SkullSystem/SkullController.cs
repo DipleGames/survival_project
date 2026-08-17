@@ -1,188 +1,212 @@
-using UnityEngine;
+using System;
 using System.Collections;
-using System.Collections.Generic;
+using JetBrains.Annotations;
+using UnityEngine;
 
+
+/// <summary>
+/// 해골의 상태 전환과 공통 동작을 관리하는 중심 컨트롤러.
+/// 이동, 작업 시작 및 중지, 상태 변경 등의 기능을 담당한다.
+/// </summary>
 public class SkullController : MonoBehaviour
 {
     private SkullView _skullView;
     private SkullStateMachine _stateMachine;
 
     private SkullIdleState _idleState;
-    private SkullMoveToWorkState _moveToWorkState;
     private SkullFarmingState _farmingState;
     private SkullMiningState _miningState;
     private SkullFishingState _fishingState;
 
+    private FarmingAutomationController _farmingAutomation;
+
+    private Coroutine _moveCoroutine;
+
+    // 채광 / 낚시처럼 단순 작업에서 현재 예약 중인 작업장
+    private WorkAreaData _currentWorkArea;
+
+
     [Header("해골이 지닌 물건")]
-    public CropSO equippedCrop;
+    public CropSO equippedCropSO;
     public GameObject equippedPick;
     public GameObject equippedFishingRod;
-
 
 
     private void Awake()
     {
         _skullView = GetComponent<SkullView>();
-
         _stateMachine = new SkullStateMachine();
+        _farmingAutomation = new FarmingAutomationController();
 
         _idleState = new SkullIdleState(this);
-        _moveToWorkState = new SkullMoveToWorkState(this);
-        _farmingState = new SkullFarmingState(this);
+        _farmingState = new SkullFarmingState(this, _farmingAutomation);
         _miningState = new SkullMiningState(this);
         _fishingState = new SkullFishingState(this);
     }
+
 
     private void Start()
     {
         ChangeState(_idleState);
     }
 
+
     private void Update()
     {
         _stateMachine.Update();
     }
 
-    public void StartFarming()
-    {
-        WorkAreaData targetArea = WorkAreaManager.Instance.GetNearestAvailableArea(WorkType.Farming, transform.position);
 
-        if (targetArea == null)
-        {
-            Debug.Log("사용 가능한 농사 영역이 없습니다.");
-            return;
-        }
-
-        targetArea.Reserve(this);
-
-        _farmingState.EquipCrop(equippedCrop);
-        _moveToWorkState.SetTarget(targetArea, _farmingState);
-        ChangeState(_moveToWorkState);
-
-        _skullView.CloseSkullUI();
-    }
-
-    public void StartMining()
-    {
-        WorkAreaData targetArea = WorkAreaManager.Instance.GetNearestAvailableArea(WorkType.Mining, transform.position);
-
-        if (targetArea == null)
-        {
-            Debug.Log("사용 가능한 채광 영역이 없습니다.");
-            return;
-        }
-
-        targetArea.Reserve(this);
-
-        _moveToWorkState.SetTarget(targetArea, _miningState);
-        ChangeState(_moveToWorkState);
-
-        _skullView.CloseSkullUI();
-    }
-
-    public void StartFishing()
-    {
-        WorkAreaData targetArea = WorkAreaManager.Instance.GetNearestAvailableArea(WorkType.Fishing, transform.position);
-
-        if (targetArea == null)
-        {
-            Debug.Log("사용 가능한 낚시 영역이 없습니다.");
-            return;
-        }
-
-        targetArea.Reserve(this);
-
-        _moveToWorkState.SetTarget(targetArea, _fishingState);
-        ChangeState(_moveToWorkState);
-
-        _skullView.CloseSkullUI();
-    }
-
-    public void StopWork()
-    {
-        ChangeState(_idleState);
-    }
+    // =========================
+    // State
+    // =========================
 
     public void ChangeState(IState nextState)
     {
         _stateMachine.ChangeState(nextState);
     }
 
-    private Coroutine _workMoveCoroutine;
 
-    public void StartMoveToNextPoint(WorkType workType)
+    // =========================
+    // Farming
+    // =========================
+
+    public void StartFarming()
     {
-        StopMoveToNextPoint();
+        ChangeState(_farmingState);
 
-        _workMoveCoroutine = StartCoroutine(MoveToNextPoint(workType));
+        _skullView.CloseSkullUI();
     }
 
-    public void StopMoveToNextPoint()
+
+    // =========================
+    // Mining
+    // =========================
+
+    public void StartMining()
     {
-        if (_workMoveCoroutine == null)
+        StartWork(WorkType.Mining, _miningState);
+    }
+
+
+    // =========================
+    // Fishing
+    // =========================
+
+    public void StartFishing()
+    {
+        StartWork(WorkType.Fishing, _fishingState);
+    }
+
+
+    // =========================
+    // Simple Work
+    // =========================
+
+    private void StartWork(WorkType workType, IState workState)
+    {
+        WorkAreaData targetArea = WorkAreaSelector.FindNearestAvailableArea(workType, transform.position);
+
+        if (targetArea == null)
+        {
+            Debug.Log($"사용 가능한 {workType} 작업 영역이 없습니다.");
+
+            return;
+        }
+
+
+        if (!targetArea.TryReserve(this))
+        {
+            Debug.Log("작업 영역 예약 실패");
+            return;
+        }
+
+
+        _currentWorkArea = targetArea;
+
+        Vector3 targetPosition = WorkAreaManager.Instance.GetWorldPosition(targetArea.CellPosition);
+
+        MoveTo(targetPosition,
+        () =>
+            {
+                Debug.Log($"{workType} 작업장 도착");
+
+                ChangeState(workState);
+            }
+        );
+
+
+        _skullView.CloseSkullUI();
+    }
+
+
+    // =========================
+    // Stop Work
+    // =========================
+
+    public void StopWork()
+    {
+        StopMoving();
+
+        ReleaseCurrentWorkArea();
+
+        ChangeState(_idleState);
+    }
+
+
+    public void ReleaseCurrentWorkArea()
+    {
+        if (_currentWorkArea == null)
             return;
 
-        StopCoroutine(_workMoveCoroutine);
-        _workMoveCoroutine = null;
+        _currentWorkArea.Release(this);
+
+        _currentWorkArea = null;
     }
 
-    private IEnumerator MoveToNextPoint(WorkType workType)
+
+    // =========================
+    // Movement
+    // =========================
+
+    public void MoveTo(Vector3 targetPosition, Action onArrived = null)
+    {
+        StopMoving();
+
+        _moveCoroutine = StartCoroutine(MoveRoutine(targetPosition, onArrived));
+    }
+
+
+    public void StopMoving()
+    {
+        if (_moveCoroutine == null)
+            return;
+
+        StopCoroutine(_moveCoroutine);
+
+        _moveCoroutine = null;
+    }
+
+
+    private IEnumerator MoveRoutine(Vector3 targetPosition, Action onArrived)
     {
         const float moveSpeed = 3f;
         const float stopDistance = 0.1f;
-        const float workDuration = 2f;
 
-        while (true)
+        float stopDistanceSqr = stopDistance * stopDistance;
+
+
+        while (Vector3.SqrMagnitude(transform.position - targetPosition) > stopDistanceSqr)
         {
-            Vector3 targetPos;
+            transform.position =Vector3.MoveTowards(transform.position, targetPosition, moveSpeed * Time.deltaTime);
 
-            switch (workType)
-            {
-                case WorkType.Farming:
-                {
-                    List<Vector3Int> farmAreaList = WorkAreaManager.Instance.farmAreaList;
-
-                    if (farmAreaList.Count == 0)
-                    {
-                        _workMoveCoroutine = null;
-                        yield break;
-                    }
-
-                    int randomIndex =
-                        UnityEngine.Random.Range(0, farmAreaList.Count);
-
-                    Vector3Int cellPos = farmAreaList[randomIndex];
-
-                    targetPos = TilemapFarmSystem.Instance.fieldTilemap
-                        .GetCellCenterWorld(cellPos);
-
-                    break;
-                }
-
-                case WorkType.Mining:
-                case WorkType.Fishing:
-                default:
-                    _workMoveCoroutine = null;
-                    yield break;
-            }
-
-            while (Vector3.Distance(transform.position, targetPos) > stopDistance)
-            {
-                transform.position = Vector3.MoveTowards(
-                    transform.position,
-                    targetPos,
-                    moveSpeed * Time.deltaTime
-                );
-
-                yield return null;
-            }
-
-            transform.position = targetPos;
-
-            // 여기서 농사 애니메이션 재생
-            // _skullView.PlayFarmingAnimation();
-
-            yield return new WaitForSeconds(workDuration);
+            yield return null;
         }
+
+        transform.position = targetPosition;
+
+        _moveCoroutine = null;
+
+        onArrived?.Invoke();
     }
 }

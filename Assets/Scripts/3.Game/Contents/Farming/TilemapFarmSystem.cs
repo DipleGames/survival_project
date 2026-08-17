@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-
 public class TilemapFarmSystem : Singleton<TilemapFarmSystem>, IFarmSystem
 {
     public enum FarmTileState
@@ -12,136 +11,266 @@ public class TilemapFarmSystem : Singleton<TilemapFarmSystem>, IFarmSystem
         Occupied
     }
 
-    public enum FarmWorkResult 
-    {
-        Planted,
-        Watered,
-        Harvested,
-        NoWork
-    }
-
     [Header("타일맵")]
-    public Tilemap fieldTilemap;
+    public Tilemap groundTilemap;
+    public Tilemap farmPlotTilemap;
     public Tilemap wetOverlayTilemap;
+    public Tilemap fertilizedTilemap;
     public Tilemap cropTilemap;
 
     [Header("땅 타일")]
-    [SerializeField] private TileBase cultivatedTile;
+    [SerializeField] private TileBase _cultivatedTile;
 
     [Header("물 준 땅 오버레이 타일")]
-    [SerializeField] private TileBase wetOverlayTile;
+    [SerializeField] private TileBase _wetOverlayTile;
 
-    private Dictionary<Vector3Int, FarmTileState> _farmTileDict = new();
-    private Dictionary<Vector3Int, CropData> _cropDict = new();
+    [Header("비료 준 땅 타일")]
+    [SerializeField] private TileBase _fertilizedTile;
 
-    public bool isFarmMode = false; 
+    // 실제 경작 타일
+    private readonly Dictionary<Vector3Int, FarmTile> _farmTiles = new();
+
+    // 농작지 목록
+    private readonly List<FarmArea> _farmAreas = new();
+
+    // 특정 셀이 어느 FarmArea에 속하는지 빠르게 찾기 위한 Dictionary
+    private readonly Dictionary<Vector3Int, FarmArea> _farmAreaByCell = new();
+
+    public bool isFarmMode = false;
+
 
     private void Update()
     {
-        foreach (var pair in _cropDict)
-        {
-            CropData crop = pair.Value;
+        UpdateCrops();
 
-            if (crop.UpdateGrowth(Time.deltaTime))
-            {
-                UpdateCropTile(pair.Key, crop);
-                wetOverlayTilemap.SetTile(pair.Key, null);
-            }
-        }
+        if (Input.GetKeyDown(KeyCode.F))
+            isFarmMode = !isFarmMode;
+    }
 
-        if(Input.GetKeyDown(KeyCode.F))
+
+    // =========================================================
+    // FarmArea
+    // =========================================================
+
+    public IEnumerable<FarmArea> GetFarmAreas()
+    {
+        return _farmAreas;
+    }
+
+    public FarmArea GetFarmArea(Vector3Int pos)
+    {
+        _farmAreaByCell.TryGetValue(pos, out FarmArea farmArea);
+        return farmArea;
+    }
+
+    public void RegisterFarmArea(FarmArea farmArea, IEnumerable<Vector3Int> areaCells)
+    {
+        if (farmArea == null || _farmAreas.Contains(farmArea))
+            return;
+
+        _farmAreas.Add(farmArea);
+
+        foreach (Vector3Int cellPos in areaCells)
         {
-            isFarmMode = isFarmMode == true ? false : true;
+            if (_farmAreaByCell.ContainsKey(cellPos))
+                continue;
+
+            _farmAreaByCell.Add(cellPos, farmArea);
+
+            // 이미 경작된 타일이라면 FarmArea에도 연결
+            FarmTile farmTile = GetFarmTile(cellPos);
+
+            if (farmTile == null)
+                continue;
+
+            farmTile.SetArea(farmArea);
+            farmArea.AddTile(farmTile);
         }
     }
+
+    public void UnregisterFarmArea(FarmArea farmArea)
+    {
+        if (farmArea == null)
+            return;
+
+        _farmAreas.Remove(farmArea);
+
+        List<Vector3Int> removeCells = new();
+
+        foreach (var pair in _farmAreaByCell)
+        {
+            if (pair.Value == farmArea)
+                removeCells.Add(pair.Key);
+        }
+
+        foreach (Vector3Int cellPos in removeCells)
+        {
+            _farmAreaByCell.Remove(cellPos);
+
+            FarmTile farmTile = GetFarmTile(cellPos);
+
+            if (farmTile != null)
+                farmTile.SetArea(null);
+        }
+    }
+
+
+    // =========================================================
+    // FarmTile
+    // =========================================================
+
+    public FarmTile GetFarmTile(Vector3Int pos)
+    {
+        _farmTiles.TryGetValue(pos, out FarmTile farmTile);
+        return farmTile;
+    }
+
+    public IEnumerable<FarmTile> GetFarmTiles()
+    {
+        return _farmTiles.Values;
+    }
+
+
+    // =========================================================
+    // 경작
+    // =========================================================
 
     public void Cultivate(Vector3Int pos)
     {
-        if (!IsFarmableTile(pos)) // 밭 (경작할수있는 땅이아니면 리턴)
+        if (!IsFarmableTile(pos))
             return;
 
-        if (_farmTileDict.TryGetValue(pos, out FarmTileState state))
+        if (!_farmTiles.TryGetValue(pos, out FarmTile farmTile))
         {
-            if (state != FarmTileState.Empty)
-                return;
+            farmTile = new FarmTile(pos);
+            _farmTiles.Add(pos, farmTile);
         }
 
-        _farmTileDict[pos] = FarmTileState.Cultivated;
+        if (!farmTile.Cultivate())
+            return;
 
-        fieldTilemap.SetTile(pos, cultivatedTile);
+        // 이 좌표가 FarmArea에 속한다면 연결
+        FarmArea farmArea = GetFarmArea(pos);
+
+        if (farmArea != null)
+        {
+            farmTile.SetArea(farmArea);
+            farmArea.AddTile(farmTile);
+        }
+
+        farmPlotTilemap.SetTile(pos, _cultivatedTile);
         wetOverlayTilemap.SetTile(pos, null);
         cropTilemap.SetTile(pos, null);
-
-        WorkAreaManager.Instance.RegisterWorkArea(pos, WorkType.Farming);
     }
+
+
+    // =========================================================
+    // 씨앗 심기
+    // =========================================================
 
     public void Plant(Vector3Int pos, CropSO cropSO)
     {
         if (cropSO == null)
             return;
-        
-        if (!IsFarmableTile(pos)) // 밭 (경작할수있는 땅이아니면 리턴)
+
+        FarmTile farmTile = GetFarmTile(pos);
+
+        if (farmTile == null || !farmTile.Plant(cropSO))
             return;
 
-        if (!_farmTileDict.TryGetValue(pos, out FarmTileState state))
-            return;
-
-        if (state != FarmTileState.Cultivated)
-            return;
-
-        if (_cropDict.ContainsKey(pos))
-            return;
-
-        CropData crop = new CropData
-        {
-            cropSO = cropSO,
-            growthStage = CropGrowthStage.Seed,
-            growthState = CropGrowthState.CannotGrow,
-            isWatered = false
-        };
-
-        _cropDict.Add(pos, crop);
-        _farmTileDict[pos] = FarmTileState.Occupied;
-
-        UpdateCropTile(pos, crop);
+        UpdateCropTile(pos, farmTile.Crop);
     }
+
+
+    // =========================================================
+    // 물주기
+    // =========================================================
 
     public void Water(Vector3Int pos)
     {
-        if (!IsFarmableTile(pos)) // 밭 (경작할수있는 땅이아니면 리턴)
+        FarmTile farmTile = GetFarmTile(pos);
+
+        if (farmTile == null || !farmTile.Water())
             return;
 
-        if (_cropDict.TryGetValue(pos, out CropData crop))
-        {
-            Debug.Log($"{crop}에 물을 주었다");
-            crop.Water();
+        Debug.Log($"{pos}에 물을 주었다.");
 
-            wetOverlayTilemap.SetTile(pos, wetOverlayTile);
-
-            UpdateCropTile(pos, crop);
-        }
+        wetOverlayTilemap.SetTile(pos, _wetOverlayTile);
+        UpdateCropTile(pos, farmTile.Crop);
     }
 
-    public void Harvest(Vector3Int pos)
+
+    // =========================================================
+    // 비료
+    // =========================================================
+
+    public void Fertilize(Vector3Int pos)
     {
-        if (!IsFarmableTile(pos)) // 밭 (경작할수있는 땅이아니면 리턴)
+        FarmTile farmTile = GetFarmTile(pos);
+
+        if (farmTile == null || !farmTile.Fertilize())
             return;
 
-        if (!_cropDict.TryGetValue(pos, out CropData crop))
-            return;
+        Debug.Log($"{pos}에 비료를 주었다.");
 
-        if (crop.growthStage != CropGrowthStage.Harvestable)
-            return;
+        // TODO:
+        // 비료에 따른 시각적 연출이 생기면 여기서 처리
+        // fertilizedTilemap.SetTile(pos, _fertilizedTile);
+        // UpdateCropTile(pos, farmTile.Crop);
+    }
 
-        _cropDict.Remove(pos);
-        _farmTileDict[pos] = FarmTileState.Cultivated;
+
+    // =========================================================
+    // 수확
+    // =========================================================
+
+    public CropData Harvest(Vector3Int pos)
+    {
+        FarmTile farmTile = GetFarmTile(pos);
+
+        if (farmTile == null)
+            return null;
+
+        CropData harvestedCrop = farmTile.Harvest();
+
+        if (harvestedCrop == null)
+            return null;
 
         cropTilemap.SetTile(pos, null);
         wetOverlayTilemap.SetTile(pos, null);
-        fieldTilemap.SetTile(pos, cultivatedTile);
+        farmPlotTilemap.SetTile(pos, _cultivatedTile);
+
+        return harvestedCrop;
     }
 
-    public void UpdateCropTile(Vector3Int pos, CropData crop)
+
+    // =========================================================
+    // 작물 성장
+    // =========================================================
+
+    private void UpdateCrops()
+    {
+        foreach (FarmTile farmTile in _farmTiles.Values)
+        {
+            if (!farmTile.HasCrop)
+                continue;
+
+            CropData crop = farmTile.Crop;
+
+            if (!crop.UpdateGrowth(Time.deltaTime))
+                continue;
+
+            UpdateCropTile(farmTile.CellPosition, crop);
+            wetOverlayTilemap.SetTile(farmTile.CellPosition, null);
+        }
+    }
+
+
+    // =========================================================
+    // 작물 타일 이미지 갱신
+    // =========================================================
+
+    private void UpdateCropTile(Vector3Int pos, CropData crop)
     {
         if (crop == null || crop.cropSO == null)
             return;
@@ -157,29 +286,60 @@ public class TilemapFarmSystem : Singleton<TilemapFarmSystem>, IFarmSystem
         };
 
         cropTilemap.SetTile(pos, tile);
-        fieldTilemap.SetTile(pos, cultivatedTile);
+        farmPlotTilemap.SetTile(pos, _cultivatedTile);
     }
 
-    public bool IsFarmableTile(Vector3Int pos)
-    {
-        return fieldTilemap.HasTile(pos);
-    }
+
+    // =========================================================
+    // 물 초기화
+    // =========================================================
 
     public void ResetWater(Vector3Int pos)
     {
-        if (_cropDict.TryGetValue(pos, out CropData crop))
-        {
-            crop.isWatered = false;
-            wetOverlayTilemap.SetTile(pos, null);
-        }
+        FarmTile farmTile = GetFarmTile(pos);
+
+        if (farmTile == null || !farmTile.ResetWater())
+            return;
+
+        wetOverlayTilemap.SetTile(pos, null);
     }
 
     public void ResetAllWater()
     {
-        foreach (var pair in _cropDict)
+        foreach (FarmTile farmTile in _farmTiles.Values)
         {
-            pair.Value.isWatered = false;
-            wetOverlayTilemap.SetTile(pair.Key, null);
+            if (!farmTile.ResetWater())
+                continue;
+
+            wetOverlayTilemap.SetTile(farmTile.CellPosition, null);
         }
+    }
+
+
+    // =========================================================
+    // 체크
+    // =========================================================
+
+    public bool IsFarmableTile(Vector3Int pos)
+    {
+        return farmPlotTilemap.HasTile(pos);
+    }
+
+    public Vector3 GetWorldPosition(Vector3Int pos)
+    {
+        return farmPlotTilemap.GetCellCenterWorld(pos);
+    }
+
+   public FarmTileState GetTileState(Vector3Int cellPosition)
+    {
+        FarmTile farmTile = GetFarmTile(cellPosition);
+
+        if (farmTile == null)
+            return FarmTileState.Empty;
+
+        if (farmTile.HasCrop)
+            return FarmTileState.Occupied;
+
+        return FarmTileState.Cultivated;
     }
 }

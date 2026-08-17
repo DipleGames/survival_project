@@ -1,5 +1,9 @@
 using UnityEngine;
 
+
+/// <summary>
+/// 해골이 아무 작업도 수행하지 않고 대기 중인 상태를 담당한다.
+/// </summary>
 public class SkullIdleState : IState
 {
     private readonly SkullController _skull;

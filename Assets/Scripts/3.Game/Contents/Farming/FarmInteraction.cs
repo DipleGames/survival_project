@@ -105,7 +105,7 @@ public class FarmInteraction : MonoBehaviour
         if (groundPlane.Raycast(ray, out float distance))
         {
             Vector3 worldPos = ray.GetPoint(distance);
-            return TilemapFarmSystem.Instance.fieldTilemap.WorldToCell(worldPos);
+            return TilemapFarmSystem.Instance.farmPlotTilemap.WorldToCell(worldPos);
         }
 
         return Vector3Int.zero;
@@ -113,7 +113,7 @@ public class FarmInteraction : MonoBehaviour
     
     private bool CanInteract(Vector3Int targetCell)
     {
-        Vector3Int playerCell = TilemapFarmSystem.Instance.fieldTilemap.WorldToCell(player.transform.position);
+        Vector3Int playerCell = TilemapFarmSystem.Instance.farmPlotTilemap.WorldToCell(player.transform.position);
 
         int diffX = Mathf.Abs(targetCell.x - playerCell.x);
         int diffY = Mathf.Abs(targetCell.y - playerCell.y);

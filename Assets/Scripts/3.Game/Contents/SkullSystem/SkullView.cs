@@ -4,6 +4,11 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
+
+/// <summary>
+/// 해골과 관련된 시각적 요소와 UI 표현을 담당한다.
+/// 상호작용 UI, 애니메이션, 장비 표시 등의 화면 출력을 관리한다.
+/// </summary>
 public class SkullView : MonoBehaviour
 {
     [Header("패널")]
