@@ -11,6 +11,9 @@ using UnityEngine.UI;
 /// </summary>
 public class SkullView : MonoBehaviour
 {
+    [Header("UICanvas")]
+    public GameObject ui;
+
     [Header("패널")]
     public GameObject mainSelectPanel;
     public GameObject lifePanel;
@@ -27,6 +30,16 @@ public class SkullView : MonoBehaviour
         LifeSelectBtn.onClick.AddListener(OnClickedLifeSelectBtn);
         BattleSelectBtn.onClick.AddListener(OnClickedBattleSelectBtn);
         equippedObjBtn.onClick.AddListener(OnClickedEquippedObjBtn);
+    }
+
+    public void SwitchSkullUI()
+    {
+        ui.SetActive(!ui.activeSelf);
+
+        mainSelectPanel.SetActive(true);
+        battlePanel.SetActive(false);
+        equippedObjPanel.SetActive(false);
+        lifePanel.SetActive(false);
     }
 
     void OnClickedLifeSelectBtn()

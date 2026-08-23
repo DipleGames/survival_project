@@ -7,6 +7,9 @@ public class FarmTile
 
     public bool IsCultivated { get; private set; }
     public bool IsFertilized { get; private set; }
+    public bool IsWatered { get; private set; }
+
+    private float _waterTimer;
 
     public SkullController ReservedBy { get; private set; }
 
@@ -14,10 +17,9 @@ public class FarmTile
     public bool IsReserved => ReservedBy != null;
 
     public bool CanPlant => IsCultivated && !HasCrop;
-    public bool CanWater => HasCrop && !Crop.isWatered;
+    public bool CanWater => IsCultivated && !IsWatered;
     public bool CanFertilize => HasCrop && !IsFertilized;
     public bool CanHarvest => HasCrop && Crop.growthStage == CropGrowthStage.Harvestable;
-
 
     public TilemapFarmSystem.FarmTileState State
     {
@@ -32,8 +34,6 @@ public class FarmTile
         CellPosition = cellPosition;
     }
 
-
-
     public bool Cultivate()
     {
         if (IsCultivated)
@@ -42,7 +42,6 @@ public class FarmTile
         IsCultivated = true;
         return true;
     }
-
 
     public bool Plant(CropSO cropSO)
     {
@@ -53,23 +52,49 @@ public class FarmTile
         {
             cropSO = cropSO,
             growthStage = CropGrowthStage.Seed,
-            growthState = CropGrowthState.CannotGrow,
-            isWatered = false
+            growthState = CropGrowthState.CannotGrow
         };
 
         return true;
     }
 
-
-    public bool Water()
+    public bool Water(float duration)
     {
         if (!CanWater)
             return false;
 
-        Crop.Water();
+        IsWatered = true;
+        _waterTimer = duration;
+
         return true;
     }
 
+    public bool UpdateWater(float deltaTime)
+    {
+        if (!IsWatered)
+            return false;
+
+        _waterTimer -= deltaTime;
+
+        if (_waterTimer > 0f)
+            return false;
+
+        IsWatered = false;
+        _waterTimer = 0f;
+
+        return true;
+    }
+
+    public bool ResetWater()
+    {
+        if (!IsWatered)
+            return false;
+
+        IsWatered = false;
+        _waterTimer = 0f;
+
+        return true;
+    }
 
     public bool Fertilize()
     {
@@ -79,7 +104,6 @@ public class FarmTile
         IsFertilized = true;
         return true;
     }
-
 
     public CropData Harvest()
     {
@@ -94,7 +118,6 @@ public class FarmTile
         return harvestedCrop;
     }
 
-
     public bool TryReserve(SkullController skull)
     {
         if (IsReserved)
@@ -104,22 +127,12 @@ public class FarmTile
         return true;
     }
 
-
     public void Release(SkullController skull)
     {
         if (ReservedBy != skull)
             return;
 
         ReservedBy = null;
-    }
-
-    public bool ResetWater()
-    {
-        if (!HasCrop)
-            return false;
-
-        Crop.isWatered = false;
-        return true;
     }
 
     public FarmArea Area { get; private set; }

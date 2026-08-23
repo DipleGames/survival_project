@@ -23,14 +23,14 @@ public class CropData
     public CropGrowthStage growthStage;
     public CropGrowthState growthState;
 
-    public bool isWatered;
-
     private float _growthTimer;
 
-    public bool UpdateGrowth(float deltaTime)
+    public bool UpdateGrowth(float deltaTime, bool isWatered)
     {
         if (growthStage == CropGrowthStage.Harvestable)
             return false;
+
+        growthState = isWatered ? CropGrowthState.CanGrow : CropGrowthState.CannotGrow;
 
         if (growthState != CropGrowthState.CanGrow)
             return false;
@@ -43,30 +43,16 @@ public class CropData
         Growth();
         _growthTimer = 0f;
 
-        isWatered = false;
-        UpdateGrowthState();
-
         return true;
-    }
-
-    public void Water()
-    {
-        isWatered = true;
-        UpdateGrowthState();
-    }
-
-    private void UpdateGrowthState()
-    {
-        growthState = isWatered
-            ? CropGrowthState.CanGrow
-            : CropGrowthState.CannotGrow;
     }
 
     private void Growth()
     {
         if (growthStage == CropGrowthStage.Harvestable)
             return;
+
         growthStage++;
+
         Debug.Log($"{growthStage}로 성장했습니다");
     }
 }

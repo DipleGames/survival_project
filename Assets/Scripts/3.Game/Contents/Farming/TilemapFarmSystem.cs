@@ -27,6 +27,9 @@ public class TilemapFarmSystem : Singleton<TilemapFarmSystem>, IFarmSystem
     [Header("비료 준 땅 타일")]
     [SerializeField] private TileBase _fertilizedTile;
 
+    [Header("물 지속 시간 = 하루")]
+    [SerializeField] private float _waterDuration = 60f;
+
     // 실제 경작 타일
     private readonly Dictionary<Vector3Int, FarmTile> _farmTiles = new();
 
@@ -186,11 +189,11 @@ public class TilemapFarmSystem : Singleton<TilemapFarmSystem>, IFarmSystem
     // 물주기
     // =========================================================
 
-    public void Water(Vector3Int pos)
+   public void Water(Vector3Int pos)
     {
         FarmTile farmTile = GetFarmTile(pos);
 
-        if (farmTile == null || !farmTile.Water())
+        if (farmTile == null || !farmTile.Water(_waterDuration))
             return;
 
         Debug.Log($"{pos}에 물을 주었다.");
@@ -198,7 +201,6 @@ public class TilemapFarmSystem : Singleton<TilemapFarmSystem>, IFarmSystem
         wetOverlayTilemap.SetTile(pos, _wetOverlayTile);
         UpdateCropTile(pos, farmTile.Crop);
     }
-
 
     // =========================================================
     // 비료
@@ -237,7 +239,6 @@ public class TilemapFarmSystem : Singleton<TilemapFarmSystem>, IFarmSystem
             return null;
 
         cropTilemap.SetTile(pos, null);
-        wetOverlayTilemap.SetTile(pos, null);
         farmPlotTilemap.SetTile(pos, _cultivatedTile);
 
         return harvestedCrop;
@@ -252,19 +253,22 @@ public class TilemapFarmSystem : Singleton<TilemapFarmSystem>, IFarmSystem
     {
         foreach (FarmTile farmTile in _farmTiles.Values)
         {
+            bool waterExpired = farmTile.UpdateWater(Time.deltaTime);
+
+            if (waterExpired)
+                wetOverlayTilemap.SetTile(farmTile.CellPosition, null);
+
             if (!farmTile.HasCrop)
                 continue;
 
             CropData crop = farmTile.Crop;
 
-            if (!crop.UpdateGrowth(Time.deltaTime))
-                continue;
+            bool didGrow = crop.UpdateGrowth(Time.deltaTime, farmTile.IsWatered);
 
-            UpdateCropTile(farmTile.CellPosition, crop);
-            wetOverlayTilemap.SetTile(farmTile.CellPosition, null);
+            if (didGrow)
+                UpdateCropTile(farmTile.CellPosition, crop);
         }
     }
-
 
     // =========================================================
     // 작물 타일 이미지 갱신

@@ -276274,6 +276274,7 @@ MonoBehaviour:
   _cultivatedTile: {fileID: 11400000, guid: a2ee43784e5ea67468bbdb91be532366, type: 2}
   _wetOverlayTile: {fileID: 11400000, guid: 0635d42e6f3dcaf4babf4f1b9f21be81, type: 2}
   _fertilizedTile: {fileID: 11400000, guid: f105e2dacac2432469e8ac87518600ec, type: 2}
+  _waterDuration: 60
   isFarmMode: 1
 --- !u!1 &467084896
 GameObject:
@@ -292674,7 +292675,7 @@ GameObject:
   - component: {fileID: 886034718}
   - component: {fileID: 886034719}
   m_Layer: 22
-  m_Name: TempSkeleton
+  m_Name: TempSkull
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -292713,7 +292714,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 4e23f186269ee9e4d87cd0d4d113f407, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -292773,7 +292774,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3eb0bd627de3aa345849a13a85ed1390, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ui: {fileID: 826156199}
+  player: {fileID: 0}
+  _spriteRenderer: {fileID: 886034715}
+  _skullView: {fileID: 886034718}
 --- !u!114 &886034718
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -292786,6 +292789,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f55f411b38cf46f4896fb62b7ce89298, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ui: {fileID: 826156199}
   mainSelectPanel: {fileID: 374335405}
   lifePanel: {fileID: 1560543380}
   battlePanel: {fileID: 1968653780}

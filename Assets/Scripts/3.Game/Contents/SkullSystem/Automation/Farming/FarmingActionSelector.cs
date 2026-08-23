@@ -13,17 +13,28 @@ public class FarmingActionSelector
     private readonly IFarmingAction _fertilizeAction = new FertilizeAction();
 
     public IFarmingAction SelectAction(bool isFarmingLevel2)
-    {
+    {   
+        if (!isFarmingLevel2)
+        {
+            if (CanExecute(_waterAction))
+                return _waterAction;
+
+            if (CanExecute(_harvestAction))
+                return _harvestAction;
+
+            return null;
+        }
+
         if (CanExecute(_harvestAction))
             return _harvestAction;
 
-        if (isFarmingLevel2 && CanExecute(_waterAction))
+        if (CanExecute(_waterAction))
             return _waterAction;
 
         if (CanExecute(_plantAction))
             return _plantAction;
 
-        if (isFarmingLevel2 && CanExecute(_fertilizeAction))
+        if (CanExecute(_fertilizeAction))
             return _fertilizeAction;
 
         return null;

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: TempCrop
   m_EditorClassIdentifier: 
   cropName: TempCrop
-  growthTime: 10
+  growthTime: 5
   seedTile: {fileID: 11400000, guid: bb3522218e38482419c05ec7c42513a1, type: 2}
   sproutTile: {fileID: 11400000, guid: df1189226a4abfc419f358677a65ade9, type: 2}
   growingTile: {fileID: 11400000, guid: ca7f55651af1fe54b90190e35b73adf5, type: 2}
