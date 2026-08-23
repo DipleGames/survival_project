@@ -116,6 +116,8 @@ GameObject:
   - component: {fileID: 2030790823311812204}
   - component: {fileID: 2241369871795938460}
   - component: {fileID: 6647390453161408462}
+  - component: {fileID: 7353061674129308411}
+  - component: {fileID: 7353061674129308412}
   m_Layer: 6
   m_Name: Pirate
   m_TagString: Character
@@ -215,6 +217,7 @@ MonoBehaviour:
   - {fileID: 9100000, guid: 6a009263e7a27b0448468cc43906e675, type: 2}
   - {fileID: 9100000, guid: fe15ed084fcfba5468cd7e6adf9a5695, type: 2}
   - {fileID: 9100000, guid: ef15f392a3401984b86385e75d77c999, type: 2}
+  - {fileID: 9100000, guid: 16685f4616573c240968e2b445efa262, type: 2}
   dashCoolTime: 2
   initDashCoolTime: 0
   dashCount: 2
@@ -293,6 +296,36 @@ SortingGroup:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 2
+--- !u!114 &7353061674129308411
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 289213144344291185}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e34737d763ae59b499d1cefc90951421, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveSpeed: 3
+  facingRenderers: []
+--- !u!114 &7353061674129308412
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 289213144344291185}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 746d0ec8a6856f2499f3c89a8c55408f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MineTest.MineTestPlayerController
+  moveSpeed: 3
+  facingRenderers: []
+  miningAnimatorIndex: 6
+  standaloneMiningController: {fileID: 9100000, guid: 16685f4616573c240968e2b445efa262, type: 2}
 --- !u!1 &289213144383534345
 GameObject:
   m_ObjectHideFlags: 0

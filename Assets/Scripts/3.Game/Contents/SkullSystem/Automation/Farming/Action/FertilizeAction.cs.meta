@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/Scripts/3.Game/Contents/SkullSystem/Automation/Farming/Action/FertilizeAction.cs.meta
 guid: 98930f1847f380f429ba69220e095b63
+========
+guid: 746d0ec8a6856f2499f3c89a8c55408f
+>>>>>>>> skdydtjd/main:Assets/Scripts/MineTest/MineTestPlayerController.cs.meta
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2

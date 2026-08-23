@@ -54,6 +54,7 @@ public class Character : Singleton<Character>
     [SerializeField] GameObject tamedPet;
 
     bool isRun, isAttacked = false;
+    bool externalMovementVisualControl;
     bool isAvoid = false;
     [HideInInspector] public bool isDead = false;
 
@@ -86,6 +87,14 @@ public class Character : Singleton<Character>
     SoundManager soundManager;
 
     public bool IsFlip => rendUpper.flipX;
+    public float MovementAnimationSpeed => 1f + (speed * 0.1f);
+
+    public RuntimeAnimatorController GetAnimationController(int index)
+    {
+        if (currentController == null || index < 0 || index >= currentController.Length)
+            return null;
+        return currentController[index];
+    }
 
     Vector3 initParticleScale;
 
@@ -165,19 +174,34 @@ public class Character : Singleton<Character>
             if (!isCanControll)
             {
                 Flip();
-                isRun = false;
-                anim.SetBool("isRun", isRun);
+                if (!externalMovementVisualControl)
+                {
+                    isRun = false;
+                    anim.SetBool("isRun", isRun);
+                }
                 return;
             }
 
             isRun = false;
 
-            if (currentHp > 0 && agent.enabled)
+            if (currentHp > 0 && agent.enabled && agent.isOnNavMesh)
                 Move();
 
-            anim.SetFloat("moveSpeed", 1 + (speed * 0.1f));
+            anim.SetFloat("moveSpeed", MovementAnimationSpeed);
             anim.SetBool("isRun", isRun);
         }
+    }
+
+    public void SetFacingLeft(bool faceLeft)
+    {
+        if (rendUpper != null) rendUpper.flipX = faceLeft;
+        if (rendLower != null) rendLower.flipX = faceLeft;
+    }
+
+    public void SetExternalMovementVisualControl(bool enabled)
+    {
+        externalMovementVisualControl = enabled;
+        if (!enabled && anim != null) anim.SetBool("isRun", false);
     }
 
     public void UpdateStat()
@@ -352,6 +376,12 @@ public class Character : Singleton<Character>
 
     void Move()
     {
+        if (agent == null || !agent.enabled || !agent.isOnNavMesh)
+        {
+            isRun = false;
+            return;
+        }
+
         bool xInput = (Input.GetKey((KeyCode)PlayerPrefs.GetInt("Key_Left"))) 
             || (Input.GetKey((KeyCode)PlayerPrefs.GetInt("Key_Right")));
         bool zInput = (Input.GetKey((KeyCode)PlayerPrefs.GetInt("Key_Up"))) || (Input.GetKey((KeyCode)PlayerPrefs.GetInt("Key_Down")));
