@@ -116,6 +116,7 @@ GameObject:
   - component: {fileID: 2030790823311812204}
   - component: {fileID: 6647390453161408462}
   - component: {fileID: 7353061674129308411}
+  - component: {fileID: 7353061674129308412}
   m_Layer: 6
   m_Name: Pirate
   m_TagString: Character
@@ -293,6 +294,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeed: 3
   facingRenderers: []
+--- !u!114 &7353061674129308412
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 289213144344291185}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 746d0ec8a6856f2499f3c89a8c55408f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MineTest.MineTestPlayerController
+  moveSpeed: 3
+  facingRenderers: []
+  miningAnimatorIndex: 6
+  standaloneMiningController: {fileID: 9100000, guid: 16685f4616573c240968e2b445efa262, type: 2}
 --- !u!1 &289213144383534345
 GameObject:
   m_ObjectHideFlags: 0

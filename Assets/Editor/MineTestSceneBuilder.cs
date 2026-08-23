@@ -49,6 +49,9 @@ public static class MineTestSceneBuilder
         serialized.FindProperty("worldCamera").objectReferenceValue = camera;
         serialized.FindProperty("player").objectReferenceValue = player;
         serialized.FindProperty("ground").objectReferenceValue = ground;
+        SerializedProperty spawnGrounds = serialized.FindProperty("spawnGrounds");
+        spawnGrounds.arraySize = 1;
+        spawnGrounds.GetArrayElementAtIndex(0).objectReferenceValue = ground;
         serialized.FindProperty("jewelPrefab").objectReferenceValue = jewelPrefab;
         serialized.FindProperty("rockPrefab").objectReferenceValue = rockPrefab;
         serialized.FindProperty("clickUiPrefab").objectReferenceValue = clickUiPrefab;
@@ -83,6 +86,10 @@ public static class MineTestSceneBuilder
         foreach (string reference in references)
             if (serialized.FindProperty(reference).objectReferenceValue == null)
                 throw new System.InvalidOperationException("MineTest 참조가 비어 있습니다: " + reference);
+
+        SerializedProperty spawnGrounds = serialized.FindProperty("spawnGrounds");
+        if (spawnGrounds.arraySize == 0 || spawnGrounds.GetArrayElementAtIndex(0).objectReferenceValue == null)
+            throw new System.InvalidOperationException("MineTest 생성 지면(spawnGrounds)이 비어 있습니다.");
 
         Debug.Log("MineTest validation passed: 100 ground tiles and all required references are connected.");
     }
@@ -161,7 +168,14 @@ public static class MineTestSceneBuilder
 
         BoxCollider playerCollider = pirate.AddComponent<BoxCollider>();
         playerCollider.size = new Vector3(0.6f, 1f, 0.6f);
-        return pirate.AddComponent<MineTestPlayerController>();
+
+        MineTestPlayerController controller = pirate.AddComponent<MineTestPlayerController>();
+        RuntimeAnimatorController miningController = AssetDatabase.LoadAssetAtPath<RuntimeAnimatorController>(
+            "Assets/Animation/Player/Pirate/Mining/PC_Mining_0.controller");
+        var serializedController = new SerializedObject(controller);
+        serializedController.FindProperty("standaloneMiningController").objectReferenceValue = miningController;
+        serializedController.ApplyModifiedPropertiesWithoutUndo();
+        return controller;
     }
 
     private static Camera CreateCamera()

@@ -17,6 +17,11 @@ TagManager:
   - MouseInteraction
   - MonsterAttacked
   - MouseInteration
+  - Sea
+  - Lake
+  - jewel
+  - rock
+  - Ground
   layers:
   - Default
   - TransparentFX

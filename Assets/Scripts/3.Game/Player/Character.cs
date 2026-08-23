@@ -89,6 +89,13 @@ public class Character : Singleton<Character>
     public bool IsFlip => rendUpper.flipX;
     public float MovementAnimationSpeed => 1f + (speed * 0.1f);
 
+    public RuntimeAnimatorController GetAnimationController(int index)
+    {
+        if (currentController == null || index < 0 || index >= currentController.Length)
+            return null;
+        return currentController[index];
+    }
+
     Vector3 initParticleScale;
 
     [SerializeField] AnimationClip[] loggingClips;
