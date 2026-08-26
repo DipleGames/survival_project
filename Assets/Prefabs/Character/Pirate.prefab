@@ -114,7 +114,10 @@ GameObject:
   - component: {fileID: 4918108379380069775}
   - component: {fileID: 289213144344291184}
   - component: {fileID: 2030790823311812204}
+  - component: {fileID: 2241369871795938460}
   - component: {fileID: 6647390453161408462}
+  - component: {fileID: 7353061674129308411}
+  - component: {fileID: 7353061674129308412}
   m_Layer: 6
   m_Name: Pirate
   m_TagString: Character
@@ -131,7 +134,7 @@ Transform:
   m_GameObject: {fileID: 289213144344291185}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: -0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 5780085628578121744}
@@ -142,6 +145,7 @@ Transform:
   - {fileID: 9083610162007046965}
   - {fileID: 315125761682846038}
   - {fileID: 7774217152466415246}
+  - {fileID: 5938348869043282029}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -214,6 +218,7 @@ MonoBehaviour:
   - {fileID: 9100000, guid: 6a009263e7a27b0448468cc43906e675, type: 2}
   - {fileID: 9100000, guid: fe15ed084fcfba5468cd7e6adf9a5695, type: 2}
   - {fileID: 9100000, guid: ef15f392a3401984b86385e75d77c999, type: 2}
+  - {fileID: 9100000, guid: 16685f4616573c240968e2b445efa262, type: 2}
   dashCoolTime: 2
   initDashCoolTime: 0
   dashCount: 2
@@ -232,8 +237,6 @@ MonoBehaviour:
   getItemUI: {fileID: 9083610162007046966}
   tamedPet: {fileID: 7444320351319460353}
   isDead: 0
-  x: 0
-  z: 0
   weaponParent: {fileID: 4566666533326533890}
   canWeaponChange: 1
   currentWeaponIndex: 0
@@ -268,6 +271,21 @@ MonoBehaviour:
   layerMask:
     serializedVersion: 2
     m_Bits: 262144
+--- !u!114 &2241369871795938460
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 289213144344291185}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 277bd4fd3fca5a045bbaf08305af161b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  player: {fileID: 315125761682846038}
+  selectedCrop: {fileID: 0}
+  tempCrop: {fileID: 11400000, guid: f0c88cd51a0064647ab3d1c5e4cf92a1, type: 2}
 --- !u!210 &6647390453161408462
 SortingGroup:
   m_ObjectHideFlags: 0
@@ -279,6 +297,36 @@ SortingGroup:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 2
+--- !u!114 &7353061674129308411
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 289213144344291185}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e34737d763ae59b499d1cefc90951421, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveSpeed: 3
+  facingRenderers: []
+--- !u!114 &7353061674129308412
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 289213144344291185}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 746d0ec8a6856f2499f3c89a8c55408f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MineTest.MineTestPlayerController
+  moveSpeed: 3
+  facingRenderers: []
+  miningAnimatorIndex: 6
+  standaloneMiningController: {fileID: 9100000, guid: 16685f4616573c240968e2b445efa262, type: 2}
 --- !u!1 &289213144383534345
 GameObject:
   m_ObjectHideFlags: 0
@@ -5772,6 +5820,90 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!1 &4094548905750760664
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5938348869043282029}
+  - component: {fileID: 5026757271968001719}
+  m_Layer: 22
+  m_Name: MinimapIcon
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5938348869043282029
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4094548905750760664}
+  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: 0, y: 0, z: 0.101}
+  m_LocalScale: {x: 1, y: 1, z: 2}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 289213144344291195}
+  m_RootOrder: 8
+  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
+--- !u!212 &5026757271968001719
+SpriteRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4094548905750760664}
+  m_Enabled: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 0
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 10
+  m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
+  m_Color: {r: 0.41460484, g: 0.7264151, b: 0.4936022, a: 1}
+  m_FlipX: 0
+  m_FlipY: 0
+  m_DrawMode: 0
+  m_Size: {x: 1, y: 1}
+  m_AdaptiveModeThreshold: 0.5
+  m_SpriteTileMode: 0
+  m_WasSpriteAssigned: 1
+  m_MaskInteraction: 0
+  m_SpriteSortPoint: 0
 --- !u!1 &4533356642436260621
 GameObject:
   m_ObjectHideFlags: 0

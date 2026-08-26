@@ -1,0 +1,419 @@
+fileFormatVersion: 2
+guid: 37549010e22f02f49849abce8ee1e191
+TextureImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 11
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMasterTextureLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 352
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  platformSettings:
+  - serializedVersion: 3
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Server
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Tree_BurnEnd_0
+      rect:
+        serializedVersion: 2
+        x: 117
+        y: 640
+        width: 164
+        height: 361
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e0ad8b89acb34c1469e4cb9febd8faec
+      internalID: 827376044
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tree_BurnEnd_2
+      rect:
+        serializedVersion: 2
+        x: 843
+        y: 641
+        width: 223
+        height: 308
+      alignment: 9
+      pivot: {x: 0.44, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5f7dfa6d21fb7814da6cfd93861e601f
+      internalID: -291688502
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tree_BurnEnd_4
+      rect:
+        serializedVersion: 2
+        x: 54
+        y: 330
+        width: 275
+        height: 206
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5348720561d0fc84f8282d2c8a6c38c7
+      internalID: 1264380364
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tree_BurnEnd_5
+      rect:
+        serializedVersion: 2
+        x: 439
+        y: 325
+        width: 271
+        height: 147
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3650e6e27272b2d4c9851380ed79f1c3
+      internalID: 1429213010
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tree_BurnEnd_6
+      rect:
+        serializedVersion: 2
+        x: 787
+        y: 325
+        width: 316
+        height: 135
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d8847749bdd841a47aa19a5551bab659
+      internalID: -359967460
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tree_BurnEnd_7
+      rect:
+        serializedVersion: 2
+        x: 1163
+        y: 322
+        width: 333
+        height: 71
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 862600ddd6b0bbe4e9136b04ddada4a1
+      internalID: -534496850
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tree_BurnEnd_8
+      rect:
+        serializedVersion: 2
+        x: 37
+        y: 43
+        width: 310
+        height: 72
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 62bc3e867e339cc48b98940b2690d5cb
+      internalID: 507083787
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tree_BurnEnd_9
+      rect:
+        serializedVersion: 2
+        x: 415
+        y: 41
+        width: 312
+        height: 60
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d02115d1a8144644f872e0a2b944c3d5
+      internalID: -1843948749
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tree_BurnEnd_10
+      rect:
+        serializedVersion: 2
+        x: 793
+        y: 42
+        width: 315
+        height: 43
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8b4e5353e8eeeaf4f91fe4e851b25e59
+      internalID: 802598104
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tree_BurnEnd_11
+      rect:
+        serializedVersion: 2
+        x: 1163
+        y: 42
+        width: 317
+        height: 33
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 909568285eb5e4b46a8c11ecac497aaa
+      internalID: -1468832972
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tree_BurnEnd_1
+      rect:
+        serializedVersion: 2
+        x: 485
+        y: 637
+        width: 168
+        height: 364
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 80d9e7a5589811849aef9410a5e37d38
+      internalID: 1656364282
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Tree_BurnEnd_3
+      rect:
+        serializedVersion: 2
+        x: 1207
+        y: 638
+        width: 257
+        height: 233
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9a10f71f353c84c4488d2d0eccd8035d
+      internalID: 167604798
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    nameFileIdTable:
+      Tree_BurnEnd_37: -2081427560
+      Tree_BurnEnd_26: -1114190979
+      Tree_BurnEnd_10: 802598104
+      Tree_BurnEnd_11: -1468832972
+      Tree_BurnEnd_17: -1777233228
+      Tree_BurnEnd_20: -1063819257
+      Tree_BurnEnd_1: 1656364282
+      Tree_BurnEnd_25: -1356430078
+      Tree_BurnEnd_35: -1757529997
+      Tree_BurnEnd_36: 1853162992
+      Tree_BurnEnd_15: 777926420
+      Tree_BurnEnd_6: -359967460
+      Tree_BurnEnd_31: -1818179185
+      Tree_BurnEnd_34: 1290344825
+      Tree_BurnEnd_0: 827376044
+      Tree_BurnEnd_28: 2089243212
+      Tree_BurnEnd_5: 1429213010
+      Tree_BurnEnd_23: -941093230
+      Tree_BurnEnd_3: 167604798
+      Tree_BurnEnd_4: 1264380364
+      Tree_BurnEnd_13: -1822983330
+      Tree_BurnEnd_18: -207270659
+      Tree_BurnEnd_32: -130070506
+      Tree_BurnEnd_7: -534496850
+      Tree_BurnEnd_2: -291688502
+      Tree_BurnEnd_21: 1980800086
+      Tree_BurnEnd_40: 48865587
+      Tree_BurnEnd_8: 507083787
+      Tree_BurnEnd_30: 1660368002
+      Tree_BurnEnd_27: 1417676995
+      Tree_BurnEnd_9: -1843948749
+      Tree_BurnEnd_22: 2137322074
+      Tree_BurnEnd_14: -508581326
+  spritePackingTag: 
+  pSDRemoveMatte: 0
+  pSDShowRemoveMatteOption: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
