@@ -33,12 +33,14 @@ public class SkullController : MonoBehaviour
     public GameObject equippedFishingRod;
 
     [Header("채광 자동화")]
+
+
     [SerializeField] private MiningManager _miningManager;
     [SerializeField] private Transform _miningSearchCenter;
-    [SerializeField, Min(0.1f)] private float _miningSearchRadius = 20f;
-    [SerializeField, Min(1)] private int _miningDamagePerHit = 10;
-    [SerializeField, Min(0.1f)] private float _miningWorkDuration = 1f;
-    [SerializeField, Min(0.1f)] private float _miningApproachDistance = 0.8f;
+    [SerializeField, Min(0.1f)] private float _miningSearchRadius = 20f; // 거점 기준 광물 탐색 범위
+    [SerializeField, Min(1)] private int _miningDamagePerHit = 10; // 해골의 타격당 피해
+    [SerializeField, Min(0.1f)] private float _miningWorkDuration = 1f; // 타격 간격
+    [SerializeField, Min(0.1f)] private float _miningApproachDistance = 0.8f; // 광물 앞에서 멈추는 거리
 
 
     private void Awake()
