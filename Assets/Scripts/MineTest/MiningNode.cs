@@ -28,9 +28,19 @@ namespace MineTest
         private int currentHealth;
         private bool destroyed;
 
+        private static long nextSpawnOrder;
+
+        private Object reservedBy;
+        private long spawnOrder;
+
         public int CurrentHealth => currentHealth;
         public int MaxHealth => maxHealth;
         public SpriteRenderer MainRenderer => mainRenderer;
+
+        public long SpawnOrder => spawnOrder;
+        public bool IsDestroyed => destroyed;
+        public bool IsReserved => reservedBy != null;
+        public bool CanBeMined => !destroyed && currentHealth > 0 && gameObject.activeInHierarchy;
 
         // 렌더러와 체력을 초기화하고 그림자와 선택 외곽선을 생성한다.
         private void Awake()
@@ -48,7 +58,9 @@ namespace MineTest
             owner = manager;
             currentHealth = maxHealth;
             destroyed = false;
-            
+            reservedBy = null;
+            spawnOrder = nextSpawnOrder++;
+
             if (randomJewelColor && mainRenderer != null)
             {
                 mainRenderer.color = JewelColors[Random.Range(0, JewelColors.Length)];
@@ -73,6 +85,7 @@ namespace MineTest
             }
 
             destroyed = true;
+            reservedBy = null;
             SetHighlighted(false);
 
             Debug.Log(CompareTag("jewel")
@@ -164,6 +177,37 @@ namespace MineTest
 
                 outlines.Add(outline);
             }
+        }
+
+        public bool CanBeMinedBy(UnityEngine.Object worker)
+        {
+            if (!CanBeMined)
+                return false;
+
+            return !IsReserved || reservedBy == worker;
+        }
+
+        public bool TryReserve(UnityEngine.Object worker)
+        {
+            if (worker == null || !CanBeMinedBy(worker))
+                return false;
+
+            reservedBy = worker;
+
+            return true;
+        }
+
+        public void Release(UnityEngine.Object worker)
+        {
+            if (reservedBy != worker)
+                return;
+
+            reservedBy = null;
+        }
+
+        public bool IsReservedBy(UnityEngine.Object worker)
+        {
+            return worker != null && reservedBy == worker;
         }
     }
 }

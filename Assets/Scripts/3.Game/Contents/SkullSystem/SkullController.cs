@@ -1,6 +1,6 @@
 using System;
 using System.Collections;
-using JetBrains.Annotations;
+using MineTest;
 using UnityEngine;
 
 
@@ -16,9 +16,10 @@ public class SkullController : MonoBehaviour
     private SkullIdleState _idleState;
     private SkullFarmingState _farmingState;
     private SkullMiningState _miningState;
-    private SkullFishingState _fishingState;
+    private SkullLoggingState _loggingState;
 
     private FarmingAutomationController _farmingAutomation;
+    private MiningAutomationController _miningAutomation;
 
     private Coroutine _moveCoroutine;
 
@@ -31,17 +32,30 @@ public class SkullController : MonoBehaviour
     public GameObject equippedPick;
     public GameObject equippedFishingRod;
 
+    [Header("채광 자동화")]
+    [SerializeField] private MiningManager _miningManager;
+    [SerializeField] private Transform _miningSearchCenter;
+    [SerializeField, Min(0.1f)] private float _miningSearchRadius = 20f;
+    [SerializeField, Min(1)] private int _miningDamagePerHit = 10;
+    [SerializeField, Min(0.1f)] private float _miningWorkDuration = 1f;
+    [SerializeField, Min(0.1f)] private float _miningApproachDistance = 0.8f;
+
 
     private void Awake()
     {
         _skullView = GetComponent<SkullView>();
         _stateMachine = new SkullStateMachine();
         _farmingAutomation = new FarmingAutomationController();
+        if (_miningManager == null)
+        {
+            _miningManager = FindObjectOfType<MiningManager>();
+        }
+        _miningAutomation = new MiningAutomationController(_miningDamagePerHit, _miningWorkDuration, _miningApproachDistance);
 
         _idleState = new SkullIdleState(this);
         _farmingState = new SkullFarmingState(this, _farmingAutomation);
-        _miningState = new SkullMiningState(this);
-        _fishingState = new SkullFishingState(this);
+        _miningState = new SkullMiningState(this, _miningAutomation, _miningManager, _miningSearchCenter, _miningSearchRadius);
+        _loggingState = new SkullLoggingState(this);
     }
 
 
@@ -85,7 +99,15 @@ public class SkullController : MonoBehaviour
 
     public void StartMining()
     {
-        StartWork(WorkType.Mining, _miningState);
+        if (_miningManager == null)
+        {
+            Debug.LogWarning("MiningManager를 찾을 수 없습니다.");
+            return;
+        }
+
+        ChangeState(_miningState);
+
+        _skullView.CloseSkullUI();
     }
 
 
@@ -93,9 +115,9 @@ public class SkullController : MonoBehaviour
     // Fishing
     // =========================
 
-    public void StartFishing()
+    public void StartLogging()
     {
-        StartWork(WorkType.Fishing, _fishingState);
+        StartWork(WorkType.Logging, _loggingState);
     }
 
 

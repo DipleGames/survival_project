@@ -6,7 +6,7 @@ public enum WorkType
 {
     Farming,
     Mining,
-    Fishing
+    Logging
 }
 
 

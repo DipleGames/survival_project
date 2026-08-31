@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public class Skull : InteractableObj
+public class SkullInteraction : InteractableObj
 {
     [SerializeField] private GameObject player;
     [SerializeField] private SpriteRenderer _spriteRenderer;
