@@ -154,7 +154,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MineTest.MiningManager
   worldCamera: {fileID: 1200114469}
-  player: {fileID: 518758759}
+  player: {fileID: 518758760}
   ground: {fileID: 1902988670}
   spawnGrounds:
   - {fileID: 1902988670}
@@ -355,6 +355,10 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2241369871795938460, guid: 8d77a8f4167ea0b469ec40c27f9686ea, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7037617160102815328, guid: 8d77a8f4167ea0b469ec40c27f9686ea, type: 3}
       propertyPath: m_Controller
       value: 
@@ -435,17 +439,22 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 2, y: 2, z: 2}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &518758759 stripped
+--- !u!114 &518758760
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 7353061674129308412, guid: 8d77a8f4167ea0b469ec40c27f9686ea, type: 3}
-  m_PrefabInstance: {fileID: 518758755}
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 518758756}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 746d0ec8a6856f2499f3c89a8c55408f, type: 3}
+  m_Script: {fileID: 11500000, guid: 9cc61e02bb1a9de4f9124a8f23eea030, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MineTest.MineTestPlayerController
+  m_EditorClassIdentifier: 
+  moveSpeed: 3
+  facingRenderers: []
+  miningAnimatorIndex: 6
+  standaloneMiningController: {fileID: 9100000, guid: 16685f4616573c240968e2b445efa262, type: 2}
 --- !u!1 &852363914
 GameObject:
   m_ObjectHideFlags: 0

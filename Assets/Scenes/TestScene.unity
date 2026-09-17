@@ -178,6 +178,10 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2241369871795938460, guid: 8d77a8f4167ea0b469ec40c27f9686ea, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2582548205094614513, guid: 8d77a8f4167ea0b469ec40c27f9686ea, type: 3}
       propertyPath: m_Controller
       value: 
@@ -263,6 +267,7 @@ PrefabInstance:
     - {fileID: 1730456788773478032, guid: 8d77a8f4167ea0b469ec40c27f9686ea, type: 3}
     - {fileID: 289213144344291190, guid: 8d77a8f4167ea0b469ec40c27f9686ea, type: 3}
     - {fileID: 1275680370536691044, guid: 8d77a8f4167ea0b469ec40c27f9686ea, type: 3}
+    - {fileID: 7353061674129308412, guid: 8d77a8f4167ea0b469ec40c27f9686ea, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 8d77a8f4167ea0b469ec40c27f9686ea, type: 3}
 --- !u!1 &391544135
 GameObject:
