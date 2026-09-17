@@ -319838,18 +319838,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-<<<<<<< HEAD
-    - target: {fileID: 2077587231, guid: 48fb1218143e1104cba3e8fc37dae23e, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2145521348, guid: 48fb1218143e1104cba3e8fc37dae23e, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1902762375346570204, guid: 48fb1218143e1104cba3e8fc37dae23e, type: 3}
-      propertyPath: m_IsActive
-=======
     - target: {fileID: 1902762375346570209, guid: 48fb1218143e1104cba3e8fc37dae23e, type: 3}
       propertyPath: m_Size.x
       value: 169
@@ -319868,7 +319856,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1902762375346570209, guid: 48fb1218143e1104cba3e8fc37dae23e, type: 3}
       propertyPath: m_TileMatrixArray.Array.size
->>>>>>> ef81de8e416fcea1a24ebfd679da7b79ab9c873a
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1902762375346570209, guid: 48fb1218143e1104cba3e8fc37dae23e, type: 3}
