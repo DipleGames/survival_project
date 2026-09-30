@@ -2,6 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
+public class SpawnWeight
+{
+    public float weight;
+    public GameObject prefab;
+}
+
+
 public class Spawner : MonoBehaviour
 {
     [Header("스폰 대상")]
@@ -20,7 +28,7 @@ public class Spawner : MonoBehaviour
     private void Update()
     {
         timer += Time.deltaTime;
-        if (timer > spawnInterval)
+        if (timer >= spawnInterval)
         {
             timer = 0f;
             SpawnRandomObject();
@@ -29,15 +37,18 @@ public class Spawner : MonoBehaviour
 
     private void SpawnRandomObject()
     {
-        if (spawnList == null) return;
+        if (spawnList == null || spawnList.Length == 0) return;
 
         float totalWeight = 0f;
         foreach (var item in spawnList)
+        {
             totalWeight += item.weight;
+        }
 
         float randomValue = Random.Range(0f, totalWeight);
         Debug.Log("randomValue: " + randomValue);
         GameObject selectedPrefab = null;
+
         foreach (var item in spawnList)
         {
             randomValue -= item.weight;

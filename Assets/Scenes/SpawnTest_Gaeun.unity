@@ -321,9 +321,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spawnList:
-  - {fileID: 6998160619207052055, guid: 7cc84d012a15ddd4785da799ddee5658, type: 3}
-  - {fileID: 8298075413427102740, guid: 3f772b899d90e8e478f263690478c8ee, type: 3}
-  - {fileID: 9041949693151592017, guid: b35cf8446f90d9d4d89b0b2f28fe9010, type: 3}
+  - weight: 10
+    prefab: {fileID: 3961228475943041306, guid: 7cc84d012a15ddd4785da799ddee5658, type: 3}
+  - weight: 20
+    prefab: {fileID: 7619256662593934119, guid: 3f772b899d90e8e478f263690478c8ee, type: 3}
+  - weight: 40
+    prefab: {fileID: 6984173956166366709, guid: b35cf8446f90d9d4d89b0b2f28fe9010, type: 3}
   maxBounds: {x: 12, y: 5, z: 0}
   minBounds: {x: -12, y: -5, z: 0}
   spawnInterval: 1
