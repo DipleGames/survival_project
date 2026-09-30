@@ -11,16 +11,16 @@ public class FarmTile
 
     private float _waterTimer;
 
-    public SkullController ReservedBy { get; private set; }
-
     public bool HasCrop => Crop != null;
-    public bool IsReserved => ReservedBy != null;
 
     public bool CanPlant => IsCultivated && !HasCrop;
     public bool CanWater => IsCultivated && !IsWatered;
     public bool CanFertilize => HasCrop && !IsFertilized;
     public bool CanHarvest => HasCrop && Crop.growthStage == CropGrowthStage.Harvestable;
 
+    private readonly WorkReservation _reservation = new WorkReservation();
+    public Object ReservedBy => _reservation.ReservedBy;
+    public bool IsReserved => _reservation.IsReserved;
     public TilemapFarmSystem.FarmTileState State
     {
         get
@@ -118,21 +118,19 @@ public class FarmTile
         return harvestedCrop;
     }
 
-    public bool TryReserve(SkullController skull)
+    public bool TryReserve(Object worker)
     {
-        if (IsReserved)
-            return false;
-
-        ReservedBy = skull;
-        return true;
+        return _reservation.TryReserve(worker);
     }
 
-    public void Release(SkullController skull)
+    public bool IsReservedBy(Object worker)
     {
-        if (ReservedBy != skull)
-            return;
+        return _reservation.IsReservedBy(worker);
+    }
 
-        ReservedBy = null;
+    public void Release(Object worker)
+    {
+        _reservation.Release(worker);
     }
 
     public FarmArea Area { get; private set; }
