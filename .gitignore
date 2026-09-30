@@ -47,6 +47,9 @@ ExportedObj/
 *.opendb
 *.VC.db
 
+# Unity-Logs-Viewer(ReporterEditor)가 컴파일할 때마다 PC 이름/시간을 기록하는 파일
+/[Aa]ssets/[Ss]treaming[Aa]ssets/build_info
+
 # Unity3D generated meta files
 *.pidb.meta
 *.pdb.meta
