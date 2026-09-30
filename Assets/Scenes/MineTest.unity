@@ -364,8 +364,7 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents:
-    - {fileID: 628179329643789465, guid: 8d77a8f4167ea0b469ec40c27f9686ea, type: 3}
-    - {fileID: 289213144344291184, guid: 8d77a8f4167ea0b469ec40c27f9686ea, type: 3}
+    - {fileID: 0}
     - {fileID: 2030790823311812204, guid: 8d77a8f4167ea0b469ec40c27f9686ea, type: 3}
     - {fileID: 289213144316783391, guid: 8d77a8f4167ea0b469ec40c27f9686ea, type: 3}
     - {fileID: 289213144316783384, guid: 8d77a8f4167ea0b469ec40c27f9686ea, type: 3}
@@ -416,6 +415,7 @@ PrefabInstance:
     - {fileID: 4990506392129303528, guid: 8d77a8f4167ea0b469ec40c27f9686ea, type: 3}
     - {fileID: 3829200802999481825, guid: 8d77a8f4167ea0b469ec40c27f9686ea, type: 3}
     - {fileID: 7353061674129308411, guid: 8d77a8f4167ea0b469ec40c27f9686ea, type: 3}
+    - {fileID: 289213144344291184, guid: 8d77a8f4167ea0b469ec40c27f9686ea, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 8d77a8f4167ea0b469ec40c27f9686ea, type: 3}
 --- !u!1 &518758756 stripped
 GameObject:
@@ -437,15 +437,15 @@ BoxCollider:
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &518758759 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 7353061674129308412, guid: 8d77a8f4167ea0b469ec40c27f9686ea, type: 3}
+  m_CorrespondingSourceObject: {fileID: 946242043861222315, guid: 8d77a8f4167ea0b469ec40c27f9686ea, type: 3}
   m_PrefabInstance: {fileID: 518758755}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 518758756}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 746d0ec8a6856f2499f3c89a8c55408f, type: 3}
+  m_Script: {fileID: 11500000, guid: 9cc61e02bb1a9de4f9124a8f23eea030, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MineTest.MineTestPlayerController
+  m_EditorClassIdentifier: 
 --- !u!1 &852363914
 GameObject:
   m_ObjectHideFlags: 0
