@@ -753,6 +753,7 @@ GameObject:
   - component: {fileID: 8693566036821307471}
   - component: {fileID: 2434142344764085353}
   - component: {fileID: 6851097734795936922}
+  - component: {fileID: -170356207718633149}
   m_Layer: 18
   m_Name: Tree
   m_TagString: Tree
@@ -834,6 +835,33 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 126
   m_CollisionDetection: 0
+--- !u!114 &-170356207718633149
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7007229096887857488}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 355b0108ed59ed74182764ff13b33e54, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemId: 
+  interactableDistance: 1
+  gatherPoint: []
+  interactionTime: 3
+  isSingleUse: 1
+  isGatherable: 1
+  animationName: Logging
+  requiredHitCount: 3
+  currentHit: 0
+  dropItems: []
+  respawnTime: 10
+  character: {fileID: 0}
+  normalTreeSprite: {fileID: 0}
+  choppedTreeSprite: {fileID: 0}
+  toolOfPlayer: 0
 --- !u!1 &7412166656126384603
 GameObject:
   m_ObjectHideFlags: 0

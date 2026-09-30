@@ -37,11 +37,7 @@ public static class MiningTargetSelector
         return bestNode;
     }
 
-    private static bool IsValidTarget(
-        MiningNode node,
-        SkullController skull,
-        Vector3 searchCenter,
-        float searchRadiusSqr)
+    private static bool IsValidTarget(MiningNode node, SkullController skull,Vector3 searchCenter, float searchRadiusSqr)
     {
         if (node == null || !node.CanBeMinedBy(skull))
             return false;

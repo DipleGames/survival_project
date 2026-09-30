@@ -3,36 +3,29 @@ using System.Collections;
 
 public class Tree : GatherableObj
 {
-    [Header("Tree")]
-    [SerializeField] int requiredHitCount = 3;
-    [SerializeField] int currentHit;
-    [SerializeField] string[] dropItems;
+    [Header("Tree 전용 설정")]
+    [SerializeField] Sprite normalTreeSprite;
     [SerializeField] Sprite choppedTreeSprite;
 
-    [Header("Temp")]
-    [SerializeField] ToolType toolOfPlayer;
 
+    SpriteRenderer spriteRenderer;
     Animator animator;
 
     protected override void Awake()
     {
         base.Awake();
         animator = GetComponentInChildren<Animator>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
     protected override bool CanStartInteraction()
     {
-        // Check Player's tool
-        if (toolOfPlayer == ToolType.Axe || toolOfPlayer == ToolType.Lighter)
-        {
-            return true;
-        }
-
-        return false;
+        return currentToolType == ToolType.Axe || currentToolType == ToolType.Lighter;
     }
+
     protected override void OnInteractionFinished()
     {
-        switch(toolOfPlayer)
+        switch (currentToolType)
         {
             case ToolType.Axe:
                 currentHit++;
@@ -45,9 +38,9 @@ public class Tree : GatherableObj
                 {
                     GetItem(item);
                 }
-                GetComponent<SpriteRenderer>().sprite = choppedTreeSprite;
                 ChangeGatherState();
                 break;
+
             case ToolType.Lighter:
                 animator.SetTrigger("Burn");
                 StartCoroutine(WaitForBurn());
@@ -58,7 +51,6 @@ public class Tree : GatherableObj
                 ChangeGatherState();
                 break;
         }
-
     }
 
     IEnumerator WaitForBurn()
@@ -70,7 +62,9 @@ public class Tree : GatherableObj
     protected override void ChangeGatherState()
     {
         base.ChangeGatherState();
-        switch(toolOfPlayer)
+        spriteRenderer.sprite = choppedTreeSprite;
+
+        switch (currentToolType)
         {
             case ToolType.Axe:
                 Debug.Log("Tree is chopped down");
@@ -79,5 +73,11 @@ public class Tree : GatherableObj
                 Debug.Log("Tree is burnt down");
                 break;
         }
+    }
+
+    protected override void ResetGatherState()
+    {
+        base.ResetGatherState();
+        spriteRenderer.sprite = normalTreeSprite;
     }
 }

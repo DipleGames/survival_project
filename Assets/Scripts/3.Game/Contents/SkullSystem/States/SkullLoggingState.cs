@@ -10,29 +10,40 @@ using UnityEngine;
 public class SkullLoggingState : IState
 {
     private readonly SkullController _skull;
-    // private readonly FarmingAutomationController _automation;
+    private readonly LoggingAutomationController _automation;
+    private readonly LoggingManager _loggingManager;
+    private readonly Transform _searchCenter;
+    private readonly float _searchRadius;
 
-    public SkullLoggingState(SkullController skull)
+     public SkullLoggingState(SkullController skull, LoggingAutomationController automation, LoggingManager loggingManager, Transform searchCenter, float searchRadius)
     {
         _skull = skull;
+        _automation = automation;
+        _loggingManager = loggingManager;
+        _searchCenter = searchCenter;
+        _searchRadius = searchRadius;
     }
-    
+
     public void Enter()
     {
         Debug.Log("벌목 자동화 시작");
 
-        //_automation.StartAutomation(_skull);
+        Vector3 searchCenter = _searchCenter != null
+            ? _searchCenter.position
+            : _skull.transform.position;
+
+        _automation.StartAutomation(_skull, _loggingManager, searchCenter, _searchRadius);
     }
 
     public void Update()
     {
-        //_automation.Tick();
+        _automation.Tick();
     }
 
     public void Exit()
     {
-        Debug.Log("농사 자동화 종료");
+        Debug.Log("벌목 자동화 종료");
 
-        //_automation.StopAutomation();
+        _automation.StopAutomation();
     }
 }

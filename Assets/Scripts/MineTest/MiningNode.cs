@@ -30,16 +30,17 @@ namespace MineTest
 
         private static long nextSpawnOrder;
 
-        private Object reservedBy;
-        private long spawnOrder;
-
         public int CurrentHealth => currentHealth;
         public int MaxHealth => maxHealth;
         public SpriteRenderer MainRenderer => mainRenderer;
+        
+        private readonly WorkReservation _reservation = new WorkReservation();
+
+        private long spawnOrder;
 
         public long SpawnOrder => spawnOrder;
         public bool IsDestroyed => destroyed;
-        public bool IsReserved => reservedBy != null;
+        public bool IsReserved => _reservation.IsReserved;
         public bool CanBeMined => !destroyed && currentHealth > 0 && gameObject.activeInHierarchy;
 
         // 렌더러와 체력을 초기화하고 그림자와 선택 외곽선을 생성한다.
@@ -58,7 +59,7 @@ namespace MineTest
             owner = manager;
             currentHealth = maxHealth;
             destroyed = false;
-            reservedBy = null;
+            _reservation.Clear();
             spawnOrder = nextSpawnOrder++;
 
             if (randomJewelColor && mainRenderer != null)
@@ -85,7 +86,7 @@ namespace MineTest
             }
 
             destroyed = true;
-            reservedBy = null;
+            _reservation.Clear();
             SetHighlighted(false);
 
             Debug.Log(CompareTag("jewel")
@@ -179,35 +180,24 @@ namespace MineTest
             }
         }
 
-        public bool CanBeMinedBy(UnityEngine.Object worker)
+        public bool CanBeMinedBy(Object worker)
         {
-            if (!CanBeMined)
-                return false;
-
-            return !IsReserved || reservedBy == worker;
+            return CanBeMined && _reservation.CanReserve(worker);
         }
 
-        public bool TryReserve(UnityEngine.Object worker)
+        public bool TryReserve(Object worker)
         {
-            if (worker == null || !CanBeMinedBy(worker))
-                return false;
-
-            reservedBy = worker;
-
-            return true;
+            return CanBeMinedBy(worker) && _reservation.TryReserve(worker);
         }
 
-        public void Release(UnityEngine.Object worker)
+        public void Release(Object worker)
         {
-            if (reservedBy != worker)
-                return;
-
-            reservedBy = null;
+            _reservation.Release(worker);
         }
 
-        public bool IsReservedBy(UnityEngine.Object worker)
+        public bool IsReservedBy(Object worker)
         {
-            return worker != null && reservedBy == worker;
+            return _reservation.IsReservedBy(worker);
         }
     }
 }
