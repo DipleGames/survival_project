@@ -3,6 +3,7 @@ using UnityEngine;
 public class PlayerStateMachine : MonoBehaviour
 {
     [SerializeField] private ComboAttackController _comboAttackController;
+    [SerializeField] private PlayerMove _playerMove;
     // 현재 실행 중인 상태
     private IPlayerState _currentState;
 
@@ -11,6 +12,8 @@ public class PlayerStateMachine : MonoBehaviour
     private PlayerAttackState _attackState;
 
     // 외부에서 상태 전환을 요청할 때 사용할 읽기 전용 프로퍼티
+    public PlayerMove PlayerMove => _playerMove;
+    public IPlayerState CurrentState => _currentState;
     public PlayerIdleState IdleState => _idleState;
     public PlayerAttackState AttackState => _attackState;
 
@@ -18,6 +21,7 @@ public class PlayerStateMachine : MonoBehaviour
     {
         _idleState = new PlayerIdleState(this, _comboAttackController.Animator);
         _attackState = new PlayerAttackState(this, _comboAttackController);
+        _playerMove = GetComponent<PlayerMove>();
 
         // 처음에는 대기 상태로 시작
         ChangeState(_idleState);

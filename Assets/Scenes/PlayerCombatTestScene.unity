@@ -258843,6 +258843,7 @@ GameObject:
   - component: {fileID: 196220930380406826}
   - component: {fileID: 196220930380406823}
   - component: {fileID: 4826382931901805278}
+  - component: {fileID: 6967405715725352367}
   - component: {fileID: 1846636594484290509}
   - component: {fileID: 6555594344942006431}
   - component: {fileID: 6967405715725352362}
@@ -264112,10 +264113,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9cc61e02bb1a9de4f9124a8f23eea030, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 3
   facingRenderers: []
   miningAnimatorIndex: 6
-  standaloneMiningController: {fileID: 0}
+  miningAnimatorController: {fileID: 9100000, guid: f7d74ad42290f264386975d3d6f346dc, type: 2}
 --- !u!114 &1205530137837694487
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -265188,7 +265188,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e34737d763ae59b499d1cefc90951421, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 3
   facingRenderers: []
 --- !u!114 &6967405715725352363
 MonoBehaviour:
@@ -265232,6 +265231,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _comboAttackController: {fileID: 6967405715725352366}
+  _playerMove: {fileID: 0}
 --- !u!114 &6967405715725352366
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -265245,6 +265245,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _animator: {fileID: 7426650955423080753}
+--- !u!114 &6967405715725352367
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 196220930380406816}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 149a4ea926228c04a8f0f27369997a3b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveSpeed: 3
+  animator: {fileID: 0}
+  movementAnimationSpeed: 1
+  facingRenderers: []
+  defaultFacingLeft: 1
 --- !u!1 &7366060254672657906
 GameObject:
   m_ObjectHideFlags: 0

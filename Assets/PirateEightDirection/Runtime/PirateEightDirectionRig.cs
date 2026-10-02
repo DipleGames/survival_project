@@ -4,23 +4,42 @@ using UnityEngine.AI;
 
 namespace PirateEightDirection
 {
+    // XZ 이동: 부모는 Rigidbody, 이 컴포넌트는 시각 자식에 배치합니다.
     [DisallowMultipleComponent]
     public sealed class PirateEightDirectionRig : MonoBehaviour
     {
         private enum Facing { South, SouthWest, West, NorthWest, North, NorthEast, East, SouthEast }
 
         [Header("Motion")]
-        [SerializeField] private Rigidbody2D motionSource;
+        [SerializeField] private Rigidbody motionSource;
         [SerializeField] private NavMeshAgent navMeshMotionSource;
         [SerializeField, Min(0.01f)] private float walkingThreshold = 0.08f;
-        [SerializeField, Min(0.1f)] private float walkCyclesPerSecond = 1.8f;
-        [SerializeField, Range(0f, 20f)] private float limbSwingDegrees = 11f;
-        [SerializeField, Range(0f, 0.1f)] private float idleBreathing = 0.025f;
+        [SerializeField, Min(0.1f)] private float referenceWalkSpeed = 2.5f;
+        [SerializeField, Min(0.1f)] private float walkCyclesPerSecond = 2.1f;
+        [SerializeField, Min(0.02f)] private float walkBlendTime = 0.10f;
         [SerializeField] private Vector2 initialFacing = Vector2.down;
 
+        [Header("Relaxed Arms (local Z degrees)")]
+        [Tooltip("For the supplied left-screen BackArm pivot, positive values lower the hand.")]
+        [SerializeField, Range(-60f, 60f)] private float backArmRestAngle = 22f;
+        [SerializeField, Range(-60f, 60f)] private float frontArmRestAngle = -22f;
+        [Tooltip("Optional extra angles (BackArm, FrontArm) for S, SW, W, NW, N, NE, E, SE.")]
+        [SerializeField] private Vector2[] directionArmOffsets = new Vector2[8];
+
+        [Header("Walk Detail")]
+        [SerializeField, Range(0f, 15f)] private float armSwingDegrees = 4f;
+        [SerializeField, Range(0f, 20f)] private float legSwingDegrees = 7f;
+        [SerializeField, Range(0f, 0.2f)] private float footLift = 0.055f;
+        [SerializeField, Range(0f, 0.2f)] private float strideLength = 0.055f;
+        [SerializeField, Range(0f, 0.05f)] private float bodyBob = 0.009f;
+        [SerializeField, Range(0f, 8f)] private float forwardLeanDegrees = 2.5f;
+        [SerializeField, Range(0f, 0.05f)] private float idleBreathing = 0.008f;
+
         [Header("Roll")]
-        [SerializeField, Min(0.1f)] private float rollDuration = 0.3f;
-        [SerializeField, Range(0f, 0.5f)] private float rollHopHeight = 0.12f;
+        [SerializeField, Min(0.1f)] private float rollDuration = 0.32f;
+        [SerializeField, Range(0f, 0.5f)] private float rollHopHeight = 0.08f;
+        [SerializeField, Range(0f, 1f)] private float rollTuckStrength = 0.8f;
+        [SerializeField] private Vector2 rollPivot = new Vector2(0f, -0.15f);
 
         [Header("Rendering")]
         [SerializeField] private string sortingLayerName = "Default";
@@ -37,223 +56,285 @@ namespace PirateEightDirection
 
         private readonly Transform[] bones = new Transform[6];
         private readonly SpriteRenderer[] renderers = new SpriteRenderer[6];
+        private readonly Sprite[,] sprites = new Sprite[8, 6];
+        private readonly Vector3[] rollStartPositions = new Vector3[6];
+        private readonly Vector3[] rollStartScales = new Vector3[6];
+        private readonly Quaternion[] rollStartRotations = new Quaternion[6];
+
         private Facing facing = Facing.South;
         private Vector2 externalMotion;
         private bool useExternalMotion;
         private Vector3 restScale;
         private Vector3 restPosition;
         private Quaternion restRotation;
-        private bool rolling;
-        private float rollTime;
-        private float rollSpinSign;
-        private bool rollTumble;
-        // Play 중 재컴파일 시 readonly 배열은 비워지지만 private 필드는 복원되므로 직렬화에서 제외한다.
+        [NonSerialized] private bool initialized;
         [NonSerialized] private bool built;
+        [NonSerialized] private bool spritesCached;
+        private float walkPhase;
+        private float walkWeight;
+        private float idleTime;
+        private float gaitSpeed = 1f;
+        [NonSerialized] private bool rolling;
+        private float rollStartedAt;
+        private float activeRollDuration;
+        private float rollSpinSign;
 
         public Vector2 Motion { get; private set; }
-        public bool IsRolling => rolling;
-        public float RollDuration => rollDuration;
+        public bool IsRolling => rolling && Time.time < rollStartedAt + activeRollDuration;
+        public float RollDuration => rolling ? activeRollDuration : Mathf.Max(0.1f, rollDuration);
+        public float RollProgress => rolling ? Mathf.Clamp01((Time.time - rollStartedAt) / activeRollDuration) : 0f;
         public event Action RollFinished;
 
-        private void Awake()
+        private void Awake() => InitializeRig();
+
+        private void InitializeRig()
         {
+            if (initialized) return;
             restScale = transform.localScale;
             restPosition = transform.localPosition;
             restRotation = transform.localRotation;
-            if (motionSource == null) motionSource = GetComponentInParent<Rigidbody2D>();
+            initialized = true;
+
+            if (GetComponent<Rigidbody>() != null)
+            {
+                Debug.LogError("Place PirateEightDirectionRig on the visual child, not the Rigidbody root.", this);
+                enabled = false;
+                return;
+            }
+
+            if (motionSource == null) motionSource = GetComponentInParent<Rigidbody>();
             if (navMeshMotionSource == null) navMeshMotionSource = GetComponentInParent<NavMeshAgent>();
             BuildIfNeeded();
             SetFacing(initialFacing);
+            ApplyWalkPose(0f, 0f);
         }
 
         private void OnEnable()
         {
-            BuildIfNeeded();
+            InitializeRig();
+            if (!built) return;
+            CancelRoll();
         }
 
+        // Vector2의 x/y는 월드 속도의 x/z를 의미합니다.
         public void SetMotion(Vector2 motion)
         {
             externalMotion = motion;
             useExternalMotion = true;
         }
 
-        public void UseRigidbodyMotion()
-        {
-            useExternalMotion = false;
-        }
+        public void UseRigidbodyMotion() => useExternalMotion = false;
 
-        /// <summary>direction 방향으로 구르기를 시작한다. 이미 구르는 중이면 false.</summary>
         public bool PlayRoll(Vector2 direction)
         {
-            if (rolling) return false;
-            BuildIfNeeded();
+            if (!isActiveAndEnabled || rolling || !built) return false;
             if (direction.sqrMagnitude < 0.0001f) direction = FacingToVector(facing);
             direction.Normalize();
             SetFacing(direction);
 
-            // 좌우가 섞인 방향은 화면 평면에서 회전, 순수 상하 방향은 앞뒤로 텀블링하는 것처럼 보이게 한다.
-            rollTumble = Mathf.Abs(direction.x) < 0.3f;
-            rollSpinSign = direction.x > 0.01f ? -1f : direction.x < -0.01f ? 1f : -1f;
-            rollTime = 0f;
+            for (int i = 0; i < bones.Length; i++)
+            {
+                rollStartPositions[i] = bones[i].localPosition;
+                rollStartScales[i] = bones[i].localScale;
+                rollStartRotations[i] = bones[i].localRotation;
+            }
+
+            // 부모 X 회전이 90도여도, 시각 리그는 로컬 Z축으로 회전합니다. 음수 스케일은 사용하지 않습니다.
+            rollSpinSign = Mathf.Abs(direction.x) > 0.1f ? -Mathf.Sign(direction.x) : (direction.y >= 0f ? -1f : 1f);
+            activeRollDuration = Mathf.Max(0.1f, rollDuration);
+            rollStartedAt = Time.time;
+            walkPhase = 0f;
+            walkWeight = 0f;
             rolling = true;
             return true;
         }
 
+        // Mover에서 호출: 구르기 애니메이션과 같은 시간 기준으로 이동 속도를 조절합니다.
+        public float GetRollSpeedMultiplier()
+        {
+            if (!IsRolling) return 0f;
+            float t = RollProgress;
+            if (t < 0.12f) return Mathf.Lerp(0.30f, 1.35f, Smooth01(t / 0.12f));
+            if (t < 0.65f) return Mathf.Lerp(1.35f, 1f, Smooth01((t - 0.12f) / 0.53f));
+            return 1f - Smooth01((t - 0.65f) / 0.35f);
+        }
+
+        public void CancelRoll()
+        {
+            rolling = false;
+            walkWeight = 0f;
+            walkPhase = 0f;
+            gaitSpeed = 1f;
+            if (!initialized) return;
+            RestoreVisualTransform();
+            if (built) ApplyWalkPose(0f, 0f);
+        }
+
         private void LateUpdate()
         {
-            BuildIfNeeded();
-            if (useExternalMotion)
-                Motion = externalMotion;
-            else if (motionSource != null)
-                Motion = motionSource.velocity;
-            else if (navMeshMotionSource != null && navMeshMotionSource.enabled && navMeshMotionSource.isOnNavMesh)
-                Motion = new Vector2(navMeshMotionSource.velocity.x, navMeshMotionSource.velocity.z);
-            else
-                Motion = Vector2.zero;
+            if (!built) return;
+            idleTime += Time.deltaTime;
+            Motion = ReadMotion();
+
             if (rolling)
             {
                 UpdateRoll();
                 return;
             }
-            if (Motion.sqrMagnitude > walkingThreshold * walkingThreshold) SetFacing(Motion);
 
             float speed = Motion.magnitude;
             bool walking = speed > walkingThreshold;
-            float phase = Time.time * walkCyclesPerSecond * Mathf.PI * 2f;
-            float wave = Mathf.Sin(phase);
-            float swing = walking ? wave * limbSwingDegrees : 0f;
-            float breathe = walking ? Mathf.Abs(wave) * 0.018f : Mathf.Sin(Time.time * 2.2f) * idleBreathing;
+            if (walking) SetFacing(Motion);
+            float targetWeight = walking ? Mathf.Clamp01(speed / Mathf.Max(referenceWalkSpeed, 0.1f)) : 0f;
+            walkWeight = Mathf.MoveTowards(walkWeight, targetWeight, Time.deltaTime / Mathf.Max(walkBlendTime, 0.02f));
+            float targetGait = Mathf.Clamp(speed / Mathf.Max(referenceWalkSpeed, 0.1f), 0.65f, 1.5f);
+            gaitSpeed = Mathf.Lerp(gaitSpeed, targetGait, 1f - Mathf.Exp(-12f * Time.deltaTime));
 
-            bones[0].localRotation = Quaternion.Euler(0, 0, swing);
-            bones[1].localRotation = Quaternion.Euler(0, 0, -swing * 0.65f);
-            bones[2].localScale = new Vector3(1f - breathe * 0.35f, 1f + breathe, 1f);
-            bones[2].localPosition = PixelToLocal(JointPixels[2]) + Vector3.up * (walking ? Mathf.Abs(wave) * 0.025f : breathe * 0.35f);
-            bones[3].localRotation = Quaternion.Euler(0, 0, swing * 0.65f);
-            bones[4].localRotation = Quaternion.Euler(0, 0, -swing);
-            bones[5].localRotation = Quaternion.Euler(0, 0, walking ? -wave * 1.5f : Mathf.Sin(Time.time * 1.4f) * 0.7f);
+            if (walkWeight > 0.0001f) walkPhase = Mathf.Repeat(walkPhase + Time.deltaTime * walkCyclesPerSecond * gaitSpeed * Mathf.PI * 2f, Mathf.PI * 2f);
+            else
+                walkPhase = 0f;
+
+            ApplyWalkPose(walkPhase, walkWeight);
+        }
+
+        private Vector2 ReadMotion()
+        {
+            if (useExternalMotion) return externalMotion;
+            if (navMeshMotionSource != null && navMeshMotionSource.enabled && navMeshMotionSource.isOnNavMesh) return new Vector2(navMeshMotionSource.velocity.x, navMeshMotionSource.velocity.z);
+            if (motionSource != null) return new Vector2(motionSource.velocity.x, motionSource.velocity.z);
+            return Vector2.zero;
+        }
+
+        private Vector2 RestArmAngles()
+        {
+            Vector2 extra = directionArmOffsets != null && directionArmOffsets.Length > (int)facing ? directionArmOffsets[(int)facing] : Vector2.zero;
+            return new Vector2(backArmRestAngle, frontArmRestAngle) + extra;
+        }
+
+        private void ApplyWalkPose(float phase, float weight)
+        {
+            Vector2 direction = FacingToVector(facing);
+            Vector2 arms = RestArmAngles();
+            float side = Mathf.Abs(direction.x);
+            float wave = Mathf.Sin(phase);
+            float stride = Mathf.Cos(phase) * strideLength * weight;
+            float backLift = Mathf.Max(0f, wave) * weight;
+            float frontLift = Mathf.Max(0f, -wave) * weight;
+            float breathe = Mathf.Sin(idleTime * 2.2f) * idleBreathing * (1f - weight);
+            float bob = (1f - Mathf.Cos(phase * 2f)) * 0.5f * bodyBob * weight;
+            float lean = -direction.x * forwardLeanDegrees * weight;
+            float armSwing = wave * armSwingDegrees * weight * Mathf.Lerp(0.45f, 1f, side);
+            float legSwing = wave * legSwingDegrees * weight * side;
+            Vector3 chestOffset = new Vector3(direction.x * weight * 0.01f, bob + breathe * 0.3f, 0f);
+
+            SetPart(0, chestOffset, arms.x + armSwing + lean, Vector3.one);
+            SetPart(4, chestOffset, arms.y - armSwing + lean, Vector3.one);
+            SetPart(1, new Vector3(-direction.x * stride, backLift * footLift - direction.y * stride * 0.35f, 0f), -legSwing, new Vector3(1f, 1f - backLift * 0.035f, 1f));
+            SetPart(3, new Vector3(direction.x * stride, frontLift * footLift + direction.y * stride * 0.35f, 0f), legSwing, new Vector3(1f, 1f - frontLift * 0.035f, 1f));
+            SetPart(2, chestOffset, lean * 0.6f, new Vector3(1f - breathe * 0.25f, 1f + breathe, 1f));
+            SetPart(5, chestOffset + Vector3.up * (bob * 0.15f), lean * 0.3f - wave * 0.35f * weight, Vector3.one);
         }
 
         private void UpdateRoll()
         {
-            rollTime += Time.deltaTime;
-            float t = Mathf.Clamp01(rollTime / rollDuration);
+            float t = RollProgress;
+            if (t >= 1f)
+            {
+                CancelRoll();
+                RollFinished?.Invoke();
+                return;
+            }
 
-            // 몸을 웅크리는 정도: 앞 25% 동안 접고, 마지막 25% 동안 편다.
-            float tuck = Mathf.SmoothStep(0f, 1f, t / 0.25f) * Mathf.SmoothStep(0f, 1f, (1f - t) / 0.25f);
-            // 도약 직전과 착지 직후에 짧게 찌그러진다.
-            float squash = Pulse(t, 0.06f, 0.06f) + Pulse(t, 0.95f, 0.06f);
-            float spinT = Mathf.Clamp01((t - 0.1f) / 0.8f);
-            float spinT01 = spinT * spinT * (3f - 2f * spinT);
-            float spinDegrees = spinT01 * 360f;
+            float tuckIn = Smooth01(t / 0.18f);
+            float recover = Smooth01((t - 0.74f) / 0.26f);
+            float tuck = tuckIn * (1f - recover) * rollTuckStrength;
+            float spinT = Mathf.Clamp01((t - 0.12f) / 0.66f);
+            float spin = Smooth01(spinT) * 360f * rollSpinSign;
+            float prepare = Pulse(t, 0f, 0.18f);
+            float landing = Pulse(t, 0.78f, 1f);
+            float squash = prepare * 0.12f + landing * 0.16f;
             float hop = Mathf.Sin(spinT * Mathf.PI) * rollHopHeight;
 
-            var scale = new Vector3(1f + squash * 0.12f - tuck * 0.06f, 1f - squash * 0.2f - tuck * 0.1f, 1f);
-            if (rollTumble)
-            {
-                float flip = Mathf.Cos(spinDegrees * Mathf.Deg2Rad);
-                scale.y *= Mathf.Sign(flip) * Mathf.Max(Mathf.Abs(flip), 0.2f);
-                transform.localRotation = restRotation;
-            }
-            else
-            {
-                transform.localRotation = restRotation * Quaternion.Euler(0f, 0f, spinDegrees * rollSpinSign);
-            }
-            transform.localScale = Vector3.Scale(restScale, scale);
-            transform.localPosition = restPosition + Vector3.up * hop;
+            // 편안한 복귀 자세를 만든 뒤, 시작 자세와 웅크린 자세 사이를 보간합니다.
+            ApplyWalkPose(0f, 0f);
+            Vector2 arms = RestArmAngles();
+            BlendRollPart(0, new Vector3(0.055f, -0.06f, 0f), arms.x + 68f, new Vector3(1f, 0.88f, 1f), tuckIn, recover);
+            BlendRollPart(4, new Vector3(-0.055f, -0.06f, 0f), arms.y - 68f, new Vector3(1f, 0.88f, 1f), tuckIn, recover);
+            BlendRollPart(1, new Vector3(0.09f, 0.22f, 0f), 22f, new Vector3(1f, 0.62f, 1f), tuckIn, recover);
+            BlendRollPart(3, new Vector3(-0.09f, 0.22f, 0f), -22f, new Vector3(1f, 0.62f, 1f), tuckIn, recover);
+            BlendRollPart(2, new Vector3(0f, 0.02f, 0f), 0f, new Vector3(1.06f, 0.88f, 1f), tuckIn, recover);
+            BlendRollPart(5, new Vector3(0f, -0.34f, 0f), 8f * rollSpinSign, new Vector3(0.96f, 0.96f, 1f), tuckIn, recover);
 
-            bones[0].localRotation = Quaternion.Euler(0f, 0f, tuck * 70f);
-            bones[4].localRotation = Quaternion.Euler(0f, 0f, -tuck * 70f);
-            bones[1].localRotation = Quaternion.Euler(0f, 0f, tuck * 25f);
-            bones[3].localRotation = Quaternion.Euler(0f, 0f, -tuck * 25f);
-            bones[1].localScale = new Vector3(1f, 1f - tuck * 0.35f, 1f);
-            bones[3].localScale = new Vector3(1f, 1f - tuck * 0.35f, 1f);
-            bones[2].localScale = new Vector3(1f + tuck * 0.05f, 1f - tuck * 0.1f, 1f);
-            bones[2].localPosition = PixelToLocal(JointPixels[2]);
-            bones[5].localPosition = PixelToLocal(JointPixels[5]) + Vector3.down * (tuck * 0.25f);
-            bones[5].localRotation = Quaternion.Euler(0f, 0f, tuck * 12f * rollSpinSign);
-
-            if (t < 1f) return;
-            rolling = false;
-            ResetPose();
-            RollFinished?.Invoke();
+            Quaternion rotation = Quaternion.Euler(0f, 0f, spin);
+            Vector3 scale = new Vector3(1f + tuck * 0.08f + squash, 1f - tuck * 0.24f - squash, 1f);
+            Vector3 pivot = new Vector3(rollPivot.x, rollPivot.y, 0f);
+            Vector3 newScale = Vector3.Scale(restScale, scale);
+            // 물리 루트는 회전시키지 않고, 시각 리그만 몸 중심으로 회전시킵니다.
+            Vector3 pivotCorrection = Vector3.Scale(restScale, pivot) - rotation * Vector3.Scale(newScale, pivot);
+            transform.localRotation = restRotation * rotation;
+            transform.localScale = newScale;
+            transform.localPosition = restPosition + restRotation * (pivotCorrection + Vector3.Scale(restScale, Vector3.up * hop));
         }
 
-        private static float Pulse(float t, float center, float width)
+        private void BlendRollPart(int index, Vector3 offset, float angle, Vector3 scale, float tuckIn, float recover)
         {
-            float x = (t - center) / width;
-            return Mathf.Exp(-x * x);
+            Transform bone = bones[index];
+            Vector3 relaxedPosition = bone.localPosition;
+            Quaternion relaxedRotation = bone.localRotation;
+            Vector3 relaxedScale = bone.localScale;
+            Vector3 targetPosition = Vector3.Lerp(relaxedPosition, PixelToLocal(JointPixels[index]) + offset, rollTuckStrength);
+            Quaternion targetRotation = Quaternion.Slerp(relaxedRotation, Quaternion.Euler(0f, 0f, angle), rollTuckStrength);
+            Vector3 targetScale = Vector3.Lerp(relaxedScale, scale, rollTuckStrength);
+
+            bone.localPosition = Vector3.Lerp(Vector3.Lerp(rollStartPositions[index], targetPosition, tuckIn), relaxedPosition, recover);
+            bone.localRotation = Quaternion.Slerp(Quaternion.Slerp(rollStartRotations[index], targetRotation, tuckIn), relaxedRotation, recover);
+            bone.localScale = Vector3.Lerp(Vector3.Lerp(rollStartScales[index], targetScale, tuckIn), relaxedScale, recover);
         }
 
-        private static Vector2 FacingToVector(Facing value)
+        private void SetPart(int index, Vector3 offset, float angle, Vector3 scale)
         {
-            float angle = value switch
-            {
-                Facing.East => 0f,
-                Facing.NorthEast => 45f,
-                Facing.North => 90f,
-                Facing.NorthWest => 135f,
-                Facing.West => 180f,
-                Facing.SouthWest => 225f,
-                Facing.SouthEast => 315f,
-                _ => 270f
-            };
-            return new Vector2(Mathf.Cos(angle * Mathf.Deg2Rad), Mathf.Sin(angle * Mathf.Deg2Rad));
+            bones[index].localPosition = PixelToLocal(JointPixels[index]) + offset;
+            bones[index].localRotation = Quaternion.Euler(0f, 0f, angle);
+            bones[index].localScale = scale;
         }
 
-        private void ResetPose()
+        private void RestoreVisualTransform()
         {
-            transform.localScale = restScale;
             transform.localPosition = restPosition;
             transform.localRotation = restRotation;
-            if (!built) return;
-            for (int i = 0; i < bones.Length; i++)
-            {
-                if (bones[i] == null) continue;
-                bones[i].localRotation = Quaternion.identity;
-                bones[i].localScale = Vector3.one;
-                bones[i].localPosition = PixelToLocal(JointPixels[i]);
-            }
+            transform.localScale = restScale;
         }
 
         private void SetFacing(Vector2 direction)
         {
             if (direction.sqrMagnitude < 0.0001f) return;
-            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-            int octant = Mathf.RoundToInt(angle / 45f);
-            Facing next;
-            switch (octant)
-            {
-                case -2: next = Facing.South; break;
-                case -3: next = Facing.SouthWest; break;
-                case 4:
-                case -4: next = Facing.West; break;
-                case 3: next = Facing.NorthWest; break;
-                case 2: next = Facing.North; break;
-                case 1: next = Facing.NorthEast; break;
-                case 0: next = Facing.East; break;
-                case -1: next = Facing.SouthEast; break;
-                default: next = Facing.South; break;
-            }
+            int octant = Mathf.RoundToInt(Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg / 45f);
+            // Enum order: S=0, SW=1, W=2, NW=3, N=4, NE=5, E=6, SE=7.
+            Facing next = (Facing)((6 - octant + 8) % 8);
             if (next == facing && renderers[0].sprite != null) return;
             facing = next;
             ApplySprites();
         }
 
+        private static Vector2 FacingToVector(Facing value)
+        {
+            float angle = (270f - (int)value * 45f) * Mathf.Deg2Rad;
+            return new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
+        }
+
         private void BuildIfNeeded()
         {
-            if (built && bones[0] != null && renderers[0] != null) return;
+            if (built) return;
+            CacheSprites();
             for (int i = 0; i < PartNames.Length; i++)
             {
-                // 재컴파일 후에는 이전에 만든 자식이 남아 있으므로 새로 만들지 않고 재사용한다.
                 Transform bone = transform.Find(PartNames[i] + " Bone");
                 if (bone == null)
                 {
                     bone = new GameObject(PartNames[i] + " Bone").transform;
                     bone.SetParent(transform, false);
                 }
-                bone.localPosition = PixelToLocal(JointPixels[i]);
                 bones[i] = bone;
-
                 Transform art = bone.Find(PartNames[i] + " Art");
                 if (art == null)
                 {
@@ -261,34 +342,90 @@ namespace PirateEightDirection
                     art.SetParent(bone, false);
                 }
                 art.localPosition = -PixelToLocal(JointPixels[i]);
-                var spriteRenderer = art.GetComponent<SpriteRenderer>();
-                if (spriteRenderer == null) spriteRenderer = art.gameObject.AddComponent<SpriteRenderer>();
-                spriteRenderer.sortingLayerName = sortingLayerName;
-                spriteRenderer.sortingOrder = sortingOrder + i;
-                spriteRenderer.color = tint;
-                renderers[i] = spriteRenderer;
+                art.localRotation = Quaternion.identity;
+                art.localScale = Vector3.one;
+                SpriteRenderer renderer = art.GetComponent<SpriteRenderer>();
+                if (renderer == null) renderer = art.gameObject.AddComponent<SpriteRenderer>();
+                renderer.sortingLayerName = sortingLayerName;
+                renderer.sortingOrder = sortingOrder + i;
+                renderer.color = tint;
+                renderers[i] = renderer;
             }
             built = true;
             ApplySprites();
         }
 
+        private void CacheSprites()
+        {
+            if (spritesCached) return;
+            int missing = 0;
+            string firstMissing = null;
+            for (int d = 0; d < DirectionNames.Length; d++)
+            for (int p = 0; p < PartNames.Length; p++)
+            {
+                string path = $"PirateRig/{DirectionNames[d]}-{PartNames[p]}";
+                sprites[d, p] = Resources.Load<Sprite>(path);
+                if (sprites[d, p] != null) continue;
+                missing++;
+                if (firstMissing == null) firstMissing = path;
+            }
+            spritesCached = true;
+            if (missing > 0) Debug.LogWarning($"Pirate rig: {missing} sprite(s) missing. First: Resources/{firstMissing}. Check Sprite import and resource names.", this);
+        }
+
         private void ApplySprites()
         {
-            string direction = DirectionNames[(int)facing];
             for (int i = 0; i < PartNames.Length; i++)
-                renderers[i].sprite = Resources.Load<Sprite>($"PirateRig/{direction}-{PartNames[i]}");
+                renderers[i].sprite = sprites[(int)facing, i];
         }
 
         private static Vector3 PixelToLocal(Vector2 pixel)
         {
-            const float pixelsPerUnit = 100f;
-            return new Vector3((pixel.x - 192f) / pixelsPerUnit, (256f - pixel.y) / pixelsPerUnit, 0f);
+            // 기존 이미지의 캔버스 좌표와 PPU 100을 유지합니다.
+            return new Vector3((pixel.x - 192f) / 100f, (256f - pixel.y) / 100f, 0f);
+        }
+
+        private static float Smooth01(float value)
+        {
+            float t = Mathf.Clamp01(value);
+            return t * t * (3f - 2f * t);
+        }
+
+        private static float Pulse(float t, float start, float end)
+        {
+            if (t <= start || t >= end) return 0f;
+            float wave = Mathf.Sin((t - start) / (end - start) * Mathf.PI);
+            return wave * wave;
+        }
+
+        [ContextMenu("Apply XZ Motion Preset")]
+        private void ApplyXZMotionPreset()
+        {
+            walkingThreshold = 0.08f;
+            referenceWalkSpeed = 2.5f;
+            walkCyclesPerSecond = 2.1f;
+            walkBlendTime = 0.10f;
+            backArmRestAngle = 22f;
+            frontArmRestAngle = -22f;
+            directionArmOffsets = new Vector2[8];
+            armSwingDegrees = 4f;
+            legSwingDegrees = 7f;
+            footLift = 0.055f;
+            strideLength = 0.055f;
+            bodyBob = 0.009f;
+            forwardLeanDegrees = 2.5f;
+            idleBreathing = 0.008f;
+            rollDuration = 0.32f;
+            rollHopHeight = 0.08f;
+            rollTuckStrength = 0.8f;
+            rollPivot = new Vector2(0f, -0.15f);
         }
 
         private void OnDisable()
         {
-            rolling = false;
-            ResetPose();
+            CancelRoll();
+            externalMotion = Vector2.zero;
+            Motion = Vector2.zero;
         }
     }
 }
