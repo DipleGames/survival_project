@@ -21,7 +21,6 @@ public class PlayerStateMachine : MonoBehaviour
     {
         _idleState = new PlayerIdleState(this, _comboAttackController.Animator);
         _attackState = new PlayerAttackState(this, _comboAttackController);
-        _playerMove = GetComponent<PlayerMove>();
 
         // 처음에는 대기 상태로 시작
         ChangeState(_idleState);

@@ -1,12 +1,13 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using Cinemachine;
 
 public class ComboAttackController : MonoBehaviour
 {
 
     [SerializeField] private Animator _animator;
+    [SerializeField] private PlayerMove _playerMove;
+    [SerializeField] private CinemachineImpulseSource _impulseSource;
 
     private WeaponData _weaponData;
     private Vector3 _attackDirection;
@@ -36,7 +37,7 @@ public class ComboAttackController : MonoBehaviour
         _nextAttackDirection = Vector3.zero;
 
         _isAttacking = true;
-        PlayCurrentStep();
+        PlayCurrentStep(_attackDirection);
     }
 
     public void FinishAttack()
@@ -88,7 +89,7 @@ public class ComboAttackController : MonoBehaviour
             _attackDirection = _nextAttackDirection;
             _nextAttackDirection = Vector3.zero;
 
-            PlayCurrentStep();
+            PlayCurrentStep(_attackDirection);
         }
         else
         {
@@ -97,11 +98,19 @@ public class ComboAttackController : MonoBehaviour
     }
 
 
-    private void PlayCurrentStep()
+    private void PlayCurrentStep(Vector3 _attackDirection)
     {
         AttackStepData attackStepData = _weaponData.ComboData.GetStep(_currentStepIndex);
-        Debug.Log($"{_currentStepIndex + 1}타 !");
+        transform.position += _attackDirection * 0.3f; 
+        _playerMove.FaceDirection(_attackDirection);
+        PlayHitImpulse();
         _animator.Play(attackStepData.AnimationName, 0, 0f);
+        Debug.Log($"{_currentStepIndex + 1}타 !");
+    }
 
+    // 타격시 흔들림 효과 (예시로 공격타이밍에 호출하다가 나중에 타격시로 바꿀예정)
+    public void PlayHitImpulse()
+    {
+        _impulseSource.GenerateImpulse();
     }
 }

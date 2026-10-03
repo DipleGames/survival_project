@@ -79,9 +79,8 @@ public class PlayerMove : MonoBehaviour
         {
             return;
         }
-
+       
         bool flipX = defaultFacingLeft ? horizontal > 0f : horizontal < 0f;
-
         foreach (SpriteRenderer facingRenderer in facingRenderers)
         {
             if (facingRenderer != null)
@@ -89,6 +88,11 @@ public class PlayerMove : MonoBehaviour
                 facingRenderer.flipX = flipX;
             }
         }
+    }
+    // 외부에서 월드 방향을 전달해 바라보는 방향을 변경
+    public void FaceDirection(Vector3 direction)
+    {
+        UpdateFacing(direction.x);
     }
 
     private void UpdateAnimation(bool isMoving)
@@ -118,18 +122,9 @@ public class PlayerMove : MonoBehaviour
         KeyCode down = (KeyCode)PlayerPrefs.GetInt("Key_Down");
         KeyCode up = (KeyCode)PlayerPrefs.GetInt("Key_Up");
 
-        if (left == KeyCode.None &&
-            right == KeyCode.None &&
-            down == KeyCode.None &&
-            up == KeyCode.None)
+        if (left == KeyCode.None && right == KeyCode.None && down == KeyCode.None && up == KeyCode.None)
         {
-            return Vector2.ClampMagnitude(
-                new Vector2(
-                    Input.GetAxisRaw("Horizontal"),
-                    Input.GetAxisRaw("Vertical")
-                ),
-                1f
-            );
+            return Vector2.ClampMagnitude(new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical")), 1f);
         }
 
         float x = (Input.GetKey(right) ? 1f : 0f) - (Input.GetKey(left) ? 1f : 0f);

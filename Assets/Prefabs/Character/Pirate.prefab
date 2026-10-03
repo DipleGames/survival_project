@@ -309,7 +309,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e34737d763ae59b499d1cefc90951421, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 3
   facingRenderers: []
 --- !u!114 &946242043861222315
 MonoBehaviour:
@@ -323,10 +322,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9cc61e02bb1a9de4f9124a8f23eea030, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 3
   facingRenderers: []
   miningAnimatorIndex: 6
-  standaloneMiningController: {fileID: 0}
 --- !u!1 &289213144383534345
 GameObject:
   m_ObjectHideFlags: 0
@@ -5830,7 +5827,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5938348869043282029}
   - component: {fileID: 5026757271968001719}
-  m_Layer: 22
+  m_Layer: 23
   m_Name: MinimapIcon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
