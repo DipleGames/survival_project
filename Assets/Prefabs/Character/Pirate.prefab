@@ -324,6 +324,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   facingRenderers: []
   miningAnimatorIndex: 6
+  miningAnimatorController: {fileID: 0}
 --- !u!1 &289213144383534345
 GameObject:
   m_ObjectHideFlags: 0

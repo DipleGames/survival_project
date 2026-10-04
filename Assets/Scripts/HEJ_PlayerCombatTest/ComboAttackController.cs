@@ -104,6 +104,7 @@ public class ComboAttackController : MonoBehaviour
         transform.position += _attackDirection * 0.3f; 
         _playerMove.FaceDirection(_attackDirection);
         PlayHitImpulse();
+        AudioTest.Instance.PlaySFX(attackStepData.AttackSFX);
         _animator.Play(attackStepData.AnimationName, 0, 0f);
         Debug.Log($"{_currentStepIndex + 1}타 !");
     }
