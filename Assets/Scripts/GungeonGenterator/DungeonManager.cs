@@ -8,11 +8,8 @@ public class DungeonManager : MonoBehaviour
 {
     public static DungeonManager Instance { get; private set; }
 
-    // 생성할 방 총 개수 : 기획자 용도
-    [Header("Dungeon Settings")]
-    [SerializeField] private int Depth = 5;     //층수
-    [SerializeField] private int Width = 4;     //해당 층의 최대 방 생성 개수
-    [SerializeField] private int AntCount = 4;  //ant path 알고리즘을 사용
+    [SerializeField] private DungeonSettings settings;
+    [SerializeField] private DungeonMapView mapView;
 
     //현재 플레이어가 있는 방 좌표
     public int CurrentRoomId { get; private set; }
@@ -22,27 +19,40 @@ public class DungeonManager : MonoBehaviour
     public DungeonDataset DungeonData { get; private set; }
 
     //getter
-    public int getDepth() { return Depth; }
-    public int getWidth() { return Width; }
+    public int getDepth() { return settings.Depth; }
+    public int getWidth() { return settings.Width; }
     public SortedDictionary<int, Room> getDungeonRoom() {  return DungeonData.DungeonMap; }
     public Room getDungeonRoom(int id) { return DungeonData.DungeonMap[id]; }
     public Dictionary<int, List<int>> getFloor() { return DungeonData.FloorMap; }
     public List<int> getFloor(int floor) { return DungeonData.FloorMap[floor]; }
 
-    public void MoveTo(int roomId) { CurrentRoomId = roomId; }
+    public void MoveTo(int roomId) 
+    { 
+        CurrentRoomId = roomId;
+        mapView.SetVisible(false);
+    }
+
+    public void RoomClear()
+    {
+        getDungeonRoom(CurrentRoomId).RoomClear();
+        mapView.UpdateInteractableRooms(CurrentRoomId);
+        mapView.SetVisible(true);
+    }
+
+    public bool IsPlayingRoom(){ return getDungeonRoom(CurrentRoomId).IsClear == false; }
 
     //아래는 매니저 전용 함수들
     private void Awake()
     {
-        if (Instance == null){Instance = this; CreateMap(); }
+        if (Instance == null){ Instance = this; CreateMap(); }
         else Destroy(gameObject);
     }
 
-    private void OnDestroy() { if (Instance == this) Instance = null; }
+    private void OnDestroy() { if (Instance == this) Clear(); }
 
     private void CreateMap()
     {
-        DungeonGenerator generator = new DungeonGenerator(Depth, Width, AntCount);
+        DungeonGenerator generator = new DungeonGenerator(settings.Depth, settings.Width, settings.AntCount);
         DungeonData = new DungeonDataset();
         DungeonData.DungeonMap = generator.DungeonMap;
         CurrentRoomId = generator.StartId;
@@ -57,5 +67,24 @@ public class DungeonManager : MonoBehaviour
             if (!DungeonData.FloorMap.ContainsKey(floor)) DungeonData.FloorMap[floor] = new List<int>();
             DungeonData.FloorMap[floor].Add(roomId);
         }
+    }
+
+    private void Clear()
+    {
+        DungeonData.Clear();
+        Instance = null;
+    }
+
+
+    //디버그용
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            Debug.Log($"현재 방: {CurrentRoomId}, 보스방: {BossRoomId}");
+            Debug.Log($"현재 방 클리어 여부: {getDungeonRoom(CurrentRoomId).IsClear}");
+
+        }
+        if (Input.GetKeyDown(KeyCode.Z)){ RoomClear(); }
     }
 }
