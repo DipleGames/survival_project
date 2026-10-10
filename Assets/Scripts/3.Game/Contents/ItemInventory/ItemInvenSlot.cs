@@ -49,13 +49,12 @@ public class ItemInvenSlot : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         dragSlot.gameObject.SetActive(true);
     }
 
+    // 인벤토리 슬롯에서 아이템을 드래그할 때 ItemInventory의 MoveDragSlot()을 호출
     public void OnDrag(PointerEventData eventData)
     {
-        if (itemInfo == null)
-            return;
+        if (itemInfo == null) return;
 
-        dragSlot.GetComponent<ItemInventoryDrag>().RectTransform.anchoredPosition = eventData.position;
-        dragSlot.SetActive(true);
+        inventory.MoveDragSlot(eventData);
     }
 
     public void OnEndDrag(PointerEventData eventData)

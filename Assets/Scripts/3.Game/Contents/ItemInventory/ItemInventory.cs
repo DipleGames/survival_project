@@ -1,8 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
+/// <summary>
+/// 인벤토리 UI를 관리하는 클래스
+/// </summary>
 public class ItemInventory : MonoBehaviour
 {
     [SerializeField] GameObject descriptionPanel;
@@ -10,7 +15,7 @@ public class ItemInventory : MonoBehaviour
     [SerializeField] GameObject slotPrefab;
     [SerializeField] GameObject invenPanel;
     [SerializeField] GameObject dragSlot;
-
+    [SerializeField] private InventoryCategoryTabUI categoryTabUI; //카테고리 탭 UI 관리하는 스크립트 참조
     public GameObject DragSlot => dragSlot;
 
     int currentCategory;
@@ -23,9 +28,9 @@ public class ItemInventory : MonoBehaviour
         slots = new List<ItemInvenSlot>();
         gameManager = GameManager.Instance;
 
-        currentCategory = -1;
+        currentCategory = 0;
 
-        for (int i = 0; i < 28; i++)
+        for (int i = 0; i < 36; i++)
         {
             ItemInvenSlot slot = Instantiate(slotPrefab, slotParent).GetComponent<ItemInvenSlot>();
             slot.inventory = this;
@@ -34,9 +39,7 @@ public class ItemInventory : MonoBehaviour
 
         descriptionPanel.GetComponent<Text>().text = "";
 
-        ChangeCategory(0);
-
-        invenPanel.SetActive(false);    
+        invenPanel.SetActive(false);   // ChangeCategory(0)은 삭제
     }
 
     private void Update()
@@ -52,6 +55,10 @@ public class ItemInventory : MonoBehaviour
 
     public void ChangeCategory(int type)
     {
+        if (categoryTabUI != null)
+        {
+            categoryTabUI.SetSelectedCategory(type);
+        }
         int index = 0;
 
         foreach (var item in gameManager.haveItems)
@@ -74,5 +81,12 @@ public class ItemInventory : MonoBehaviour
     public void SetItemDescription(ItemInfo item)
     {
         descriptionPanel.GetComponent<Text>().text = $"{item.itemName}\n\n{item.effect.Replace("\\n", "\n")}\n\n{item.decription.Replace("\\n","\n")}";
+    }
+    public void MoveDragSlot(PointerEventData eventData)
+    {
+        RectTransform dragRect = dragSlot.GetComponent<RectTransform>();
+        RectTransformUtility.ScreenPointToWorldPointInRectangle(
+            dragRect, eventData.position, eventData.pressEventCamera, out Vector3 worldPos);
+        dragRect.position = worldPos;
     }
 }

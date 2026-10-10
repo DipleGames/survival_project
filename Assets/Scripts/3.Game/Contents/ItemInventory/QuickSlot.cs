@@ -30,18 +30,31 @@ public class QuickSlot : MonoBehaviour, IDropHandler, IBeginDragHandler, IDragHa
         itemImage.sprite = null;
     }
 
+    
+    // 퀵슬롯에서 아이템을 드래그할 때  마우스 위치에 맞춰 드래그 아이콘을 이동하도록 수정
+    
     public void OnDrag(PointerEventData eventData)
     {
-        if (dragSlot.itemInfo == null)
-            return;
+        // 드래그할 아이템이 없으면 처리하지 않는다.
+        if (dragSlot == null || dragSlot.itemInfo == null) return;
 
-        dragSlot.GetComponent<ItemInventoryDrag>().RectTransform.anchoredPosition = eventData.position;
+        // 드래그 UI의 RectTransform을 가져온다.
+        RectTransform dragRect = dragSlot.GetComponent<RectTransform>();
+
+        RectTransform parentRect = dragRect.parent as RectTransform;
+
+        if (parentRect == null) return;
+
+        if (RectTransformUtility.ScreenPointToWorldPointInRectangle(parentRect, eventData.position, eventData.pressEventCamera, out Vector3 worldPos))
+        {
+            // 변환된 월드 좌표로 드래그 아이콘을 이동시킨다.
+            dragRect.position = worldPos;
+        }
     }
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        if (dragSlot.itemInfo == null)
-            return;
+        if (dragSlot.itemInfo == null) return;
 
         dragSlot.gameObject.SetActive(false);
     }
