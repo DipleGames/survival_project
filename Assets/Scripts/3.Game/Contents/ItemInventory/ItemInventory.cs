@@ -39,7 +39,7 @@ public class ItemInventory : MonoBehaviour
 
         descriptionPanel.GetComponent<Text>().text = "";
 
-        invenPanel.SetActive(false);   // ChangeCategory(0)은 삭제
+        invenPanel.SetActive(false);   
     }
 
     private void Update()
@@ -48,8 +48,7 @@ public class ItemInventory : MonoBehaviour
         {
             invenPanel.SetActive(!invenPanel.activeSelf);
 
-            if(invenPanel.activeSelf)
-                ChangeCategory(currentCategory);
+            if(invenPanel.activeSelf) ChangeCategory(currentCategory);
         }
     }
 
@@ -85,8 +84,7 @@ public class ItemInventory : MonoBehaviour
     public void MoveDragSlot(PointerEventData eventData)
     {
         RectTransform dragRect = dragSlot.GetComponent<RectTransform>();
-        RectTransformUtility.ScreenPointToWorldPointInRectangle(
-            dragRect, eventData.position, eventData.pressEventCamera, out Vector3 worldPos);
+        RectTransformUtility.ScreenPointToWorldPointInRectangle(dragRect, eventData.position, eventData.pressEventCamera, out Vector3 worldPos);
         dragRect.position = worldPos;
     }
 }
