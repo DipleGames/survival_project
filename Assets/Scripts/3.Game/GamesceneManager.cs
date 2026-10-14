@@ -65,6 +65,7 @@ public class GamesceneManager : Singleton<GamesceneManager>
 
     private void Update()
     {
+        // 게임시간 감소 -> 0이 될시 다음 타임
         if (character.currentHp > 0 && currentGameTime > 0 && !gameManager.isPause && isSetPieceEnd)
         {
             currentGameTime -= Time.deltaTime;
@@ -72,7 +73,7 @@ public class GamesceneManager : Singleton<GamesceneManager>
             if (currentGameTime < 0)
                 currentGameTime = 0;
         }
-
+        // 사망시
         else if(character.currentHp <= 0)
         {
             StopAllCoroutines();
@@ -84,6 +85,7 @@ public class GamesceneManager : Singleton<GamesceneManager>
         StopAllCoroutines();
     }
 
+    // 아침 루틴
     IEnumerator DayRoutine()
     {
         gameManager.bloodDamage = 0;
@@ -245,6 +247,7 @@ public class GamesceneManager : Singleton<GamesceneManager>
         }
     }
 
+    #region SpawnOBJ
     IEnumerator SpawnTree()
     {
         LoggingManager.Instance.ClearGathers();
@@ -323,7 +326,7 @@ public class GamesceneManager : Singleton<GamesceneManager>
             }
         }
     }
-
+    #endregion
     Vector3 TreeAndBushPos()
     {
         float groundX = treeBushSpawnArea.bounds.size.x;
