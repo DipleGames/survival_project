@@ -1,6 +1,6 @@
 using System;
 using System.Collections;
-using MineTest;
+using JetBrains.Annotations;
 using UnityEngine;
 
 
@@ -16,11 +16,9 @@ public class SkullController : MonoBehaviour
     private SkullIdleState _idleState;
     private SkullFarmingState _farmingState;
     private SkullMiningState _miningState;
-    private SkullLoggingState _loggingState;
+    private SkullFishingState _fishingState;
 
     private FarmingAutomationController _farmingAutomation;
-    private MiningAutomationController _miningAutomation;
-    private LoggingAutomationController _loggingAutomation;
 
     private Coroutine _moveCoroutine;
 
@@ -33,34 +31,17 @@ public class SkullController : MonoBehaviour
     public GameObject equippedPick;
     public GameObject equippedFishingRod;
 
-    [Header("채광 자동화")]
-    [SerializeField] private MiningManager _miningManager;
-    [SerializeField] private Transform _miningSearchCenter;
-    [SerializeField, Min(0.1f)] private float _miningSearchRadius = 20f; // 거점 기준 광물 탐색 범위
-    [SerializeField, Min(1)] private int _miningDamagePerHit = 10; // 해골의 타격당 피해
-    [SerializeField, Min(0.1f)] private float _miningWorkDuration = 1f; // 타격 간격
-    [SerializeField, Min(0.1f)] private float _miningApproachDistance = 0.8f; // 광물 앞에서 멈추는 거리
-
-    [Header("벌목 자동화")]
-    [SerializeField] private LoggingManager _loggingManager;
-    [SerializeField] private Transform _loggingSearchCenter;
-    [SerializeField, Min(0.1f)] private float _loggingSearchRadius = 20f; // 거점 기준 광물 탐색 범위
-    [SerializeField, Min(0.1f)] private float _loggingWorkDuration = 1f; // 타격 간격
-    [SerializeField, Min(0.1f)] private float _loggingApproachDistance = 0.8f; // 광물 앞에서 멈추는 거리
 
     private void Awake()
     {
         _skullView = GetComponent<SkullView>();
         _stateMachine = new SkullStateMachine();
         _farmingAutomation = new FarmingAutomationController();
-        _miningAutomation = new MiningAutomationController(_miningDamagePerHit, _miningWorkDuration, _miningApproachDistance);
-        _loggingAutomation = new LoggingAutomationController(ToolType.Axe, _loggingWorkDuration, _loggingApproachDistance);
-        
 
         _idleState = new SkullIdleState(this);
         _farmingState = new SkullFarmingState(this, _farmingAutomation);
-        _miningState = new SkullMiningState(this, _miningAutomation, _miningManager, _miningSearchCenter, _miningSearchRadius);
-        _loggingState = new SkullLoggingState(this, _loggingAutomation, _loggingManager, _loggingSearchCenter, _loggingSearchRadius);
+        _miningState = new SkullMiningState(this);
+        _fishingState = new SkullFishingState(this);
     }
 
 
@@ -104,15 +85,7 @@ public class SkullController : MonoBehaviour
 
     public void StartMining()
     {
-        if (_miningManager == null)
-        {
-            Debug.LogWarning("MiningManager를 찾을 수 없습니다.");
-            return;
-        }
-
-        ChangeState(_miningState);
-
-        _skullView.CloseSkullUI();
+        StartWork(WorkType.Mining, _miningState);
     }
 
 
@@ -120,17 +93,9 @@ public class SkullController : MonoBehaviour
     // Fishing
     // =========================
 
-    public void StartLogging()
+    public void StartFishing()
     {
-        if (_loggingManager == null)
-        {
-            Debug.LogWarning("MiningManager를 찾을 수 없습니다.");
-            return;
-        }
-
-        ChangeState(_loggingState);
-
-        _skullView.CloseSkullUI();
+        StartWork(WorkType.Fishing, _fishingState);
     }
 
 

@@ -5,30 +5,30 @@ using UnityEngine.AI;
 using UnityEngine.TextCore.Text;
 using UnityEngine.UI;
 
-public enum CHARACTER_NUM //어디서나 접근 가능한 CHARACTER_NUM이라는 이름의 열거형(enum) 목록을 정의
+public enum CHARACTER_NUM
 {
-    Bagic, //CHRACTER가 갖는 속성?
+    Bagic,
     Legendary,
     Count,
 }
 
-public class Character : Singleton<Character> //어디서나 접근 가능한 Character 클래스를 선언, 싱글톤 패턴(Singleton<Character>)을 상속받도록 함
+public class Character : Singleton<Character>
 {
-    [SerializeField] Collider attackedColl; //인스펙터 창에 노출시키고, Collider 값을 받는 attackedColl 선언 <- private가 없음 Collider를 직렬화? => 암묵적으로 private 생략
-    [SerializeField] SpriteRenderer rendUpper; //인스펙터 창에 노출시키고, SpriteRenderer 값을 받는 rendUpper선언 
+    [SerializeField] Collider attackedColl;
+    [SerializeField] SpriteRenderer rendUpper;
     [SerializeField] SpriteRenderer rendLower;
-    [SerializeField] public Animator anim; //[SerializeField]로 직렬화, Animator 타입의 값을 받는 anim 선언 <-public을 SerializedField하는것은 직렬화를 의미하는듯함
+    [SerializeField] public Animator anim;
     [SerializeField] ParticleSystem particle;
-    [SerializeField] float particleScale; //float값을 받는 particleScale 선언
+    [SerializeField] float particleScale;
     [SerializeField] GameObject coffinObject;
 
-    [SerializeField] Slider playerHpBar; //인스펙터 창에 노출시키고, Slider라는 값을 받는 playerHpBar 선언
+    [SerializeField] Slider playerHpBar;
     [SerializeField] SpriteRenderer[] weaponImages;
 
-    [Header("Stat")] //인스펙터 창에서 변수 목록 위에 "Stat"이라는 구분을 위한 헤더 타이틀을 표시
-    [SerializeField] RuntimeAnimatorController[] currentController; //인스펙터 창에 노출시키고, RuntimeAnimatorController[]라는 배열의 값을 받는  currentController 선언
+    [Header("Stat")]
+    [SerializeField] RuntimeAnimatorController[] currentController;
 
-    [HideInInspector] public float dashCoolTime; //인스펙터 창에서 숨기고, float 값을 받는 dashCoolTime을 선언
+    [HideInInspector] public float dashCoolTime;
     [HideInInspector] public float initDashCoolTime;
     [HideInInspector] public int dashCount;
 
@@ -38,7 +38,7 @@ public class Character : Singleton<Character> //어디서나 접근 가능한 Ch
     [HideInInspector] public float speed;
     [HideInInspector] public int avoid;
     [HideInInspector] public float attackSpeed;
-    /*[HideInInspector]*/ public int defence; //그냥 public 상태로 int값을 받는 defence?
+    /*[HideInInspector]*/ public int defence;
     [SerializeField] float invincibleTime;
     public int percentDamage;
     public int percentDefence;
@@ -50,17 +50,17 @@ public class Character : Singleton<Character> //어디서나 접근 가능한 Ch
     int recoveryValue;
     public int RecoveryValue => recoveryValue;
 
-    [Header("Summon")] //인스펙터 창에서 변수 목록 위에 "Summon"이라는 구분을 위한 헤더 타이틀을 표시
+    [Header("Summon")]
     [SerializeField] GameObject tamedPet;
 
     bool isRun, isAttacked = false;
     bool externalMovementVisualControl;
     bool isAvoid = false;
-    [HideInInspector] public bool isDead = false; //인스펙터 창에서 숨기고, bool값을 받는 초기값 false의 isDead를 선언
+    [HideInInspector] public bool isDead = false;
 
-    GameManager gameManager; //GameManager값을 받는 gameManager를 선언
+    GameManager gameManager;
 
-    Vector3 dir; //Vector3(3차원 위치/방향)값을 받는 dir을 선언
+    Vector3 dir;
     float x;
     float z;
 
@@ -118,14 +118,14 @@ public class Character : Singleton<Character> //어디서나 접근 가능한 Ch
 
     void Start()
     {
-        particle.GetComponentInChildren<Renderer>().enabled = false; //particle이라는 컴포넌트의 자식 중에서 <Renderer>를 찾아서, enabled = false 한다.(=비활성화한다)->안보이게함)
-        agent = GetComponent<NavMeshAgent>(); //agent라는 변수에, 현재 게임 오브젝트에 붙어있는 NavMeshAgent 컴포넌트를 가져와서 저장함
-        agent.enabled = false; //agent의 enabled 속성을 false로함
+        particle.GetComponentInChildren<Renderer>().enabled = false;
+        agent = GetComponent<NavMeshAgent>();
+        agent.enabled = false;
 
-        gameManager = GameManager.Instance; //gameManager 변수에 GameManager속 Instance 값을 가져와 저장
-        soundManager = SoundManager.Instance; //soundManager 변수에 SoundManager 속 Instance 값을 가져와 저장
+        gameManager = GameManager.Instance;
+        soundManager = SoundManager.Instance;
 
-        maxRecoveryGauge = 80; //maxRecoveryGauge 변수에 정수값 80을 할당
+        maxRecoveryGauge = 80;
         initMaxRecGauge = maxRecoveryGauge;
         currentRecoveryGauge = 0;
         recoveryValue = 20;
@@ -136,13 +136,13 @@ public class Character : Singleton<Character> //어디서나 접근 가능한 Ch
         dashCount = gameManager.dashCount;
         initDashCoolTime = dashCoolTime;
 
-        getItemUI.gameObject.SetActive(false); //getItemUI 속 gameObject를 찾아, SetActive를 (false)로 함
+        getItemUI.gameObject.SetActive(false);
 
-        tamedPet.SetActive(false); //tamedPet 속 SetActive를 (false)로 함
+        tamedPet.SetActive(false);
 
-        initParticleScale = particle.transform.localScale; //initParticleScale 변수에 = particle의 transform : localScale을 가져와 저장
+        initParticleScale = particle.transform.localScale;
 
-        ChangeAnimationController(0); //ChangeAnimationController의 인자값을 0으로함?
+        ChangeAnimationController(0);
 
         rendLower.gameObject.SetActive(false);
 
@@ -151,11 +151,11 @@ public class Character : Singleton<Character> //어디서나 접근 가능한 Ch
     
     void Update()
     {
-        if (gameManager.currentScene == "Game" && !gameManager.isPause) //gameManager의 currentScene이 "Game"이고, isPause 상태일때 아래 실행
+        if (gameManager.currentScene == "Game" && !gameManager.isPause)
         {
             HpSetting();
 
-            if (!isCanControll) 
+            if (!isCanControll)
                 return;
 
             if (currentHp > 0)
@@ -167,11 +167,11 @@ public class Character : Singleton<Character> //어디서나 접근 가능한 Ch
         }
     }
 
-    private void FixedUpdate() // 항상 일정한 주기로 호출, 
+    private void FixedUpdate()
     {
-        if (gameManager.currentScene == "Game" && !gameManager.isPause) //(gameManager.currentScene)이 Gmae, 
+        if (gameManager.currentScene == "Game" && !gameManager.isPause)
         {
-            if (!isCanControll) //
+            if (!isCanControll)
             {
                 Flip();
                 if (!externalMovementVisualControl)
@@ -211,10 +211,10 @@ public class Character : Singleton<Character> //어디서나 접근 가능한 Ch
 
         maxHp = gameManager.status[Status.Maxhp];
 
-#if UNITY_EDITOR //개발환경에서는 아래 구문 실행
+#if UNITY_EDITOR
             currentHp = maxHp;
 
-#else //실제 게임환경에서는 아래 구문 실행
+#else
         if(gameManager.round == 0)
             currentHp = maxHp;
         
@@ -259,7 +259,7 @@ public class Character : Singleton<Character> //어디서나 접근 가능한 Ch
         }
     }
 
-    IEnumerator ConvertRecoveryGauge() //코루틴 보통 버프같은 시스템 처리할때 사용 
+    IEnumerator ConvertRecoveryGauge()
     {
         isCanControll = false;
 
@@ -268,7 +268,7 @@ public class Character : Singleton<Character> //어디서나 접근 가능한 Ch
         currentHp += Mathf.RoundToInt(realRecoveryValue * (100 + recoverHpRatio) * 0.01f);
         currentRecoveryGauge -= realRecoveryValue;
 
-        yield return CoroutineCaching.WaitForSeconds(0.3f); //강제적으로 0.3초 기다리도록하고 밑에 구문 실행 
+        yield return CoroutineCaching.WaitForSeconds(0.3f);
 
         isCanControll = true;
     }
@@ -305,7 +305,7 @@ public class Character : Singleton<Character> //어디서나 접근 가능한 Ch
         if (gameManager.dashCount <= 0)
             return;
 
-        if (dashCount > 0 && isCanControll) 
+        if (dashCount > 0 && isCanControll)
         {
             Vector3 afterPos;
 
@@ -374,7 +374,7 @@ public class Character : Singleton<Character> //어디서나 접근 가능한 Ch
     bool isDownUp = false;
     bool isLeftRight = false;
 
-    void Move() 
+    void Move()
     {
         if (agent == null || !agent.enabled || !agent.isOnNavMesh)
         {
@@ -485,7 +485,7 @@ public class Character : Singleton<Character> //어디서나 접근 가능한 Ch
 
     int avoidRand;
 
-    public void OnDamaged(float damage, GameObject damagedObject) //하나의 행동을 서로다른 여러개(최소 3~4개)의 개체가 해야 할 때 
+    public void OnDamaged(float damage, GameObject damagedObject)
     {
         if (gameManager.isClear)
             return;
@@ -533,7 +533,7 @@ public class Character : Singleton<Character> //어디서나 접근 가능한 Ch
         }
     }
 
-    void OnDead() //똑같이 인터페이스로 상속해서 
+    void OnDead()
     {
         currentHp = 0;
 
@@ -546,13 +546,13 @@ public class Character : Singleton<Character> //어디서나 접근 가능한 Ch
         soundManager.StopBGM();
         soundManager.PlaySFX(deadSound);
 
-        StopAllCoroutines(); //모든 코루틴을 멈추게함 - 해당 스크립트 내에 있는 코루틴만
+        StopAllCoroutines();
 
         GameSceneUI.Instance.ChangeTilemapMat(transform.position + new Vector3(0, 7, 0));
 
-        Instantiate(coffinObject, transform.position, coffinObject.transform.rotation); // Instantiate : 오브젝트 생성 => 죽은 자리에 관 생성
+        Instantiate(coffinObject, transform.position, coffinObject.transform.rotation);
 
-        StartCoroutine(GameSceneUI.Instance.GameClear(0)); 
+        StartCoroutine(GameSceneUI.Instance.GameClear(0));
 
         transform.localScale = Vector3.zero;
 
@@ -631,7 +631,7 @@ public class Character : Singleton<Character> //어디서나 접근 가능한 Ch
         isAttacked = false;
     }
 
-    private IEnumerator PlayerColorBlink() //
+    private IEnumerator PlayerColorBlink()
     {
         Color semiRed = new Color(1, 0, 0, 0.5f);
         Color semiWhite = new Color(1, 1, 1, 0.5f);
@@ -708,7 +708,7 @@ public class Character : Singleton<Character> //어디서나 접근 가능한 Ch
             {
                 isCanControll = true;
                 agent.enabled = true;
-                yield break; //코루틴 종료, 끝냄과 동시에 메모리에서 삭제. => 내부에서 제거하는방법
+                yield break;
             }
 
             transform.position = Vector3.MoveTowards(transform.position, movePos, Time.deltaTime * speed);

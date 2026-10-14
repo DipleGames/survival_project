@@ -27,9 +27,6 @@ public class FarmInteraction : MonoBehaviour
         if (_mainCamera == null)
             return;
 
-        if(TilemapFarmSystem.Instance == null)
-            return;
-
         if(!TilemapFarmSystem.Instance.isFarmMode)
             return;
 
