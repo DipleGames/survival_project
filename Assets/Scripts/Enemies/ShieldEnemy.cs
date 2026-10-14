@@ -18,6 +18,7 @@ public class ShieldEnemy : MonoBehaviour
     public float knockbackDuration = 0.2f;
 
     private Transform player;
+    private bool isAttacking = false;
     private bool isDestroyed = false;
     public SpriteRenderer childSpriteRenderer;
 
@@ -42,6 +43,8 @@ public class ShieldEnemy : MonoBehaviour
 
         if (distance > attackRange)
         {
+            isAttacking = false;
+
             Vector3 direction = (player.position - transform.position).normalized;
             direction.y = 0;
 
@@ -54,7 +57,11 @@ public class ShieldEnemy : MonoBehaviour
         }
         else
         {
-            PerformMeleeAttack();
+            if(!isAttacking)
+            {
+                isAttacking = true;
+                PerformMeleeAttack();
+            }
         }
     }
 
@@ -79,6 +86,10 @@ public class ShieldEnemy : MonoBehaviour
                 BreakShield();
             }
         }
+        else
+        {
+            Debug.Log("플레이어의 공격이 방패에 막혔습니다!");
+        }
     }
 
     void BreakShield()
@@ -93,7 +104,7 @@ public class ShieldEnemy : MonoBehaviour
         {
             if (normalEnemyPrefab != null)
             {
-                Instantiate(normalEnemyPrefab, transform.position, Quaternion.identity);
+                Instantiate(normalEnemyPrefab, transform.position, Quaternion.Euler(90f,0f,0f));
             }
             Destroy(gameObject);
         });

@@ -16,6 +16,7 @@ public class SmallBazicEnemy : MonoBehaviour
 
     [Header("돌진(집중) 설정")]
     public float chargeTime = 2.0f;
+    public float dashHoldTime = 0.3f;
     public float maxDashRange = 6.0f;
     public float dashDuration = 1.0f;
     public float cooldownTime = 2.0f;
@@ -82,7 +83,6 @@ public class SmallBazicEnemy : MonoBehaviour
 
             if (childSpriteRenderer != null)
             {
-                // 플레이어가 왼쪽에 있으면 뒤집기 (에셋 방향에 따라 부호 수정 가능)
                 childSpriteRenderer.flipX = (player.position.x > transform.position.x);
             }
         }
@@ -111,9 +111,9 @@ public class SmallBazicEnemy : MonoBehaviour
 
             if (dashDirection != Vector3.zero)
             {
-                float angle = Mathf.Atan2(dashDirection.x, dashDirection.z) * Mathf.Rad2Deg;
+                Quaternion worldLookRotation = Quaternion.LookRotation(dashDirection, Vector3.up);
 
-                warningIndicator.localRotation = Quaternion.Euler(90f, angle - 90f, 0f);
+                warningIndicator.rotation = worldLookRotation * Quaternion.Euler(90f, -90f, 0f);
             }
 
             float indicatorWidth = 1f;
@@ -123,6 +123,9 @@ public class SmallBazicEnemy : MonoBehaviour
         }
 
         yield return new WaitForSeconds(chargeTime);
+
+        yield return new WaitForSeconds(dashHoldTime);
+
         StartDash();
     }
 

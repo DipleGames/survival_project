@@ -26,7 +26,7 @@ Transform:
   m_GameObject: {fileID: 4123742347882939617}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 4, y: 4, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2793879951120326415}
@@ -93,8 +93,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2793879951120326415}
-  - component: {fileID: 7316257145388092933}
   - component: {fileID: 888918886691317451}
+  - component: {fileID: 2914931908671093534}
   m_Layer: 22
   m_Name: ShieldEnemy
   m_TagString: Untagged
@@ -110,27 +110,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6129582663990887102}
   m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: -2.05, y: 0.1, z: -39.64}
-  m_LocalScale: {x: 3.5, y: 4, z: 1}
+  m_LocalPosition: {x: -2.108, y: 0.1, z: -39.64}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7624685065132896045}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
---- !u!65 &7316257145388092933
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6129582663990887102}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 0.4, y: 0.5, z: 0.20000005}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &888918886691317451
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -146,7 +133,20 @@ MonoBehaviour:
   moveSpeed: 1.5
   attackRange: 1
   shieldHp: 3
-  normalEnemyPrefab: {fileID: 2833058189840479340, guid: 7f1a3429e32419d4e85a7871b7ed364a, type: 3}
+  normalEnemyPrefab: {fileID: 4998988373881691735, guid: 7f1a3429e32419d4e85a7871b7ed364a, type: 3}
   knockbackDistance: 2
   knockbackDuration: 0.3
   childSpriteRenderer: {fileID: 3848011295801561315}
+--- !u!65 &2914931908671093534
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6129582663990887102}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.4, y: 0.5, z: 0.2}
+  m_Center: {x: 0.03, y: 0, z: 0}
