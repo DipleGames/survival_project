@@ -61,6 +61,9 @@ namespace MineTest
         [SerializeField, Min(0.1f)] private float uiScaleMultiplier = 1f;
 
         private readonly List<MiningNode> nodes = new List<MiningNode>();
+
+        public IReadOnlyList<MiningNode> Nodes => nodes;
+
         private MiningNode hoveredNode;
         private MiningNode activeNode;
         private GameObject clickUiInstance;
@@ -178,6 +181,8 @@ namespace MineTest
                 StopCoroutine(miningRoutine);
             }
 
+            ReleaseActiveNode();
+
             miningRoutine = null;
             autoMoving = false;
             activeNode = null;
@@ -228,7 +233,7 @@ namespace MineTest
                 }
             }
 
-            if (next != null && !IsInRange(next))
+            if (next != null && (!IsInRange(next) || !next.CanBeMinedBy(player)))
             {
                 next = null;
             }
@@ -270,21 +275,24 @@ namespace MineTest
                 return;
             }
 
+            if (player == null)
+                return;
+
             if (PickaxeBroken)
             {
                 Debug.LogWarning("[MineTest] 곡괭이가 파괴되어 채광을 진행할 수 없습니다.", this);
                 return;
             }
 
-            activeNode = hoveredNode;
+            MiningNode targetNode = hoveredNode;
+
+            if (!targetNode.TryReserve(player))
+                return;
+
+            activeNode = targetNode;
             activeNode.SetHighlighted(false);
             hoveredNode = null;
             hitApplied = false;
-
-            if (player == null) 
-            {
-                return;
-            }
 
             Vector3 toNode = activeNode.transform.position - player.transform.position;
             toNode.y = 0f;
@@ -345,6 +353,8 @@ namespace MineTest
                 StopCoroutine(miningRoutine);
             }
 
+            ReleaseActiveNode();
+
             miningRoutine = null;
             autoMoving = false;
             activeNode = null;
@@ -370,6 +380,7 @@ namespace MineTest
             }
 
             ApplyMiningHit();
+            ReleaseActiveNode();
             player.RestoreDefaultAnimation();
 
             activeNode = null;
@@ -379,6 +390,15 @@ namespace MineTest
             {
                 player.MovementLocked = false;
             }
+        }
+
+        // 현재 플레이어가 예약한 광물이 남아 있다면 예약을 해제한다.
+        private void ReleaseActiveNode()
+        {
+            if (activeNode == null || player == null)
+                return;
+
+            activeNode.Release(player);
         }
 
         // 한 번의 채광 피해와 곡괭이 내구도 감소를 적용하고 결과를 로그로 남긴다.
