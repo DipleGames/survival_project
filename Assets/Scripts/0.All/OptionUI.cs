@@ -4,6 +4,7 @@ using UnityEngine.SceneManagement;
 public class OptionUI : MonoBehaviour
 {
     [SerializeField] protected GameObject panel;
+    [SerializeField] protected GameObject OptionPanel;
     [SerializeField] OptionSettingsUI optionSettings;
     [SerializeField] GameObject CheckHomePanel;
     [SerializeField] GameObject statPanel;
@@ -17,6 +18,7 @@ public class OptionUI : MonoBehaviour
     {
         //optionPannel
         panel.SetActive(false);
+        OptionPanel.SetActive(false);
         CheckHomePanel.SetActive(false);
         if(gameManager == null)
             gameManager = GameManager.Instance;

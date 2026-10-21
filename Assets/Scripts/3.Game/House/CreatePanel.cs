@@ -16,7 +16,7 @@ public class CreatePanel : MonoBehaviour
     [SerializeField] Transform createItemListParent;
     [SerializeField] GameObject createItemSlotPrefab;
     [SerializeField] GameObject CreateSuccessPanel;
-
+    [SerializeField] InvenControl invenControl;
     GameManager gameManager;
 
     Item item;
@@ -36,12 +36,17 @@ public class CreatePanel : MonoBehaviour
 
     private void OnEnable()
     {
+        invenControl.isUIActive = true;
         createType = 0;
 
         UpdateCreateItemList(createType);
         SetCreateItemPanelInfo();
     }
 
+    private void OnDisable()
+    {
+        invenControl.isUIActive = false;
+    }
     public void SetCreateAcquisition(Acquisition acquisition)
     {
         this.acquisition = acquisition;
