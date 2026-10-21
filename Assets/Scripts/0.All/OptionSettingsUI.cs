@@ -7,7 +7,7 @@ using UnityEngine.UI;
 #region OptionSetting
 // 타이틀/게임의 옵션 창이 각각 참조하는 공통 UI 컴포넌트입니다.
 // 각 씬의 활성 상태인 옵션 관리자 오브젝트에 붙이고 UI 필드를 연결하세요.
-public enum KeyAction { UP, DOWN ,LEFT, RIGHT, DASH, RECORVER, COUNT}
+public enum KeyAction { UP, DOWN ,LEFT, RIGHT, DASH, RECORVER,INVENTORY, COUNT}
 
 public static class KeySetting { public static Dictionary<KeyAction, KeyCode> keys = new Dictionary<KeyAction, KeyCode>(); }
 
@@ -64,7 +64,8 @@ public class OptionSettingsUI : MonoBehaviour
                                   PlayerPrefs.GetInt("Key_Left", (int)KeyCode.A),
                                   PlayerPrefs.GetInt("Key_Right", (int)KeyCode.D),
                                   PlayerPrefs.GetInt("Key_Dash", (int)KeyCode.Space),
-                                  PlayerPrefs.GetInt("Key_Recover",(int)KeyCode.Q)};
+                                  PlayerPrefs.GetInt("Key_Recover",(int)KeyCode.Q),
+                                  PlayerPrefs.GetInt("Key_Inventory",(int)KeyCode.I)};
 
         PlayerPrefs.SetInt("Key_Up", defaultKeys[0]);
         PlayerPrefs.SetInt("Key_Down", defaultKeys[1]);
@@ -72,7 +73,7 @@ public class OptionSettingsUI : MonoBehaviour
         PlayerPrefs.SetInt("Key_Right", defaultKeys[3]);
         PlayerPrefs.SetInt("Key_Dash", defaultKeys[4]);
         PlayerPrefs.SetInt("Key_Recover", defaultKeys[5]);
-
+        PlayerPrefs.SetInt("Key_Inventory", defaultKeys[6]);
         for (int i = 0; i < (int)KeyAction.COUNT; i++)
         {
             if (!KeySetting.keys.ContainsKey((KeyAction)i))                 // Dictionary keys에 값이 없다면
@@ -283,6 +284,9 @@ public class OptionSettingsUI : MonoBehaviour
                 case KeyAction.RECORVER:
                     PlayerPrefs.SetInt("Key_Recover", (int)keyEvent.keyCode);
                     break;
+                case KeyAction.INVENTORY:
+                    PlayerPrefs.SetInt("Key_Inventory", (int)keyEvent.keyCode);
+                    break;
             }
 
             // 똑같은 키가 존재하면 존재하던 키를 none으로 교체
@@ -326,6 +330,11 @@ public class OptionSettingsUI : MonoBehaviour
 
                             case 5:
                                 PlayerPrefs.SetInt("Key_Recover", 0);
+                                KeySetting.keys.Remove((KeyAction)i);
+                                KeySetting.keys.Add((KeyAction)i, KeyCode.None);
+                                break;
+                            case 6:
+                                PlayerPrefs.SetInt("Key_Inventory", 0);
                                 KeySetting.keys.Remove((KeyAction)i);
                                 KeySetting.keys.Add((KeyAction)i, KeyCode.None);
                                 break;
