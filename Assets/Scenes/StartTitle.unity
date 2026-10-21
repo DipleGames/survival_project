@@ -3491,17 +3491,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1851451977}
   m_CullTransparentMesh: 1
---- !u!114 &1920500788 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3066630537625545487, guid: 7c6ed45a1c5b65d4a9e4972694d38d3c, type: 3}
-  m_PrefabInstance: {fileID: 3066630536778592269}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 08c3996f6df84e84a8295086a044cb08, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1934916723
 GameObject:
   m_ObjectHideFlags: 0
@@ -4560,62 +4549,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 252911335}
     m_Modifications:
-    - target: {fileID: 3066630536034252443, guid: 7c6ed45a1c5b65d4a9e4972694d38d3c, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: -56.99997
-      objectReference: {fileID: 0}
-    - target: {fileID: 3066630536085971642, guid: 7c6ed45a1c5b65d4a9e4972694d38d3c, type: 3}
-      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
-      value: 
-      objectReference: {fileID: 1920500788}
-    - target: {fileID: 3066630536085971642, guid: 7c6ed45a1c5b65d4a9e4972694d38d3c, type: 3}
-      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: OptionSettingsUI, Assembly-CSharp
-      objectReference: {fileID: 0}
-    - target: {fileID: 3066630536329953034, guid: 7c6ed45a1c5b65d4a9e4972694d38d3c, type: 3}
-      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
-      value: 
-      objectReference: {fileID: 1920500788}
-    - target: {fileID: 3066630536329953034, guid: 7c6ed45a1c5b65d4a9e4972694d38d3c, type: 3}
-      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: ChangeWholeVolume
-      objectReference: {fileID: 0}
-    - target: {fileID: 3066630536329953034, guid: 7c6ed45a1c5b65d4a9e4972694d38d3c, type: 3}
-      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: OptionSettingsUI, Assembly-CSharp
-      objectReference: {fileID: 0}
-    - target: {fileID: 3066630536640199987, guid: 7c6ed45a1c5b65d4a9e4972694d38d3c, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
-      value: 
-      objectReference: {fileID: 1920500788}
-    - target: {fileID: 3066630536640199987, guid: 7c6ed45a1c5b65d4a9e4972694d38d3c, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: OptionSettingsUI, Assembly-CSharp
-      objectReference: {fileID: 0}
-    - target: {fileID: 3066630537018660383, guid: 7c6ed45a1c5b65d4a9e4972694d38d3c, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
-      value: 
-      objectReference: {fileID: 1920500788}
-    - target: {fileID: 3066630537018660383, guid: 7c6ed45a1c5b65d4a9e4972694d38d3c, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: OnOffBgmVolume
-      objectReference: {fileID: 0}
-    - target: {fileID: 3066630537018660383, guid: 7c6ed45a1c5b65d4a9e4972694d38d3c, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: OptionSettingsUI, Assembly-CSharp
-      objectReference: {fileID: 0}
-    - target: {fileID: 3066630537155304455, guid: 7c6ed45a1c5b65d4a9e4972694d38d3c, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
-      value: 
-      objectReference: {fileID: 1920500788}
-    - target: {fileID: 3066630537155304455, guid: 7c6ed45a1c5b65d4a9e4972694d38d3c, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: OnOffSfxVolume
-      objectReference: {fileID: 0}
-    - target: {fileID: 3066630537155304455, guid: 7c6ed45a1c5b65d4a9e4972694d38d3c, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: OptionSettingsUI, Assembly-CSharp
-      objectReference: {fileID: 0}
     - target: {fileID: 3066630537625545458, guid: 7c6ed45a1c5b65d4a9e4972694d38d3c, type: 3}
       propertyPath: m_Name
       value: OptionPanel
@@ -4703,14 +4636,6 @@ PrefabInstance:
     - target: {fileID: 3066630537625545485, guid: 7c6ed45a1c5b65d4a9e4972694d38d3c, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3066630537770259272, guid: 7c6ed45a1c5b65d4a9e4972694d38d3c, type: 3}
-      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
-      value: 
-      objectReference: {fileID: 1920500788}
-    - target: {fileID: 3066630537770259272, guid: 7c6ed45a1c5b65d4a9e4972694d38d3c, type: 3}
-      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: OptionSettingsUI, Assembly-CSharp
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7c6ed45a1c5b65d4a9e4972694d38d3c, type: 3}
