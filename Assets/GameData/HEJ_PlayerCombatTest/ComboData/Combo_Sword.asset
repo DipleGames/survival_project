@@ -18,23 +18,23 @@ MonoBehaviour:
     damageMultiplier: 1
     rangeType: 0
     minDistance: 0
-    maxDistance: 1.5
+    maxDistance: 2
     centerAngle: 90
-    knockbackPower: 0
+    knockbackPower: 0.2
     _AttackSFX: {fileID: 8300000, guid: acc8668063e38ee4badd6ec17721d1b8, type: 3}
   - animationName: Attack_2
     damageMultiplier: 1
     rangeType: 0
     minDistance: 0
-    maxDistance: 1.5
+    maxDistance: 2
     centerAngle: 90
-    knockbackPower: 0
+    knockbackPower: 0.2
     _AttackSFX: {fileID: 8300000, guid: acc8668063e38ee4badd6ec17721d1b8, type: 3}
   - animationName: Attack_3
     damageMultiplier: 1
     rangeType: 0
     minDistance: 0
-    maxDistance: 1.5
+    maxDistance: 2
     centerAngle: 90
-    knockbackPower: 0
+    knockbackPower: 0.2
     _AttackSFX: {fileID: 8300000, guid: acc8668063e38ee4badd6ec17721d1b8, type: 3}

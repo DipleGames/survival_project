@@ -2,7 +2,7 @@ using System.Collections;
 using UnityEngine;
 using DG.Tweening;
 
-public class BigBazicEnemy : MonoBehaviour
+public class BigBazicEnemy : MonoBehaviour, IDamageable, IKnockbackable
 {
     public enum EnemyState
     {
@@ -84,6 +84,12 @@ public class BigBazicEnemy : MonoBehaviour
         }
 
         aiCoroutine = StartCoroutine(AIExecutionLoop());
+    }
+
+    private void OnDisable()
+    {
+        if (_knockbackRoutine != null) StopCoroutine(_knockbackRoutine);
+        _knockbackRoutine = null;
     }
 
     // =========================================================
@@ -236,7 +242,7 @@ public class BigBazicEnemy : MonoBehaviour
                 childSpriteRenderer.color = originalColor;
 
                 childSpriteRenderer
-                    .DOColor(Color.red, telegraphDuration)
+                    .DOColor(Color.grey, telegraphDuration)
                     .SetEase(Ease.InQuad);
             }
 
@@ -548,6 +554,48 @@ public class BigBazicEnemy : MonoBehaviour
     // =========================================================
     // 피격 처리
     // =========================================================
+
+    public void Attacked(float damage, GameObject hitObject)
+    {
+        TakeDamage((int)damage);
+    }
+    public void RendDamageUI(float damage, Vector3 rendPos, bool canCri, bool isCri)
+    {
+        
+    }
+
+    private Coroutine _knockbackRoutine;
+
+    public void ApplyKnockback(Vector3 direction, float power)
+    {
+        if (!isActiveAndEnabled || power <= 0f) return;
+        direction.y = 0f;
+        if (direction.sqrMagnitude < 0.0001f) return;
+
+        // 연속 피격 시 기존 넉백을 멈추고 현재 위치에서 다시 시작
+        if (_knockbackRoutine != null) StopCoroutine(_knockbackRoutine);
+        _knockbackRoutine = StartCoroutine(KnockbackRoutine(direction.normalized, power));
+    }
+
+    private IEnumerator KnockbackRoutine(Vector3 direction, float distance)
+    {
+        const float duration = 0.15f;
+        Vector3 start = transform.position;
+        Vector3 end = start + direction * distance;
+        float elapsed = 0f;
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float t = Mathf.Clamp01(elapsed / duration);
+            float easedT = 1f - (1f - t) * (1f - t); // 처음엔 빠르게, 끝에서는 느리게
+            transform.position = Vector3.Lerp(start, end, easedT);
+            yield return null;
+        }
+
+        _knockbackRoutine = null;
+    }
+
 
     public void TakeDamage(int damage)
     {

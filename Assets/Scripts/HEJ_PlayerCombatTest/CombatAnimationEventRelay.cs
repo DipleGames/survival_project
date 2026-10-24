@@ -10,4 +10,9 @@ public class CombatAnimationEventRelay : MonoBehaviour
     {
         _comboAttackController.HandleStepFinished();
     }
+
+    public void OnAttackHit()
+    {
+        _comboAttackController.HandleAttackHit();
+    }
 }

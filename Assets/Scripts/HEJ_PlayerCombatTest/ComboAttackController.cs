@@ -8,6 +8,7 @@ public class ComboAttackController : MonoBehaviour
     [SerializeField] private Animator _animator;
     [SerializeField] private PlayerMove _playerMove;
     [SerializeField] private CinemachineImpulseSource _impulseSource;
+    [SerializeField] private MeleeHitDetector _hitDetector;
 
     private WeaponData _weaponData;
     private Vector3 _attackDirection;
@@ -98,15 +99,30 @@ public class ComboAttackController : MonoBehaviour
     }
 
 
-    private void PlayCurrentStep(Vector3 _attackDirection)
+    private void PlayCurrentStep(Vector3 attackDirection)
     {
-        AttackStepData attackStepData = _weaponData.ComboData.GetStep(_currentStepIndex);
-        transform.position += _attackDirection * 0.3f; 
-        _playerMove.FaceDirection(_attackDirection);
-        PlayHitImpulse();
-        AudioTest.Instance.PlaySFX(attackStepData.AttackSFX);
-        _animator.Play(attackStepData.AnimationName, 0, 0f);
+        AttackStepData step = _weaponData.ComboData.GetStep(_currentStepIndex);
+        _hitDetector.BeginStep();
+        transform.position += attackDirection * 0.3f;
+        _playerMove.FaceDirection(attackDirection);
+        _animator.Play(step.AnimationName, 0, 0f);
         Debug.Log($"{_currentStepIndex + 1}타 !");
+    }
+
+    public void HandleAttackHit()
+    {
+        if (!_isAttacking) return;
+
+        AttackStepData step = _weaponData.ComboData.GetStep(_currentStepIndex);
+        const float testBaseDamage = 10f; // 임시 -> 이후 무기의 기본 공격력으로 교체
+        bool hasHit = _hitDetector.DetectHit(step, _attackDirection, testBaseDamage);
+        if (!hasHit) return;
+
+        PlayHitImpulse();
+        if (step.AttackSFX != null)
+        {
+            AudioTest.Instance.PlaySFX(step.AttackSFX);
+        }
     }
 
     // 타격시 흔들림 효과 (예시로 공격타이밍에 호출하다가 나중에 타격시로 바꿀예정)
