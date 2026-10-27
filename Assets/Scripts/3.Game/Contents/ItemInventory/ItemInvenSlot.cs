@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class ItemInvenSlot : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
+public class ItemInvenSlot : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IDropHandler
 {
     [SerializeField] Image itemImage;
     [SerializeField] TextMeshProUGUI itemCount;
@@ -36,13 +36,22 @@ public class ItemInvenSlot : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         }
     }
 
+    public void OnDrop(PointerEventData eventData)
+    {
+        ItemInvenSlot fromSlot = eventData.pointerDrag?.GetComponent<ItemInvenSlot>();
+
+        if (fromSlot == null)return;
+
+        if (fromSlot.inventory != inventory)return;
+
+        inventory.MoveItem(fromSlot, this);
+    }
+
     public void OnBeginDrag(PointerEventData eventData)
     {
-        if (itemInfo == null)
-            return;
+        if (itemInfo == null)return;
 
-        if (dragSlot == null)
-            dragSlot = inventory.DragSlot;
+        if (dragSlot == null)dragSlot = inventory.DragSlot;
 
         dragSlot.GetComponent<ItemInventoryDrag>().itemInfo = itemInfo;
         dragSlot.GetComponentInChildren<Image>().sprite = itemImage.sprite;
@@ -59,9 +68,11 @@ public class ItemInvenSlot : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        if (itemInfo == null)
-            return;
-
-        dragSlot.gameObject.SetActive(false);
+        // 슬롯 데이터가 변경되더라도 드래그 UI는 반드시 종료
+        if (dragSlot != null)
+        {
+            dragSlot.SetActive(false);
+        }
     }
+
 }
