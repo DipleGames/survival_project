@@ -8,8 +8,13 @@ public class DungeonManager : MonoBehaviour
 {
     public static DungeonManager Instance { get; private set; }
 
+    [Header("Dungeon Settings")]
     [SerializeField] private DungeonSettings settings;
     [SerializeField] private DungeonMapView mapView;
+
+    [Header("Dungeon Room Settings")]
+    [SerializeField] private GameObject Player;
+    [SerializeField] private GameObject Portal;
 
     //현재 플레이어가 있는 방 좌표
     public int CurrentRoomId { get; private set; }
@@ -28,18 +33,30 @@ public class DungeonManager : MonoBehaviour
 
     public void MoveTo(int roomId) 
     { 
-        CurrentRoomId = roomId;
         mapView.SetVisible(false);
+        CurrentRoomId = roomId;
+
+        RoomType roomType = getDungeonRoom(CurrentRoomId).RoomType;
+        float XPos = RoomTypeNumber.GetRoomXPosition(roomType);
+
+        Player.transform.position = new Vector3(XPos, -2.0f, Player.transform.position.z);
+        Portal.transform.position = new Vector3(XPos, 10.5f, Portal.transform.position.z);
+
+        Player.GetComponent<TestPlayerMove>().SetMoving(true);
     }
 
-    public void RoomClear()
+    public void RoomComplete()
     {
+        //임시 : 포탈에 접촉하면 클리어 처리, 추후 클리어 판정이 변경될 수 있음
+        Player.GetComponent<TestPlayerMove>().SetMoving(false);
+
         getDungeonRoom(CurrentRoomId).RoomClear();
+        
         mapView.UpdateInteractableRooms(CurrentRoomId);
         mapView.SetVisible(true);
     }
 
-    public bool IsPlayingRoom(){ return getDungeonRoom(CurrentRoomId).IsClear == false; }
+    public bool IsPlayingRoom(){ return getDungeonRoom(CurrentRoomId).IsComplete == false; }
 
     //아래는 매니저 전용 함수들
     private void Awake()
@@ -52,39 +69,17 @@ public class DungeonManager : MonoBehaviour
 
     private void CreateMap()
     {
-        DungeonGenerator generator = new DungeonGenerator(settings.Depth, settings.Width, settings.AntCount);
+        DungeonGenerator generator = new DungeonGenerator(settings);
         DungeonData = new DungeonDataset();
         DungeonData.DungeonMap = generator.DungeonMap;
         CurrentRoomId = generator.StartId;
         BossRoomId = generator.BossId;
-
-        DungeonData.FloorMap.Clear();
-
-        foreach (int roomId in DungeonData.DungeonMap.Keys)
-        {
-            int floor = roomId / 100;
-
-            if (!DungeonData.FloorMap.ContainsKey(floor)) DungeonData.FloorMap[floor] = new List<int>();
-            DungeonData.FloorMap[floor].Add(roomId);
-        }
+        DungeonData.FloorMap = generator.FloorMap;
     }
 
     private void Clear()
     {
         DungeonData.Clear();
         Instance = null;
-    }
-
-
-    //디버그용
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            Debug.Log($"현재 방: {CurrentRoomId}, 보스방: {BossRoomId}");
-            Debug.Log($"현재 방 클리어 여부: {getDungeonRoom(CurrentRoomId).IsClear}");
-
-        }
-        if (Input.GetKeyDown(KeyCode.Z)){ RoomClear(); }
     }
 }
