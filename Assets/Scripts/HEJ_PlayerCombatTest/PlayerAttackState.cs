@@ -25,6 +25,7 @@ public class PlayerAttackState : IPlayerState
     public void Enter()
     {
         Debug.Log("공격상태 진입");
+        _playerStateMachine.PlayerMove.MovementLocked = true;
         _comboAttackController.AttackFinished += HandleAttackFinished;
         _comboAttackController.StartAttack(_weaponData, _attackDirection);
     }
@@ -37,6 +38,7 @@ public class PlayerAttackState : IPlayerState
     public void Exit()
     {
         Debug.Log("공격상태 나가기");
+        _playerStateMachine.PlayerMove.MovementLocked = false;
         _comboAttackController.AttackFinished -= HandleAttackFinished;
         _comboAttackController.CancelAttack();
     }
