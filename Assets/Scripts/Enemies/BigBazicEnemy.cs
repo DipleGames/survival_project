@@ -2,7 +2,7 @@ using System.Collections;
 using UnityEngine;
 using DG.Tweening;
 
-public class BigBazicEnemy : MonoBehaviour, IDamageable, IKnockbackable
+public class BigBazicEnemy : Enemies
 {
     public enum EnemyState
     {
@@ -15,13 +15,8 @@ public class BigBazicEnemy : MonoBehaviour, IDamageable, IKnockbackable
 
     private EnemyState currentState = EnemyState.Move;
 
-    [Header("기본 능력치")]
-    public float moveSpeed = 3.0f;
-    public int hp = 8;
-
     [Header("공격 및 아종 설정")]
     public bool isVariant = false;
-    public float attackRange = 4f;
     public float telegraphDuration = 0.5f;
     public float dashDistance = 5f;
     public float dashDuration = 0.2f;
@@ -45,11 +40,6 @@ public class BigBazicEnemy : MonoBehaviour, IDamageable, IKnockbackable
     public float dodgeDistance = 2.5f;
     public float dodgeDuration = 0.25f;
 
-    [Header("스프라이트")]
-    public SpriteRenderer childSpriteRenderer;
-
-    private Transform player;
-    private Color originalColor;
 
     private bool isAttackCooldown = false;
     private bool isDodgeCooldown = false;
@@ -65,18 +55,10 @@ public class BigBazicEnemy : MonoBehaviour, IDamageable, IKnockbackable
 
     private void Start()
     {
-        GameObject playerObj =
-            GameObject.FindGameObjectWithTag("Character");
+        defaultFacingRight = false;
 
-        if (playerObj != null)
-        {
-            player = playerObj.transform;
-        }
+        InitializePlayerReference();
 
-        if (childSpriteRenderer != null)
-        {
-            originalColor = childSpriteRenderer.color;
-        }
 
         if (slashIndicator != null)
         {
@@ -84,12 +66,6 @@ public class BigBazicEnemy : MonoBehaviour, IDamageable, IKnockbackable
         }
 
         aiCoroutine = StartCoroutine(AIExecutionLoop());
-    }
-
-    private void OnDisable()
-    {
-        if (_knockbackRoutine != null) StopCoroutine(_knockbackRoutine);
-        _knockbackRoutine = null;
     }
 
     // =========================================================
@@ -106,13 +82,10 @@ public class BigBazicEnemy : MonoBehaviour, IDamageable, IKnockbackable
                 continue;
             }
 
-            float distanceToPlayer =
-                Vector3.Distance(transform.position, player.position);
-
             switch (currentState)
             {
                 case EnemyState.Move:
-                    HandleMovement(distanceToPlayer);
+                    HandleMovement();
                     break;
 
                 case EnemyState.Telegraphing:
@@ -131,19 +104,6 @@ public class BigBazicEnemy : MonoBehaviour, IDamageable, IKnockbackable
     // 방향 처리
     // =========================================================
 
-    private void FaceDirection(Vector3 direction)
-    {
-        if (childSpriteRenderer == null)
-            return;
-
-        if (Mathf.Abs(direction.x) > 0.01f)
-        {
-            bool faceRight = direction.x > 0f;
-
-            childSpriteRenderer.flipX = faceRight;
-        }
-    }
-
     private float GetFacingSign()
     {
         if (childSpriteRenderer == null)
@@ -156,9 +116,9 @@ public class BigBazicEnemy : MonoBehaviour, IDamageable, IKnockbackable
     // 플레이어 추적
     // =========================================================
 
-    private void HandleMovement(float distanceToPlayer)
+    private void HandleMovement()
     {
-        if (distanceToPlayer <= attackRange && !isAttackCooldown)
+        if (IsPlayerInAttackRange() && !isAttackCooldown)
         {
             comboCount = isVariant ? 2 : 1;
 
@@ -166,21 +126,14 @@ public class BigBazicEnemy : MonoBehaviour, IDamageable, IKnockbackable
             return;
         }
 
-        Vector3 direction =
-            player.position - transform.position;
-
-        // 3D 월드의 XZ 평면으로 제한
-        direction.y = 0f;
+        Vector3 direction = GetDirectionToPlayer();
 
         if (direction.sqrMagnitude < 0.001f)
             return;
 
-        direction.Normalize();
+        UpdateFacingDirection(childSpriteRenderer);
 
-        FaceDirection(direction);
-
-        transform.position +=
-            direction * moveSpeed * Time.deltaTime;
+        transform.position += direction * moveSpeed * Time.deltaTime;
     }
 
     // =========================================================
@@ -190,27 +143,24 @@ public class BigBazicEnemy : MonoBehaviour, IDamageable, IKnockbackable
     private IEnumerator AttackSequence()
     {
         // 공격 시작 시 방향을 결정하고 고정한다.
-        lockedAttackDirection =
-            player.position - transform.position;
+        lockedAttackDirection = player.position - transform.position;
 
         lockedAttackDirection.y = 0f;
 
         if (lockedAttackDirection.sqrMagnitude < 0.001f)
         {
-            lockedAttackDirection =
-                new Vector3(GetFacingSign(), 0f, 0f);
+            lockedAttackDirection = new Vector3(GetFacingSign(), 0f, 0f);
         }
 
         lockedAttackDirection.Normalize();
 
-        FaceDirection(lockedAttackDirection);
+        UpdateFacingDirection(childSpriteRenderer);
 
         while (comboCount > 0)
         {
             if (player != null)
             {
-                Vector3 directionToPlayer =
-                    player.position - transform.position;
+                Vector3 directionToPlayer = player.position - transform.position;
 
                 // XZ 평면 기준
                 directionToPlayer.y = 0f;
@@ -222,7 +172,7 @@ public class BigBazicEnemy : MonoBehaviour, IDamageable, IKnockbackable
             }
 
             // 이번 공격 방향으로 몸체 방향 갱신
-            FaceDirection(lockedAttackDirection);
+            UpdateFacingDirection(childSpriteRenderer);
 
 
             currentState = EnemyState.Telegraphing;
@@ -241,27 +191,16 @@ public class BigBazicEnemy : MonoBehaviour, IDamageable, IKnockbackable
 
                 childSpriteRenderer.color = originalColor;
 
-                childSpriteRenderer
-                    .DOColor(Color.grey, telegraphDuration)
-                    .SetEase(Ease.InQuad);
+                childSpriteRenderer.DOColor(Color.gray, telegraphDuration).SetEase(Ease.InQuad);
             }
 
-            Vector3 pullBackPos =
-                transform.position - dashDirection * 0.4f;
+            Vector3 pullBackPos = transform.position - dashDirection * 0.4f;
 
-            Vector3 squashScale = new Vector3(
-                originalScale.x * 1.2f,
-                originalScale.y * 0.8f,
-                originalScale.z
-            );
+            Vector3 squashScale = new Vector3(originalScale.x * 1.2f, originalScale.y * 0.8f, originalScale.z);
 
-            Tween pullBackTween = transform
-                .DOMove(pullBackPos, telegraphDuration)
-                .SetEase(Ease.OutQuad);
+            Tween pullBackTween = transform.DOMove(pullBackPos, telegraphDuration).SetEase(Ease.OutQuad);
 
-            Tween squashTween = transform
-                .DOScale(squashScale, telegraphDuration)
-                .SetEase(Ease.OutQuad);
+            Tween squashTween = transform.DOScale(squashScale, telegraphDuration).SetEase(Ease.OutQuad);
 
             yield return pullBackTween.WaitForCompletion();
             yield return squashTween.WaitForCompletion();
@@ -279,13 +218,9 @@ public class BigBazicEnemy : MonoBehaviour, IDamageable, IKnockbackable
 
             currentState = EnemyState.Dashing;
 
-            Vector3 targetDashPos =
-                transform.position +
-                dashDirection * dashDistance;
+            Vector3 targetDashPos = transform.position + dashDirection * dashDistance;
 
-            Tween dashTween = transform
-                .DOMove(targetDashPos, dashDuration)
-                .SetEase(Ease.OutQuad);
+            Tween dashTween = transform.DOMove(targetDashPos, dashDuration).SetEase(Ease.OutQuad);
 
             yield return dashTween.WaitForCompletion();
 
@@ -329,7 +264,7 @@ public class BigBazicEnemy : MonoBehaviour, IDamageable, IKnockbackable
         }
 
         // 몸체도 동일한 좌우 방향을 바라보게 한다.
-        FaceDirection(new Vector3(horizontalSign, 0f, 0f));
+        UpdateFacingDirection(childSpriteRenderer);
 
         // 이펙트와 공격 판정이 공유하는 중심
         Vector3 attackCenter = transform.position;
@@ -346,8 +281,7 @@ public class BigBazicEnemy : MonoBehaviour, IDamageable, IKnockbackable
 
             slashIndicator.position = attackCenter;
 
-            SpriteRenderer indicatorSR =
-                slashIndicator.GetComponent<SpriteRenderer>();
+            SpriteRenderer indicatorSR = slashIndicator.GetComponent<SpriteRenderer>();
 
             if (indicatorSR != null)
             {
@@ -361,9 +295,7 @@ public class BigBazicEnemy : MonoBehaviour, IDamageable, IKnockbackable
 
                 slashIndicator.gameObject.SetActive(true);
 
-                indicatorSR
-                    .DOFade(0f, slashDuration)
-                    .SetEase(Ease.OutQuad)
+                indicatorSR.DOFade(0f, slashDuration).SetEase(Ease.OutQuad)
                     .OnComplete(() =>
                     {
                         if (slashIndicator != null)
@@ -390,19 +322,11 @@ public class BigBazicEnemy : MonoBehaviour, IDamageable, IKnockbackable
         // 실제 공격 판정
         // -----------------------------
 
-        Collider[] hitPlayers = Physics.OverlapBox(
-            attackCenter,
-            attackBoxSize * 0.5f,
-            Quaternion.identity,
-            playerLayer
-        );
+        Collider[] hitPlayers = Physics.OverlapBox(attackCenter, attackBoxSize * 0.5f, Quaternion.identity, playerLayer);
 
         foreach (Collider playerCollider in hitPlayers)
         {
-            Debug.Log(
-                $"[{gameObject.name}] 베기 적중: " +
-                $"{playerCollider.name}"
-            );
+            Debug.Log($"[{gameObject.name}] 베기 적중: " + $"{playerCollider.name}");
 
             // 실제 플레이어 체력 감소 함수가 있다면
             // 이곳에서 호출한다.
@@ -466,8 +390,7 @@ public class BigBazicEnemy : MonoBehaviour, IDamageable, IKnockbackable
         {
             slashIndicator.DOKill();
 
-            SpriteRenderer indicatorSR =
-                slashIndicator.GetComponent<SpriteRenderer>();
+            SpriteRenderer indicatorSR = slashIndicator.GetComponent<SpriteRenderer>();
 
             if (indicatorSR != null)
             {
@@ -499,8 +422,7 @@ public class BigBazicEnemy : MonoBehaviour, IDamageable, IKnockbackable
             yield break;
         }
 
-        Vector3 awayFromPlayer =
-            transform.position - player.position;
+        Vector3 awayFromPlayer = transform.position - player.position;
 
         awayFromPlayer.y = 0f;
 
@@ -516,10 +438,7 @@ public class BigBazicEnemy : MonoBehaviour, IDamageable, IKnockbackable
         bool dodgeCompleted = false;
         bool dodgeInterrupted = false;
 
-        Tween dodgeTween = transform
-        .DOMove(dodgeTarget, dodgeDuration)
-        .SetEase(Ease.OutSine)
-        .OnComplete(() => dodgeCompleted = true)
+        Tween dodgeTween = transform.DOMove(dodgeTarget, dodgeDuration).SetEase(Ease.OutSine).OnComplete(() => dodgeCompleted = true)
         .OnKill(() =>
         {
             if (!dodgeCompleted)
@@ -551,107 +470,35 @@ public class BigBazicEnemy : MonoBehaviour, IDamageable, IKnockbackable
         }
     }
 
+    
     // =========================================================
-    // 피격 처리
+    // 피격
     // =========================================================
-
-    public void Attacked(float damage, GameObject hitObject)
-    {
-        TakeDamage((int)damage);
-    }
-    public void RendDamageUI(float damage, Vector3 rendPos, bool canCri, bool isCri)
-    {
-        
-    }
-
-    private Coroutine _knockbackRoutine;
-
-    public void ApplyKnockback(Vector3 direction, float power)
-    {
-        if (!isActiveAndEnabled || power <= 0f) return;
-        direction.y = 0f;
-        if (direction.sqrMagnitude < 0.0001f) return;
-
-        // 연속 피격 시 기존 넉백을 멈추고 현재 위치에서 다시 시작
-        if (_knockbackRoutine != null) StopCoroutine(_knockbackRoutine);
-        _knockbackRoutine = StartCoroutine(KnockbackRoutine(direction.normalized, power));
-    }
-
-    private IEnumerator KnockbackRoutine(Vector3 direction, float distance)
-    {
-        const float duration = 0.15f;
-        Vector3 start = transform.position;
-        Vector3 end = start + direction * distance;
-        float elapsed = 0f;
-
-        while (elapsed < duration)
-        {
-            elapsed += Time.deltaTime;
-            float t = Mathf.Clamp01(elapsed / duration);
-            float easedT = 1f - (1f - t) * (1f - t); // 처음엔 빠르게, 끝에서는 느리게
-            transform.position = Vector3.Lerp(start, end, easedT);
-            yield return null;
-        }
-
-        _knockbackRoutine = null;
-    }
-
-
-    public void TakeDamage(int damage)
+    protected override void TakeDamage(float damage)
     {
         if (isInvincible)
         {
-            Debug.Log(
-                $"[{gameObject.name}] 구르기로 공격을 회피했습니다!"
-            );
+            Debug.Log($"[{gameObject.name}] 구르기로 공격을 회피했습니다!");
 
             return;
         }
-
-        hp -= damage;
-
-        Debug.Log(
-            $"[{gameObject.name}] 피격! 남은 HP: {hp}"
-        );
-
-        if (childSpriteRenderer != null)
-        {
-            childSpriteRenderer.DOKill();
-
-            childSpriteRenderer.color = Color.red;
-
-            childSpriteRenderer
-                .DOColor(originalColor, 0.2f);
-        }
-
-        if (hp <= 0)
-        {
-            Die();
-        }
+        
+        base.TakeDamage(damage);
     }
 
     // =========================================================
     // 사망 처리
     // =========================================================
 
-    private void Die()
+    protected override void Die()
     {
-        StopAllCoroutines();
-
-        transform.DOKill();
-
-        if (childSpriteRenderer != null)
-        {
-            childSpriteRenderer.DOKill();
-            childSpriteRenderer.transform.DOKill();
-        }
+        base.Die();
 
         if (slashIndicator != null)
         {
             slashIndicator.DOKill();
 
-            SpriteRenderer indicatorSR =
-                slashIndicator.GetComponent<SpriteRenderer>();
+            SpriteRenderer indicatorSR = slashIndicator.GetComponent<SpriteRenderer>();
 
             if (indicatorSR != null)
             {
@@ -661,6 +508,7 @@ public class BigBazicEnemy : MonoBehaviour, IDamageable, IKnockbackable
 
         Destroy(gameObject);
     }
+
 
     // =========================================================
     // 공격 범위 기즈모
@@ -672,24 +520,15 @@ public class BigBazicEnemy : MonoBehaviour, IDamageable, IKnockbackable
 
         float horizontalSign = 1f;
 
-        if (childSpriteRenderer != null &&
-            childSpriteRenderer.flipX)
+        if (childSpriteRenderer != null && childSpriteRenderer.flipX)
         {
             horizontalSign = -1f;
         }
 
-        Vector3 attackCenter = transform.position +
-            new Vector3(
-                horizontalSign * slashForwardOffset,
-                0f,
-                0f
-            );
+        Vector3 attackCenter = transform.position + new Vector3(horizontalSign * slashForwardOffset, 0f, 0f);
 
         Gizmos.matrix = Matrix4x4.identity;
 
-        Gizmos.DrawWireCube(
-            attackCenter,
-            attackBoxSize
-        );
+        Gizmos.DrawWireCube(attackCenter,attackBoxSize);
     }
 }

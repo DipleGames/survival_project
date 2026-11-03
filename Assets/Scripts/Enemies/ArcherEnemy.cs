@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 
-public class ArcherEnemy : MonoBehaviour
+public class ArcherEnemy : Enemies
 {
     private enum ArcherState
     {
@@ -17,11 +17,8 @@ public class ArcherEnemy : MonoBehaviour
         Dead
     }
 
-    [Header("기본 능력치")]
-    [SerializeField] private int hp = 8;
-    [SerializeField] private float moveSpeed = 3f;
+    [Header("복귀 시간 및 보조 공격 범위")]
     [SerializeField] private float fastRetreatSpeed = 6f;
-    [SerializeField] private float targetShootingDistance = 5f;
     [SerializeField] private float shootingDistanceTolerance = 0.5f;
     [SerializeField] private float daggerDistance = 2.5f;
 
@@ -31,7 +28,6 @@ public class ArcherEnemy : MonoBehaviour
     [SerializeField] private float aimDuration = 0.5f;
     [SerializeField] private float shotInterval = 2f;
     [SerializeField] private float arrowSpeed = 12f;
-    [SerializeField] private int arrowDamage = 2;
 
     [Header("단검 공격")]
     [SerializeField] private Vector3 daggerBoxSize = new Vector3(1.8f, 1f, 1.8f);
@@ -39,7 +35,6 @@ public class ArcherEnemy : MonoBehaviour
     [SerializeField] private float daggerHitDuration = 0.15f;
     [SerializeField] private float daggerRecoveryDuration = 0.5f;
     [SerializeField] private float postDaggerRetreatDistance = 5f;
-    [SerializeField] private int daggerDamage = 1;
     [SerializeField] private LayerMask playerLayer;
     [SerializeField] private bool showDaggerDebug = true;
 
@@ -67,14 +62,11 @@ public class ArcherEnemy : MonoBehaviour
     [SerializeField] private Color stunColor = Color.yellow;
 
     [Header("스프라이트 및 탐색")]
-    [SerializeField] private SpriteRenderer childSpriteRenderer;
     [SerializeField] private LayerMask obstacleLayer;
     [SerializeField] private float obstacleCheckDistance = 0.6f;
     [SerializeField] private float sideStepAngle = 55f;
 
     private Rigidbody rb;
-    private Transform player;
-    private Color originalColor = Color.white;
     private ArcherState state = ArcherState.Move;
 
     private Vector3 desiredMove;
@@ -111,11 +103,9 @@ public class ArcherEnemy : MonoBehaviour
         {
             daggerEffectTransform = daggerWarningPrefab.transform;
 
-            daggerEffectBaseLocalPosition =
-                daggerEffectTransform.localPosition;
+            daggerEffectBaseLocalPosition = daggerEffectTransform.localPosition;
 
-            daggerEffectBaseLocalRotation =
-                daggerEffectTransform.localRotation;
+            daggerEffectBaseLocalRotation = daggerEffectTransform.localRotation;
 
             daggerEffectInitialized = true;
 
@@ -128,9 +118,9 @@ public class ArcherEnemy : MonoBehaviour
 
     private void Start()
     {
-        GameObject playerObject = GameObject.FindGameObjectWithTag("Character");
-        if (playerObject != null)
-            player = playerObject.transform;
+        defaultFacingRight = true;
+
+        InitializePlayerReference();
 
         nextShotTime = Time.time;
         behaviorCoroutine = StartCoroutine(BehaviorLoop());
@@ -138,8 +128,7 @@ public class ArcherEnemy : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (isDead || state == ArcherState.Stunned || state == ArcherState.Aiming ||
-            state == ArcherState.DaggerWindup || state == ArcherState.DaggerRecovery)
+        if (isDead || state == ArcherState.Stunned || state == ArcherState.Aiming || state == ArcherState.DaggerWindup || state == ArcherState.DaggerRecovery)
         {
             desiredMove = Vector3.zero;
             return;
@@ -154,6 +143,7 @@ public class ArcherEnemy : MonoBehaviour
         if (move.sqrMagnitude > 0.0001f)
         {
             Vector3 step = move.normalized * GetCurrentMoveSpeed() * Time.fixedDeltaTime;
+
             if (!IsMovementBlocked(step))
             {
                 rb.MovePosition(rb.position + step);
@@ -192,8 +182,8 @@ public class ArcherEnemy : MonoBehaviour
         {
             if (player == null)
             {
-                GameObject playerObject = GameObject.FindGameObjectWithTag("Character");
-                if (playerObject != null) player = playerObject.transform;
+                InitializePlayerReference();
+
                 desiredMove = Vector3.zero;
                 yield return null;
                 continue;
@@ -211,20 +201,16 @@ public class ArcherEnemy : MonoBehaviour
         Vector3 toPlayer = GetPlayerOffset();
         float distance = toPlayer.magnitude;
 
-        if (toPlayer.sqrMagnitude > 0.0001f)
-            FaceDirection(toPlayer);
+        UpdateFacingDirection(childSpriteRenderer);
 
         if (distance <= daggerDistance)
         {
-            StartBehavior(
-                DaggerAttackRoutine(),
-                ArcherState.DaggerWindup
-            );
+            StartBehavior(DaggerAttackRoutine(), ArcherState.DaggerWindup);
+
             return;
         }
 
-        float maxShootDistance =
-            targetShootingDistance + shootingDistanceTolerance;
+        float maxShootDistance = attackRange + shootingDistanceTolerance;
 
         if (distance > maxShootDistance)
         {
@@ -236,10 +222,7 @@ public class ArcherEnemy : MonoBehaviour
 
         if (Time.time >= nextShotTime)
         {
-            StartBehavior(
-                AimAndShootRoutine(),
-                ArcherState.Aiming
-            );
+            StartBehavior(AimAndShootRoutine(), ArcherState.Aiming);
         }
     }
 
@@ -249,7 +232,7 @@ public class ArcherEnemy : MonoBehaviour
         desiredMove = Vector3.zero;
 
         if (player != null)
-            FaceDirection(GetPlayerOffset());
+            UpdateFacingDirection(childSpriteRenderer);
 
         yield return new WaitForSeconds(aimDuration);
 
@@ -284,29 +267,17 @@ public class ArcherEnemy : MonoBehaviour
 
         if (arrowPrefab != null)
         {
-            ArcherArrow arrow = Instantiate(
-                arrowPrefab,
-                spawnPosition,
-                arrowPrefab.transform.rotation
-            );
+            ArcherArrow arrow = Instantiate(arrowPrefab, spawnPosition, arrowPrefab.transform.rotation);
 
             // 비활성 프리팹이라면 활성화한 다음 초기화
             if (!arrow.gameObject.activeSelf)
                 arrow.gameObject.SetActive(true);
 
-            arrow.Initialize(
-                direction,
-                arrowSpeed,
-                arrowDamage,
-                gameObject,
-                playerLayer
-            );
+            arrow.Initialize(direction, arrowSpeed, attckDamege, gameObject, playerLayer);
         }
         else
         {
-            Debug.LogWarning(
-                $"[{gameObject.name}] Arrow Prefab이 지정되지 않았습니다."
-            );
+            Debug.LogWarning($"[{gameObject.name}] Arrow Prefab이 지정되지 않았습니다.");
         }
 
         nextShotTime = Time.time + shotInterval;
@@ -319,10 +290,7 @@ public class ArcherEnemy : MonoBehaviour
         desiredMove = Vector3.zero;
         hasDaggerHitPlayer = false;
 
-        Vector3 toPlayer = GetPlayerOffset();
-
-        if (toPlayer.sqrMagnitude > 0.0001f)
-            FaceDirection(toPlayer);
+        UpdateFacingDirection(childSpriteRenderer);
 
         // 1. 공격 경고 효과 표시
         Vector3 warningPosition = daggerWarningPoint != null
@@ -333,11 +301,7 @@ public class ArcherEnemy : MonoBehaviour
 
         if (daggerWarningPrefab != null)
         {
-            activeDaggerWarning = Instantiate(
-                daggerWarningPrefab,
-                warningPosition,
-                Quaternion.identity
-            );
+            activeDaggerWarning = Instantiate(daggerWarningPrefab, warningPosition, Quaternion.identity);
 
             activeDaggerWarning.SetActive(true);
         }
@@ -408,8 +372,7 @@ public class ArcherEnemy : MonoBehaviour
 
         state = ArcherState.Retreating;
 
-        float duration = postDaggerRetreatDistance
-            / Mathf.Max(0.01f, fastRetreatSpeed);
+        float duration = postDaggerRetreatDistance / Mathf.Max(0.01f, fastRetreatSpeed);
 
         float t = 0f;
 
@@ -433,12 +396,7 @@ public class ArcherEnemy : MonoBehaviour
         center.x += GetFacingSign() * daggerForwardOffset;
         lastDaggerCenter = center;
 
-        Collider[] hits = Physics.OverlapBox(
-            center,
-            daggerBoxSize * 0.5f,
-            Quaternion.identity,
-            playerLayer
-        );
+        Collider[] hits = Physics.OverlapBox(center, daggerBoxSize * 0.5f, Quaternion.identity, playerLayer);
 
         foreach (Collider hit in hits)
         {
@@ -449,7 +407,7 @@ public class ArcherEnemy : MonoBehaviour
                 break;
 
             hasDaggerHitPlayer = true;
-            Debug.Log($"[{gameObject.name}] 단검 적중: {hit.name}, 예상 피해: {daggerDamage}");
+            Debug.Log($"[{gameObject.name}] 단검 적중: {hit.name}, 예상 피해: {attckDamege/2}");
             break;
         }
     }
@@ -488,50 +446,40 @@ public class ArcherEnemy : MonoBehaviour
 
     private Vector3 GetPlayerOffset()
     {
-        if (player == null) return Vector3.zero;
+        if (player == null) 
+            return Vector3.zero;
+
         Vector3 offset = player.position - transform.position;
         offset.y = 0f;
+
         return offset;
-    }
-
-    private void FaceDirection(Vector3 direction)
-    {
-        if (childSpriteRenderer == null || Mathf.Abs(direction.x) < 0.01f)
-            return;
-
-        childSpriteRenderer.flipX = direction.x < 0f;
     }
 
     private void UpdateDaggerEffectDirection()
     {
-        if (!daggerEffectInitialized ||
-            daggerEffectTransform == null)
+        if (!daggerEffectInitialized || daggerEffectTransform == null)
             return;
 
-        bool facingLeft =
-            childSpriteRenderer != null &&
-            childSpriteRenderer.flipX;
+        bool facingLeft = childSpriteRenderer != null && childSpriteRenderer.flipX;
 
         // 궁수가 바라보는 방향에 맞춰 효과의 위치를 좌우 반전
         Vector3 localPosition = daggerEffectBaseLocalPosition;
-        localPosition.x =
-            Mathf.Abs(daggerEffectBaseLocalPosition.x) *
-            (facingLeft ? -1f : 1f);
+
+        localPosition.x = Mathf.Abs(daggerEffectBaseLocalPosition.x) * (facingLeft ? -1f : 1f);
 
         daggerEffectTransform.localPosition = localPosition;
 
         // 효과가 향하는 방향도 함께 반전
-        Quaternion directionRotation = facingLeft
-            ? Quaternion.Euler(0f, 180f, 0f)
-            : Quaternion.identity;
+        Quaternion directionRotation = facingLeft ? Quaternion.Euler(0f, 180f, 0f) : Quaternion.identity;
 
-        daggerEffectTransform.localRotation =
-            directionRotation * daggerEffectBaseLocalRotation;
+        daggerEffectTransform.localRotation = directionRotation * daggerEffectBaseLocalRotation;
     }
 
     private float GetFacingSign()
     {
-        if (childSpriteRenderer == null) return 1f;
+        if (childSpriteRenderer == null) 
+            return 1f;
+
         return childSpriteRenderer.flipX ? -1f : 1f;
     }
 
@@ -542,21 +490,15 @@ public class ArcherEnemy : MonoBehaviour
 
         Collider ownCollider = GetComponent<Collider>();
         Vector3 origin = ownCollider != null ? ownCollider.bounds.center : transform.position;
+
         float distance = displacement.magnitude;
         Vector3 direction = displacement.normalized;
+
         float radius = ownCollider != null
             ? Mathf.Max(0.1f, Mathf.Min(ownCollider.bounds.extents.x, ownCollider.bounds.extents.z) * 0.8f)
             : 0.3f;
 
-        return Physics.SphereCast(
-            origin,
-            radius,
-            direction,
-            out _,
-            Mathf.Min(distance, obstacleCheckDistance),
-            obstacleLayer,
-            QueryTriggerInteraction.Ignore
-        );
+        return Physics.SphereCast(origin, radius, direction, out _, Mathf.Min(distance, obstacleCheckDistance), obstacleLayer, QueryTriggerInteraction.Ignore);
     }
 
     /// <summary>
@@ -564,9 +506,7 @@ public class ArcherEnemy : MonoBehaviour
     /// </summary>
     public bool TryDodgeFromPlayerAttack()
     {
-        if (isDead || isStunned ||
-            state == ArcherState.Dodging ||
-            isDodgeOnCooldown)
+        if (isDead || isStunned || state == ArcherState.Dodging || isDodgeOnCooldown)
         {
             return false;
         }
@@ -681,23 +621,34 @@ public class ArcherEnemy : MonoBehaviour
             StopCoroutine(coroutine);
     }
 
-    public void TakeDamage(int damage)
+    // =========================================================
+    // 피격 처리
+    // =========================================================
+    protected override void TakeDamage(float damage)
     {
         if (isDead || isInvincible)
             return;
 
-        hp -= damage;
-        Debug.Log($"[{gameObject.name}] 피격! 남은 HP: {hp}");
+        base.TakeDamage(damage);
+    }
 
-        if (childSpriteRenderer != null)
-        {
-            flashTween?.Kill();
-            childSpriteRenderer.color = Color.red;
-            flashTween = childSpriteRenderer.DOColor(originalColor, 0.2f);
-        }
+    // =========================================================
+    // 사망 처리
+    // =========================================================
+    protected override void Die()
+    {
+        if (isDead) 
+            return;
 
-        if (hp <= 0)
-            Die();
+        isDead = true;
+        state = ArcherState.Dead;
+
+        InterruptCurrentBehavior();
+
+        flashTween?.Kill();
+        transform.DOKill();
+
+        base.Die();
     }
 
     public void ApplyReflectedArrowStun()
@@ -726,32 +677,11 @@ public class ArcherEnemy : MonoBehaviour
         if (isDead) yield break;
 
         isStunned = false;
+
         if (childSpriteRenderer != null)
             childSpriteRenderer.color = originalColor;
 
         ResumeBehavior();
-    }
-
-    private void Die()
-    {
-        if (isDead) return;
-        isDead = true;
-        state = ArcherState.Dead;
-
-        InterruptCurrentBehavior();
-        StopAllCoroutines();
-
-        flashTween?.Kill();
-        transform.DOKill();
-
-        if (childSpriteRenderer != null)
-        {
-            childSpriteRenderer.DOKill();
-            childSpriteRenderer.color = originalColor;
-        }
-
-        Debug.Log("[옛 신앙 궁수] 사망했습니다.");
-        Destroy(gameObject);
     }
 
     private void OnDrawGizmosSelected()

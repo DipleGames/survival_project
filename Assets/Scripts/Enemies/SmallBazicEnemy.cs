@@ -3,16 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 
-public class SmallBazicEnemy : MonoBehaviour
+public class SmallBazicEnemy : Enemies
 {
     public enum EnemyState { Move, ReadyToDash, Dashing, Cooldown }
     private EnemyState currentState = EnemyState.Move;
-
-    [Header("기본 능력치")]
-    public float moveSpeed = 3.0f;
-    public float detectAttackRange = 4.0f;
-
-    public int hp = 5;
 
     [Header("돌진(집중) 설정")]
     public float chargeTime = 2.0f;
@@ -21,21 +15,21 @@ public class SmallBazicEnemy : MonoBehaviour
     public float dashDuration = 1.0f;
     public float cooldownTime = 2.0f;
 
-    [Header("DoTween 연출 이펙트")]
-    public Transform warningIndicator; // 인스펙터에서 'WarningPivot' 부모를 할당하세요!
+    [Header("아종 설정")]
+    public bool isVariant = false;
+    public float variantDashDuration = 1.5f;
+    public float zigzagWidth = 1.0f;
 
-    private Transform player;
+    [Header("DoTween 연출 이펙트")]
+    public Transform warningIndicator;
+
     private Vector3 dashTargetPosition;
-    public SpriteRenderer childSpriteRenderer;
 
     void Start()
     {
-        GameObject playerObj = GameObject.FindGameObjectWithTag("Character");
+        defaultFacingRight = false;
 
-        if (playerObj != null)
-        {
-            player = playerObj.transform;
-        }
+        InitializePlayerReference();
 
         // 혹시 인스펙터에서 깜빡하고 할당하지 않았을 경우를 대비한 방어 코드
         if (childSpriteRenderer == null)
@@ -47,6 +41,11 @@ public class SmallBazicEnemy : MonoBehaviour
         {
             warningIndicator.localScale = new Vector3(1f, 1f, 0f);
             warningIndicator.gameObject.SetActive(false);
+        }
+
+        if (childSpriteRenderer != null)
+        {
+            originalColor = childSpriteRenderer.color;
         }
     }
 
@@ -67,24 +66,18 @@ public class SmallBazicEnemy : MonoBehaviour
 
     void HandleMovement()
     {
-        float distance = Vector3.Distance(transform.position, player.position);
-
-        if (distance <= detectAttackRange && currentState == EnemyState.Move)
+        if (IsPlayerInAttackRange() && currentState == EnemyState.Move)
         {
             currentState = EnemyState.ReadyToDash;
             StartCoroutine(PrepareDash());
         }
         else if (currentState == EnemyState.Move)
         {
-            Vector3 direction = (player.position - transform.position).normalized;
-            direction.y = 0;
+            Vector3 direction = GetDirectionToPlayer();
 
             transform.Translate(direction * moveSpeed * Time.deltaTime, Space.World);
 
-            if (childSpriteRenderer != null)
-            {
-                childSpriteRenderer.flipX = (player.position.x > transform.position.x);
-            }
+            UpdateFacingDirection(childSpriteRenderer);
         }
     }
 
@@ -92,15 +85,11 @@ public class SmallBazicEnemy : MonoBehaviour
     {
         Debug.Log("[일반 몹] 공격 준비");
 
-        Vector3 dashDirection = (player.position - transform.position).normalized;
-        dashDirection.y = 0;
+        Vector3 dashDirection = GetDirectionToPlayer();
 
         dashTargetPosition = transform.position + (dashDirection * maxDashRange);
 
-        if (childSpriteRenderer != null)
-        {
-            childSpriteRenderer.flipX = (player.position.x > transform.position.x);
-        }
+        UpdateFacingDirection(childSpriteRenderer);
 
         if (warningIndicator != null)
         {
@@ -140,9 +129,51 @@ public class SmallBazicEnemy : MonoBehaviour
             warningIndicator.gameObject.SetActive(false);
         }
 
-        transform.DOMove(dashTargetPosition, dashDuration)
-            .SetEase(Ease.OutQuad)
-            .OnComplete(() => {
+        if (isVariant)
+        {
+            StartVariantDash();
+            return;
+        }
+
+        transform.DOMove(dashTargetPosition, dashDuration).SetEase(Ease.OutQuad).OnComplete(() => {StartCoroutine(CooldownState());});
+    }
+
+    void StartVariantDash()
+    {
+        Vector3 startPosition = transform.position;
+
+        // 돌진 시작 시 결정한 방향을 고정
+        Vector3 forwardDirection = dashTargetPosition - startPosition;
+        forwardDirection.y = 0f;
+
+        if (forwardDirection.sqrMagnitude < 0.0001f)
+        {
+            StartCoroutine(CooldownState());
+            return;
+        }
+
+        forwardDirection.Normalize();
+
+        // 전진 방향에 수직인 좌우 방향
+        Vector3 sideDirection = Vector3.Cross(Vector3.up, forwardDirection).normalized;
+
+        // 불규칙한 간격으로 방향 전환 지점 결정
+        float firstTurnProgress = Random.Range(0.20f, 0.40f);
+        float secondTurnProgress = Random.Range(0.60f, 0.80f);
+
+        // 최초 좌우 방향도 무작위
+        float firstSide = Random.value < 0.5f ? -1f : 1f;
+
+        Vector3 firstTurnPosition = startPosition + forwardDirection * (maxDashRange * firstTurnProgress) + sideDirection * (zigzagWidth * firstSide);
+
+        Vector3 secondTurnPosition = startPosition + forwardDirection * (maxDashRange * secondTurnProgress) - sideDirection * (zigzagWidth * firstSide);
+
+        // 마지막 지점은 기존 돌진 종료 위치
+        Vector3[] path = {firstTurnPosition, secondTurnPosition, dashTargetPosition};
+
+        transform.DOPath(path,variantDashDuration, PathType.Linear, PathMode.Full3D).SetEase(Ease.OutQuad)
+            .OnComplete(() =>
+            {
                 StartCoroutine(CooldownState());
             });
     }
@@ -154,19 +185,22 @@ public class SmallBazicEnemy : MonoBehaviour
         currentState = EnemyState.Move;
     }
 
-    public void TakeDamage(int damage)
-    {
-        hp -= damage;
-        Debug.Log($"[일반 몹] 피격! 남은 HP: {hp}");
+    // =========================================================
+    // 피격
+    // =========================================================
 
-        if (hp <= 0)
-        {
-            Die();
-        }
+    protected override void TakeDamage(float damage)
+    {
+        base.TakeDamage(damage);
     }
 
-    void Die()
+    // =========================================================
+    // 사망 처리
+    // =========================================================
+    protected override void Die()
     {
+        base.Die();
+
         transform.DOKill();
 
         if (warningIndicator != null)
@@ -174,10 +208,5 @@ public class SmallBazicEnemy : MonoBehaviour
             warningIndicator.DOKill();
         }
 
-        Destroy(gameObject);
     }
 }
-
-
-
-

@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5925929883984372202}
   - component: {fileID: 1048092540031147556}
-  m_Layer: 22
+  m_Layer: 7
   m_Name: Sprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -96,7 +96,7 @@ GameObject:
   - component: {fileID: 1413734866787300825}
   - component: {fileID: 2599719725925898477}
   - component: {fileID: 4563046241505771570}
-  m_Layer: 22
+  m_Layer: 7
   m_Name: ArcherEnemy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -145,10 +145,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 707d079f2a872ee4b885add65143902a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hp: 8
   moveSpeed: 3
+  hp: 8
+  attckDamege: 1
+  attackRange: 4
+  childSpriteRenderer: {fileID: 1048092540031147556}
   fastRetreatSpeed: 6
-  targetShootingDistance: 5
   shootingDistanceTolerance: 0.5
   daggerDistance: 2.5
   arrowPrefab: {fileID: 6348064590816535713, guid: 8d105a567922ad043aed1b44d8789dc4, type: 3}
@@ -156,13 +158,11 @@ MonoBehaviour:
   aimDuration: 0.5
   shotInterval: 2
   arrowSpeed: 7
-  arrowDamage: 2
   daggerBoxSize: {x: 1, y: 0.2, z: 1.5}
   daggerForwardOffset: 0.5
   daggerHitDuration: 0.15
   daggerRecoveryDuration: 0.5
   postDaggerRetreatDistance: 5
-  daggerDamage: 1
   playerLayer:
     serializedVersion: 2
     m_Bits: 64
@@ -176,7 +176,6 @@ MonoBehaviour:
   dodgeCooldown: 1.5
   stunDuration: 2
   stunColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
-  childSpriteRenderer: {fileID: 1048092540031147556}
   obstacleLayer:
     serializedVersion: 2
     m_Bits: 16384
@@ -208,6 +207,10 @@ PrefabInstance:
     - target: {fileID: 2975990679882176396, guid: 52aae1e73a1c950409e9698d900a7102, type: 3}
       propertyPath: m_Name
       value: DashPivot
+      objectReference: {fileID: 0}
+    - target: {fileID: 2975990679882176396, guid: 52aae1e73a1c950409e9698d900a7102, type: 3}
+      propertyPath: m_Layer
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 5132494056462478073, guid: 52aae1e73a1c950409e9698d900a7102, type: 3}
       propertyPath: m_RootOrder
@@ -260,6 +263,10 @@ PrefabInstance:
     - target: {fileID: 9130328979632360480, guid: 52aae1e73a1c950409e9698d900a7102, type: 3}
       propertyPath: m_LocalScale.z
       value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 9130328979632360482, guid: 52aae1e73a1c950409e9698d900a7102, type: 3}
+      propertyPath: m_Layer
+      value: 7
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 52aae1e73a1c950409e9698d900a7102, type: 3}

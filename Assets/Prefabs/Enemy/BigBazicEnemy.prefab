@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 6830878220494395789}
   - component: {fileID: 5798973510643826076}
   - component: {fileID: 1788759440942002801}
-  m_Layer: 22
+  m_Layer: 7
   m_Name: BigBazicEnemy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -62,8 +62,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeed: 3
   hp: 6
-  isVariant: 0
+  attckDamege: 1
   attackRange: 4
+  childSpriteRenderer: {fileID: 0}
+  isVariant: 0
   telegraphDuration: 0.5
   dashDistance: 5
   dashDuration: 0.2
@@ -79,7 +81,6 @@ MonoBehaviour:
   dodgeCooldown: 3
   dodgeDistance: 2.5
   dodgeDuration: 0.25
-  childSpriteRenderer: {fileID: 0}
 --- !u!1 &4698245477699011171
 GameObject:
   m_ObjectHideFlags: 0
@@ -90,7 +91,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1286250641930414511}
   - component: {fileID: 5579710818580747873}
-  m_Layer: 22
+  m_Layer: 7
   m_Name: Sprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -175,6 +176,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: DashPivot
       objectReference: {fileID: 0}
+    - target: {fileID: 2975990679882176396, guid: 52aae1e73a1c950409e9698d900a7102, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 5132494056462478073, guid: 52aae1e73a1c950409e9698d900a7102, type: 3}
       propertyPath: m_RootOrder
       value: 1
@@ -234,6 +239,10 @@ PrefabInstance:
     - target: {fileID: 9130328979632360480, guid: 52aae1e73a1c950409e9698d900a7102, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0.823
+      objectReference: {fileID: 0}
+    - target: {fileID: 9130328979632360482, guid: 52aae1e73a1c950409e9698d900a7102, type: 3}
+      propertyPath: m_Layer
+      value: 7
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 52aae1e73a1c950409e9698d900a7102, type: 3}

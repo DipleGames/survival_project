@@ -3,32 +3,28 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 
-public class ShieldEnemy : MonoBehaviour
+public class ShieldEnemy : Enemies
 {
-    [Header("이동 설정")]
-    public float moveSpeed = 1.5f;
-    public float attackRange = 1.0f;
-
-    [Header("체력 및 방패 설정")]
-    public int shieldHp = 3;
+    [Header("방패 설정")]
+    public float shieldHp = 3;
 
     [Header("방패 파괴 전환 설정")]
     public GameObject normalEnemyPrefab;
     public float knockbackDistance = 1.5f;
     public float knockbackDuration = 0.2f;
 
-    private Transform player;
     private bool isAttacking = false;
     private bool isDestroyed = false;
-    public SpriteRenderer childSpriteRenderer;
 
     void Start()
     {
-        GameObject playerObj = GameObject.FindGameObjectWithTag("Character");
+        InitializePlayerReference();
 
-        if (playerObj != null)
+        defaultFacingRight = false;
+
+        if (childSpriteRenderer != null)
         {
-            player = playerObj.transform;
+            originalColor = childSpriteRenderer.color;
         }
     }
 
@@ -39,21 +35,15 @@ public class ShieldEnemy : MonoBehaviour
             return;
         }
 
-        float distance = Vector3.Distance(transform.position, player.position);
-
-        if (distance > attackRange)
+        if (!IsPlayerInAttackRange())
         {
             isAttacking = false;
 
-            Vector3 direction = (player.position - transform.position).normalized;
-            direction.y = 0;
+            Vector3 direction = GetDirectionToPlayer();
 
             transform.Translate(direction * moveSpeed * Time.deltaTime, Space.World);
 
-            if (childSpriteRenderer != null)
-            {
-                childSpriteRenderer.flipX = (player.position.x > transform.position.x);
-            }
+            UpdateFacingDirection(childSpriteRenderer);
         }
         else
         {
@@ -70,28 +60,24 @@ public class ShieldEnemy : MonoBehaviour
         Debug.Log("[방패 몹] 근접 공격 중...");
     }
 
-    public void TakeDamage(int damage, bool isHeavyAttack)
+    // =========================================================
+    // 피격
+    // =========================================================
+    protected override void TakeDamage(float damage)
     {
-        if (isDestroyed)
-        {
-            return;
-        }
+        shieldHp -= damage;
 
-        if (isHeavyAttack)
-        {
-            shieldHp -= damage;
+        PlayHitFlash(childSpriteRenderer, originalColor);
 
-            if (shieldHp <= 0)
-            {
-                BreakShield();
-            }
-        }
-        else
+        if (shieldHp <= 0)
         {
-            Debug.Log("플레이어의 공격이 방패에 막혔습니다!");
+            BreakShield();
         }
     }
 
+    // =========================================================
+    // 사망 처리
+    // =========================================================
     void BreakShield()
     {
         isDestroyed = true;
@@ -115,5 +101,3 @@ public class ShieldEnemy : MonoBehaviour
         transform.DOKill();
     }
 }
-
-
