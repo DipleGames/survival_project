@@ -80,8 +80,8 @@ public class ItemDictionay : MonoBehaviour
 
     private void Update()
     {
-        if(Input.GetKeyDown(KeyCode.I))
-            InventoryView.SetActive(!InventoryView.activeSelf);
+/*        if (Input.GetKeyDown(KeyCode.I))
+            InventoryView.SetActive(!InventoryView.activeSelf);*/
     }
 
     public void ChangeCategory(int category)

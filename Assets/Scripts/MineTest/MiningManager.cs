@@ -79,6 +79,7 @@ namespace MineTest
         public int PickaxeDurability => pickaxeDurability;
         public bool PickaxeBroken => pickaxeDurability <= 0;
 
+        [SerializeField] private Transform miningParent;
         // 씬 참조, 생성 지형, 곡괭이 내구도와 커서 UI를 초기화한다.
         private void Awake()
         {
@@ -535,7 +536,8 @@ namespace MineTest
                     continue;
                 }
 
-                GameObject instance = Instantiate(prefab, position, Quaternion.Euler(90f, 0f, 0f));
+                //GameObject instance = Instantiate(prefab, position, Quaternion.Euler(90f, 0f, 0f));
+                GameObject instance = Instantiate(prefab, position, Quaternion.Euler(90f, 0f, 0f),miningParent);
                 MiningNode node = instance.GetComponent<MiningNode>();
 
                 if (node == null) 
