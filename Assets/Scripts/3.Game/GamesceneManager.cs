@@ -59,7 +59,7 @@ public class GamesceneManager : Singleton<GamesceneManager>
         soundManager.StopBGM();
 
         nightFilter.SetActive(false);
-        LoggingManager.Instance.Initialize(treeParent);
+
         StartCoroutine(DayRoutine());
     }
 
@@ -250,10 +250,8 @@ public class GamesceneManager : Singleton<GamesceneManager>
     #region SpawnOBJ
     IEnumerator SpawnTree()
     {
-        LoggingManager.Instance.ClearGathers();
         foreach (Transform trees in treeParent)
         {
-            trees.gameObject.SetActive(false);
             Destroy(trees.gameObject);
         }
 
@@ -313,18 +311,7 @@ public class GamesceneManager : Singleton<GamesceneManager>
         if (spawnPos == Vector3.zero)
             return;
 
-        GameObject spawnedObject = Instantiate(spawnObject, SpawnTreeAndBushPos(), spawnObject.transform.rotation, parent);
-
-        // 나무 부모 아래에 생성한 경우 등록
-        if (parent == treeParent)
-        {
-            Tree[] trees = spawnedObject.GetComponentsInChildren<Tree>(true);
-
-            foreach (Tree tree in trees)
-            {
-                LoggingManager.Instance.RegisterGather(tree);
-            }
-        }
+        Instantiate(spawnObject, SpawnTreeAndBushPos(), spawnObject.transform.rotation, parent);
     }
     #endregion
     Vector3 TreeAndBushPos()
