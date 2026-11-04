@@ -80,11 +80,9 @@ public class SaveLoad : MonoBehaviour
 
         //폴더 생성
         //폴더가 있으면 Directory.CreateDirectory()는 아무런 동작을 하지 않음
-        Directory.CreateDirectory(Application.persistentDataPath);
-        //GetPath()에서 반환도니 경로에 파일을 생성하고 저장
+        //GetPath()에서 반환된 경로에 파일을 생성하고 저장
+        Directory.CreateDirectory(Path.GetDirectoryName(GetPath(slot)));
         File.WriteAllText(GetPath(slot), JsonUtility.ToJson(data, true));
-        //프로젝트 최상단에 Save 폴더를 만들고 그 안에 저장하고 싶을 때 사용
-        //Directory.CreateDirectory(Path.GetDirectoryName(GetPath()));
         Debug.Log("저장 완료: " + GetPath(slot));
     }
 
@@ -146,19 +144,13 @@ public class SaveLoad : MonoBehaviour
             }
         }
     }
-    private string GetPath(int slot)
-    {
-        return Path.Combine(
-            Application.persistentDataPath, $"save{slot}.json"
-        );
-    }
 
     //프로젝트 최상단에 Save 폴더를 만들고 그 안에 저장하고 싶을 때 사용
-/*    private string GetPath()
+    private string GetPath(int slot)
     {
         string projectRoot = Directory.GetParent(Application.dataPath).FullName;
 
         return Path.Combine(projectRoot, "Save", $"save{slot}.json");
-    }*/
+    }
 
 }
