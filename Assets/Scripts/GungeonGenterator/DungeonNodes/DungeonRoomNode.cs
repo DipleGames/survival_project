@@ -6,7 +6,35 @@ public enum RoomType
 {
     Start,
     Normal,
-    Boss
+    Shop,
+    Treasure,
+    Elite,
+    Boss,
+}
+
+public static class  RoomTypeNumber
+{
+    public const float Gap = 50.0f;
+    public static float GetRoomXPosition(RoomType type)
+    {
+        switch (type)
+        {
+            case RoomType.Start:
+                return Gap * 0;
+            case RoomType.Normal:
+                return Gap * 0;
+            case RoomType.Shop:
+                return Gap * 1;
+            case RoomType.Treasure:
+                return Gap * 2;
+            case RoomType.Elite:
+                return Gap * 3;
+            case RoomType.Boss:
+                return Gap * 4;
+            default:
+                return 0; // Invalid RoomType
+        }
+    }
 }
 
 public class DungeonRoomNode
@@ -18,7 +46,7 @@ public class DungeonRoomNode
     public RoomType RoomType { get; set; }
 
     //현재 방을 클리어 했는지 확인
-    public bool IsClear { get; private set; }
+    public bool IsComplete { get; private set; }
 
     //해당 방과 이어진 방의 방향을 저장 (중복으로 값이 들어가는 것을 방지하기 위해 HashSet을 사용)
     public HashSet<int> Neighbors { get; private set; }
@@ -29,12 +57,12 @@ public class DungeonRoomNode
         RoomId = _Id;
         RoomType = _type;
 
-        IsClear = false;
+        IsComplete = false;
         Neighbors = new HashSet<int>();
     }
 
     //방을 클리어 했다면 호출
-    public void RoomClear() { IsClear = true; }
+    public void RoomClear() { IsComplete = true; }
 
     //방 잇기(던전 생성에만 사용)
     public void AddNeighbor(int _neighbor) { Neighbors.Add(_neighbor); }

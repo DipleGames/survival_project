@@ -17,7 +17,7 @@ public class DungeonRoomButton : MonoBehaviour
         // TMP 텍스트 갱신
         if (txt_RoomId != null)
         {
-            txt_RoomId.text = roomId.ToString();
+            txt_RoomId.text = DungeonManager.Instance.getDungeonRoom(roomId).RoomType.ToString();
         }
 
         // 버튼 클릭 이벤트 등록
@@ -25,5 +25,16 @@ public class DungeonRoomButton : MonoBehaviour
         button.onClick.AddListener(OnClickButton);
     }
 
-    private void OnClickButton(){ DungeonManager.Instance.MoveTo(roomId); }
+    private void OnClickButton()
+    {
+        var manager = DungeonManager.Instance;
+
+        if (manager == null 
+            || manager.IsPlayingRoom()                  //게임 중에는 이동 불가
+            || manager.CurrentRoomId == roomId          //현재 방에서는 이동 불가
+            || manager.getDungeonRoom(roomId).IsComplete)  //클리어한 방에서는 이동 불가
+            return;
+        
+        manager.MoveTo(roomId);
+    }
 }
