@@ -43,7 +43,7 @@ public class OptionSettingsUI : MonoBehaviour
     {
         if (initialized)
             return;
-
+        
         panel = optionPanel;
         gameManager = GameManager.Instance;
         soundManager = SoundManager.Instance;

@@ -4,7 +4,7 @@ using UnityEngine.SceneManagement;
 public class OptionUI : MonoBehaviour
 {
     [SerializeField] protected GameObject panel;
-    [SerializeField] protected GameObject OptionPanel;
+    [SerializeField] protected GameObject KeySoundSettingPanel;
     [SerializeField] OptionSettingsUI optionSettings;
     [SerializeField] GameObject CheckHomePanel;
     [SerializeField] GameObject statPanel;
@@ -18,14 +18,16 @@ public class OptionUI : MonoBehaviour
     {
         //optionPannel
         panel.SetActive(false);
-        OptionPanel.SetActive(false);
+        //OptionScroll -> OptionSettingsUI에서 키세팅과 사운드 조절 기능이 있는 패널
+        KeySoundSettingPanel.SetActive(false);
         CheckHomePanel.SetActive(false);
         if(gameManager == null)
             gameManager = GameManager.Instance;
         soundManager = SoundManager.Instance;
         gamesceneManager = GamesceneManager.Instance;
 
-        optionSettings.Initialize(panel);
+        //optionSettings.Initialize(panel);
+        optionSettings.Initialize(KeySoundSettingPanel);
     }
 
     private void Update()
