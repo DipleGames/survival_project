@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using MineTest;
 
 
 /// <summary>
@@ -11,40 +10,24 @@ using MineTest;
 public class SkullMiningState : IState
 {
     private readonly SkullController _skull;
-    private readonly MiningAutomationController _automation;
-    private readonly MiningManager _miningManager;
-    private readonly Transform _searchCenter;
-    private readonly float _searchRadius;
 
-     public SkullMiningState(SkullController skull, MiningAutomationController automation, MiningManager miningManager, Transform searchCenter, float searchRadius)
+    public SkullMiningState(SkullController skull)
     {
         _skull = skull;
-        _automation = automation;
-        _miningManager = miningManager;
-        _searchCenter = searchCenter;
-        _searchRadius = searchRadius;
     }
 
     public void Enter()
     {
-        Debug.Log("광질 자동화 시작");
-
-        Vector3 searchCenter = _searchCenter != null
-            ? _searchCenter.position
-            : _skull.transform.position;
-
-        _automation.StartAutomation(_skull, _miningManager, searchCenter, _searchRadius);
+        Debug.Log("광질 시작");
     }
 
     public void Update()
     {
-        _automation.Tick();
+        Debug.Log("광질 중");
     }
 
     public void Exit()
     {
-        Debug.Log("광질 자동화 종료");
-
-        _automation.StopAutomation();
+        Debug.Log("광질 종료");
     }
 }

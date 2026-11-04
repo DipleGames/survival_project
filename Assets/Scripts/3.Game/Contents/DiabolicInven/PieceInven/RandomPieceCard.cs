@@ -5,7 +5,7 @@ using UnityEngine;
 public class RandomPieceCard : MonoBehaviour
 {
     List<DiabolicItemInfo> itemList = new List<DiabolicItemInfo>();
-
+    [SerializeField]InvenControl invenControl;
     ItemManager itemManager;
 
     private void Awake()
@@ -18,6 +18,9 @@ public class RandomPieceCard : MonoBehaviour
 
     private void OnEnable()
     {
+        invenControl.CloseUI(0);
+        invenControl.isUIActive = true;
+
         itemManager = ItemManager.Instance;
 
         for (int i = 0; i < itemManager.pieceItemsList.Length; i++)
@@ -52,6 +55,7 @@ public class RandomPieceCard : MonoBehaviour
 
     private void OnDisable()
     {
+        invenControl.isUIActive = false;
         for (int i = 0; i < transform.childCount; i++)
         {
             transform.GetChild(i).gameObject.SetActive(false);
