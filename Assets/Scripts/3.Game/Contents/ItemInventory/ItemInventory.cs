@@ -47,7 +47,7 @@ public class ItemInventory : MonoBehaviour
 
     private void Update()
     {
-/*        if (Input.GetKeyDown(KeyCode.U))
+        if (Input.GetKeyDown(KeyCode.U))
         {
             invenPanel.SetActive(!invenPanel.activeSelf);
 
