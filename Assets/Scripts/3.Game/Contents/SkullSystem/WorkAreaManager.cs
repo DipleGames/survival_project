@@ -6,7 +6,7 @@ public enum WorkType
 {
     Farming,
     Mining,
-    Logging
+    Fishing
 }
 
 
@@ -32,11 +32,16 @@ public class WorkAreaManager : Singleton<WorkAreaManager>
             return false;
         }
 
-        WorkAreaData workArea = new WorkAreaData(cellPosition, workType);
+        WorkAreaData workArea = new WorkAreaData(
+            cellPosition,
+            workType
+        );
 
         _workAreas.Add(cellPosition, workArea);
 
-        Debug.Log($"{cellPosition.x}, {cellPosition.y}에 {workType}을 등록했습니다.");
+        Debug.Log(
+            $"{cellPosition.x}, {cellPosition.y}에 {workType}을 등록했습니다."
+        );
 
         return true;
     }
@@ -52,7 +57,10 @@ public class WorkAreaManager : Singleton<WorkAreaManager>
     // 특정 위치 작업 지역 조회
     public WorkAreaData GetWorkArea(Vector3Int cellPosition)
     {
-        _workAreas.TryGetValue(cellPosition, out WorkAreaData workArea);
+        _workAreas.TryGetValue(
+            cellPosition,
+            out WorkAreaData workArea
+        );
 
         return workArea;
     }
