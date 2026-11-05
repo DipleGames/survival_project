@@ -5593,6 +5593,7 @@ MonoBehaviour:
   _inputReader: {fileID: 4378101287687771804}
   _stateMachine: {fileID: 4378101287687771802}
   _currentWeapon: {fileID: 11400000, guid: 4ada29c7d4d9f5e428baeb9a92e3a4e2, type: 2}
+  isCombatMode: 0
 --- !u!114 &4378101287687771801
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5605,6 +5606,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c0b91b53f79efe4f8aea390bd9b1dcd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _player: {fileID: 5820771598748478106}
   _animator: {fileID: 4279495842606631430}
   _playerMove: {fileID: 4378101287687771800}
   _impulseSource: {fileID: 4378101287687771783}

@@ -259429,46 +259429,6 @@ PrefabInstance:
       propertyPath: mainCamera
       value: 
       objectReference: {fileID: 266393882}
-    - target: {fileID: 5820771598748478106, guid: db55e69c6f8e1104ba40dbf5df46a9eb, type: 3}
-      propertyPath: _statConfig
-      value: 
-      objectReference: {fileID: 11400000, guid: 16616f3b04515ca40b0eb93bc59003b1, type: 2}
-    - target: {fileID: 5820771598748478106, guid: db55e69c6f8e1104ba40dbf5df46a9eb, type: 3}
-      propertyPath: _initialStats.Array.size
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 5820771598748478106, guid: db55e69c6f8e1104ba40dbf5df46a9eb, type: 3}
-      propertyPath: _initialStats.Array.data[1].type
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5820771598748478106, guid: db55e69c6f8e1104ba40dbf5df46a9eb, type: 3}
-      propertyPath: _initialStats.Array.data[2].type
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 5820771598748478106, guid: db55e69c6f8e1104ba40dbf5df46a9eb, type: 3}
-      propertyPath: _initialStats.Array.data[3].type
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 5820771598748478106, guid: db55e69c6f8e1104ba40dbf5df46a9eb, type: 3}
-      propertyPath: _initialStats.Array.data[4].type
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 5820771598748478106, guid: db55e69c6f8e1104ba40dbf5df46a9eb, type: 3}
-      propertyPath: _initialStats.Array.data[0].value
-      value: 50
-      objectReference: {fileID: 0}
-    - target: {fileID: 5820771598748478106, guid: db55e69c6f8e1104ba40dbf5df46a9eb, type: 3}
-      propertyPath: _initialStats.Array.data[1].value
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 5820771598748478106, guid: db55e69c6f8e1104ba40dbf5df46a9eb, type: 3}
-      propertyPath: _initialStats.Array.data[2].value
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 5820771598748478106, guid: db55e69c6f8e1104ba40dbf5df46a9eb, type: 3}
-      propertyPath: _initialStats.Array.data[3].value
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 6830285649758161687, guid: db55e69c6f8e1104ba40dbf5df46a9eb, type: 3}
       propertyPath: m_Name
       value: Player
