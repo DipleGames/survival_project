@@ -4,7 +4,7 @@ using Cinemachine;
 
 public class ComboAttackController : MonoBehaviour
 {
-
+    [SerializeField] private Player _player;
     [SerializeField] private Animator _animator;
     [SerializeField] private PlayerMove _playerMove;
     [SerializeField] private CinemachineImpulseSource _impulseSource;
@@ -114,8 +114,8 @@ public class ComboAttackController : MonoBehaviour
         if (!_isAttacking) return;
 
         AttackStepData step = _weaponData.ComboData.GetStep(_currentStepIndex);
-        const float testBaseDamage = 10f; // 임시 -> 이후 무기의 기본 공격력으로 교체
-        bool hasHit = _hitDetector.DetectHit(step, _attackDirection, testBaseDamage);
+        float damage = _player.Status.GetStat(StatType.AttackPower); // 최종 스탯 공격력
+        bool hasHit = _hitDetector.DetectHit(step, _attackDirection, damage);
         if (!hasHit) return;
 
         PlayHitImpulse();
