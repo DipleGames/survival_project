@@ -2,7 +2,6 @@ using UnityEditor;
 using UnityEngine;
 
 // 인스펙터 창에서 2차원 배열을 보여주는 스크립트
-[CustomPropertyDrawer(typeof(ItemShape))]
 public class InventoryShapePropertyDrawer : PropertyDrawer
 {
     const int GridSize = 16; // The size between the boold-fields that make up the shape matrix

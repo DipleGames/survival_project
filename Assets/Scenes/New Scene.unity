@@ -227,15 +227,16 @@ MonoBehaviour:
   - {fileID: 1303450765}
   interactionTime: 3
   isSingleUse: 0
-  animationName: Logging
   isGatherable: 1
-  character: {fileID: 1954460371}
+  animationName: Logging
   requiredHitCount: 3
   currentHit: 0
   dropItems:
   - 111112
+  respawnTime: 0
+  character: {fileID: 1954460371}
+  normalTreeSprite: {fileID: 0}
   choppedTreeSprite: {fileID: 21300000, guid: ce539685c2f722d4b9d763b5330f7cfc, type: 3}
-  toolOfPlayer: 1
 --- !u!4 &202298178
 Transform:
   m_ObjectHideFlags: 0
@@ -323,15 +324,16 @@ MonoBehaviour:
   - {fileID: 646826297}
   interactionTime: 3
   isSingleUse: 0
-  animationName: Gathering
   isGatherable: 1
-  character: {fileID: 1954460371}
+  animationName: Gathering
   requiredHitCount: 3
   currentHit: 0
   dropItems:
   - 111112
+  respawnTime: 0
+  character: {fileID: 1954460371}
+  normalTreeSprite: {fileID: 0}
   choppedTreeSprite: {fileID: 21300000, guid: ce539685c2f722d4b9d763b5330f7cfc, type: 3}
-  toolOfPlayer: 2
 --- !u!4 &207267138
 Transform:
   m_ObjectHideFlags: 0
@@ -619,8 +621,12 @@ MonoBehaviour:
   - {fileID: 482410533}
   interactionTime: 3
   isSingleUse: 0
-  animationName: Gathering
   isGatherable: 1
+  animationName: Gathering
+  requiredHitCount: 0
+  currentHit: 0
+  dropItems: []
+  respawnTime: 0
   character: {fileID: 1954460371}
 --- !u!4 &439958653
 Transform:
@@ -259299,8 +259305,12 @@ MonoBehaviour:
   - {fileID: 1980514214}
   interactionTime: 3
   isSingleUse: 1
-  animationName: Gathering
   isGatherable: 1
+  animationName: Gathering
+  requiredHitCount: 0
+  currentHit: 0
+  dropItems: []
+  respawnTime: 0
   character: {fileID: 1954460371}
 --- !u!1 &646826296
 GameObject:

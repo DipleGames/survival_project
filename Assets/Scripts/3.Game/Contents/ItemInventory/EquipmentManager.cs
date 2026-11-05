@@ -9,12 +9,12 @@ public class EquipmentManager : MonoBehaviour
     public int EquippedItemId => equippedItemId;
     public bool HasEquippedItem => equippedItemId >= 0;
 
-    private GameManager manager;
+    private ItemManager itemManager;
     public event Action OnEquipmentChanged;
 
     private void Start()
     {
-        manager = GameManager.Instance;
+        itemManager = ItemManager.Instance;
     }
 
     // Tool, Weapon 장착 가능 여부 확인
@@ -30,7 +30,7 @@ public class EquipmentManager : MonoBehaviour
     {
         Debug.Log("[EquipmentManager] EquipItem 호출");
 
-        if (item == null || !CanEquipItem(item) || manager == null)
+        if (item == null || !CanEquipItem(item) || itemManager == null)
         {
             Debug.Log("장착 실패");
             return false;
@@ -38,7 +38,7 @@ public class EquipmentManager : MonoBehaviour
 
         Debug.Log($"아이템 ID: {item.itemId}, Type: {item.itemType}");
 
-        if (!manager.haveItems.TryGetValue(item.itemId, out int count) || count <= 0)
+        if (!itemManager.haveItems.TryGetValue(item.itemId, out int count) || count <= 0)
         {
             Debug.Log("장착 실패: 보유하지 않은 아이템");
             return false;
@@ -64,7 +64,7 @@ public class EquipmentManager : MonoBehaviour
     {
         if (!HasEquippedItem) return null;
 
-        return manager.itemInfos[equippedItemId];
+        return itemManager.itemInfos[equippedItemId];
     }
 
     // 장착된 아이템이 제거되면 해제
