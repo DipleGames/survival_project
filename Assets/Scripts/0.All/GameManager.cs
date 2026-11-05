@@ -11,6 +11,10 @@ public class GameManager : Singleton<GameManager>
     [Header("카메라")]
     [SerializeField] private CameraFollow cameraFollow;
 
+    [Header("Scene Fade")]
+    [SerializeField] private SceneFade sceneFade;
+
+
     public Player Player { get; private set; }
 
     public string currentScene;
@@ -27,9 +31,6 @@ public class GameManager : Singleton<GameManager>
         GamePause(false);
     }
 
-    /// <summary>
-    /// 지정한 씬으로 이동한 후 플레이어를 생성한다.
-    /// </summary>
     public void ToNextScene(string sceneName)
     {
         if (_isLoading)
@@ -38,39 +39,61 @@ public class GameManager : Singleton<GameManager>
         StartCoroutine(LoadSceneAndSpawnPlayer(sceneName));
     }
 
-    /// <summary>
-    /// 씬 로딩이 완료되면 플레이어 프리팹을 생성한다.
-    /// </summary>
     private IEnumerator LoadSceneAndSpawnPlayer(string sceneName)
     {
         _isLoading = true;
 
         GamePause(false);
 
+        // 씬 로드 전에 검은 화면 표시
+        sceneFade.gameObject.SetActive(true);
+
+        SceneManager.sceneLoaded += OnSceneLoaded;
+
         yield return SceneManager.LoadSceneAsync(sceneName);
+
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+
+        // 씬 초기화 및 카메라 갱신을 위한 프레임 확보
+        yield return null;
+        yield return new WaitForEndOfFrame();
+
+        // 2초 동안 검은 화면에서 게임 화면으로 전환
+        sceneFade.FadeIn();
+
+        _isLoading = false;
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        currentScene = scene.name;
+
+        // 기존 플레이어 참조 초기화
+        Player = null;
 
         GameObject playerObject = Instantiate(playerPrefab, characterSpawnPos, playerPrefab.transform.rotation);
         Player = playerObject.GetComponent<Player>();
 
-        if (cameraFollow != null)
-            cameraFollow.SetPlayerTarget();
+        // 새 씬에 존재하는 CameraFollow 연결
+        cameraFollow = FindObjectOfType<CameraFollow>();
 
-        currentScene = sceneName;
-        _isLoading = false;
+        if (cameraFollow != null && Player != null)
+            cameraFollow.SetPlayerTarget(Player.transform);
+        else
+            Debug.LogWarning("[GameManager] 플레이어 또는 CameraFollow 연결 실패");
     }
 
-    /// <summary>
-    /// 게임의 일시정지 상태를 설정한다.
-    /// </summary>
+    protected virtual void OnDestroy()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
     public void GamePause(bool pause)
     {
         isPause = pause;
         Time.timeScale = pause ? 0f : 1f;
     }
 
-    /// <summary>
-    /// 현재 일시정지 상태를 반전한다.
-    /// </summary>
     public void TogglePause()
     {
         GamePause(!isPause);

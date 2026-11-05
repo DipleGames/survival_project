@@ -50,6 +50,7 @@ public class ItemManager : Singleton<ItemManager>
     private void Start()
     {
         Initialize();
+        DebugHaveItems();
     }
 
     /// <summary>
@@ -171,6 +172,20 @@ public class ItemManager : Singleton<ItemManager>
             haveItems[itemId] = remaining;
 
         return true;
+    }
+
+    [ContextMenu("보유 아이템 확인")]
+    public void DebugHaveItems()
+    {
+        Debug.Log($"현재 보유 아이템 종류: {haveItems.Count}개");
+
+        foreach (var item in haveItems)
+        {
+            ItemInfo info = GetItemInfo(item.Key);
+            string itemName = info != null ? info.itemName : "알 수 없는 아이템";
+
+            Debug.Log($"아이템: {itemName} / ID: {item.Key} / 수량: {item.Value}");
+        }
     }
 
 #if UNITY_EDITOR
