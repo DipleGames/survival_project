@@ -15,17 +15,15 @@ public class MouseInteraction : MonoBehaviour
 {
     [SerializeField] LayerMask layerMask;
 
-    Character character;
+    Player player;
 
     private void Start()
     {
-        character = Character.Instance;
+        player = GameManager.Instance.Player;
     }
 
     private void Update()
     {
-        if (!character.isCanControll)
-            return;
 
         if (Input.GetMouseButtonUp(0))
         {
@@ -40,8 +38,6 @@ public class MouseInteraction : MonoBehaviour
 
     void MouseInteractionFuc(System.Action<GameObject> interactionFuc)
     {
-        if (GamesceneManager.Instance.isNight)
-            return;
 
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit[] hit = Physics.RaycastAll(ray, 100, layerMask);

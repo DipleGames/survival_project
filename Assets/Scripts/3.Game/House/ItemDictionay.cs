@@ -1,285 +1,452 @@
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
-using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class ItemDictionay : MonoBehaviour
 {
-    [SerializeField] GameObject InventoryView;
-    [SerializeField] Transform itemSlotParent;
-    [SerializeField] GameObject itemSlotPrefab;
-    [SerializeField] GameObject itemMatSlotPrefab;
-    [SerializeField] Image itemImage;
-    [SerializeField] TextMeshProUGUI itemNameText;
-    [SerializeField] TextMeshProUGUI itemEffectText;
-    [SerializeField] TextMeshProUGUI itemAcquisition;
-    [SerializeField] Transform materialSlot;
-    [SerializeField] Transform dictionaryIndexParent;
-    [SerializeField] GameObject dictionaryIndexSlot;
-    [SerializeField] Scrollbar scrollbar;
-    [SerializeField] GameObject DiscriptionContents;
+    [Header("Inventory")]
+    [SerializeField] private GameObject InventoryView;
+    [SerializeField] private Transform itemSlotParent;
+    [SerializeField] private GameObject itemSlotPrefab;
+    [SerializeField] private GameObject itemMatSlotPrefab;
 
-    int currentCategory;
+    [Header("Item Description")]
+    [SerializeField] private Image itemImage;
+    [SerializeField] private TextMeshProUGUI itemNameText;
+    [SerializeField] private TextMeshProUGUI itemEffectText;
+    [SerializeField] private TextMeshProUGUI itemAcquisition;
+    [SerializeField] private Transform materialSlot;
+    [SerializeField] private GameObject DiscriptionContents;
 
-    List<GameObject> itemSlot = new List<GameObject>();
+    [Header("Page")]
+    [SerializeField] private Transform dictionaryIndexParent;
+    [SerializeField] private GameObject dictionaryIndexSlot;
+    [SerializeField] private Scrollbar scrollbar;
 
-    List<Item> items;
-    List<Item> itemsByCategory;
+    private const int PageSize = 10;
 
+    private readonly List<GameObject> itemSlot = new();
+    private readonly List<Item> itemsByCategory = new();
 
+    private List<Item> items;
+    private ItemManager itemManager;
+
+    private int currentCategory = -1;
+    private int currentPage;
+
+    private GameObject materialPanel;
+    private Transform matStringParent;
+
+    /// <summary>
+    /// 아이템 데이터를 초기화하고 도감 슬롯을 생성한다.
+    /// </summary>
     private void Start()
     {
-        items = GameManager.Instance.itemDatas;
-        itemsByCategory = new List<Item>();
+        itemManager = ItemManager.Instance;
 
-        currentCategory = -1;
-
-        for (int i = 0; i < 10; i++)
+        if (itemManager == null || !itemManager.Initialize())
         {
-            itemSlot.Add(Instantiate(itemSlotPrefab, itemSlotParent));
+            Debug.LogError("[ItemDictionay] ItemManager 초기화 실패", this);
+            enabled = false;
+            return;
         }
 
-        /*int index = 0;
+        items = itemManager.itemDatas;
+        matStringParent = transform.Find("Scroll View/DescriptionPanel/Contents/MatSlots");
 
-        for (int i = 0; i < items.Count; ++i)
+        for (int i = 0; i < PageSize; i++)
         {
-            if ((int)items[i].Type == currentCategory)
-            {
-                itemSlot[index].SetActive(true);
-                itemSlot[index].transform.Find("ItemImage/Sprite").GetComponent<Image>().sprite = Resources.Load<Sprite>($"Item/{items[i].ImageId}");
-                itemSlot[index].transform.Find("ItemName").GetComponent<TextMeshProUGUI>().text = items[i].ItemName;
-                index++;
-            }
-
-            if (index == 10)
-                break;
-            Transform matSlotParent = itemSlot.transform.Find("MatSlots");
-
-            foreach (var mat in items[i].NeedMaterials)
-            {
-                GameObject matSlot = Instantiate(itemMatSlotPrefab, matSlotParent);
-                matSlot.transform.Find("MatImage").GetComponent<Image>().sprite = Resources.Load<Sprite>($"Item/{GameManager.Instance.idByMaterialType[mat.Key]}");
-                matSlot.transform.Find("MatCount").GetComponent<Text>().text = $"x{mat.Value}";
-            }
+            GameObject slot = Instantiate(itemSlotPrefab, itemSlotParent);
+            itemSlot.Add(slot);
         }
-
-        for (int i = index; i < 10; i++)
-        {
-            itemSlot[i].SetActive(false);
-        }*/
 
         ChangeCategory(0);
-        ChangeItemInfoDescriptionText(0);
 
-        InventoryView.SetActive(false);
+        if (InventoryView != null)
+            InventoryView.SetActive(false);
     }
 
-    private void Update()
-    {
-        if(Input.GetKeyDown(KeyCode.I))
-            InventoryView.SetActive(!InventoryView.activeSelf);
-    }
-
+    /// <summary>
+    /// 선택한 카테고리의 아이템 목록을 구성한다.
+    /// </summary>
     public void ChangeCategory(int category)
     {
-        if (currentCategory == category) return;
+        if (items == null)
+            return;
+
+        if (currentCategory == category)
+            return;
+
+        currentCategory = category;
+        currentPage = 0;
 
         itemsByCategory.Clear();
 
-        int index = 0;
-        int dicIndex = 1;
-
-        for (int i = 0; i < dictionaryIndexParent.childCount; ++i)
+        foreach (Item item in items)
         {
-            dictionaryIndexParent.GetChild(i).gameObject.SetActive(false);
+            if ((int)item.Type == category)
+                itemsByCategory.Add(item);
         }
 
-        for (int i = 0; i < items.Count; ++i)
-        {
-            if ((int)items[i].Type == category)
-            {
-                itemsByCategory.Add(items[i]);
-                if (dicIndex == 1)
-                {
-                    itemSlot[index].SetActive(true);
-                    itemSlot[index].transform.Find("ItemImage/Sprite").GetComponent<Image>().sprite = Resources.Load<Sprite>($"Item/{items[i].ImageId}");
-                    itemSlot[index].transform.Find("ItemName").GetComponent<TextMeshProUGUI>().text = items[i].ItemName;
-                }
-                index++;
-            }
-
-            if (index >= 10 && index % 10 == 0)
-            {
-                if (dictionaryIndexParent.childCount < dicIndex)
-                {
-                    GameObject slot = Instantiate(dictionaryIndexSlot, dictionaryIndexParent);
-                    slot.transform.GetComponentInChildren<TextMeshProUGUI>().text = dicIndex.ToString();
-                    slot.transform.GetComponentInChildren<Button>().onClick.AddListener(() => ChangeDictionaryIndex(slot.transform.GetSiblingIndex()));
-                }
-
-                else
-                    dictionaryIndexParent.GetChild(dicIndex - 1).gameObject.SetActive(true);
-
-                dicIndex++;
-            }
-        }
-
-        for (int i = index; i < 10; i++)
-        {
-            itemSlot[i].SetActive(false);
-        }
-
-        currentCategory = category;
+        RefreshPageButtons();
+        ChangeDictionaryIndex(0);
     }
 
-    public void ChangeDictionaryIndex(int dicIndex)
+    /// <summary>
+    /// 도감 페이지 버튼을 생성하고 갱신한다.
+    /// </summary>
+    private void RefreshPageButtons()
     {
-        scrollbar.value = 1;
+        if (dictionaryIndexParent == null || dictionaryIndexSlot == null)
+            return;
 
-        for (int i = 0; i < 10; i++)
+        int pageCount = Mathf.CeilToInt(itemsByCategory.Count / (float)PageSize);
+
+        for (int i = 0; i < dictionaryIndexParent.childCount; i++)
+            dictionaryIndexParent.GetChild(i).gameObject.SetActive(false);
+
+        for (int i = 0; i < pageCount; i++)
         {
-            if (itemsByCategory.Count > i + dicIndex * 10)
-            {
-                itemSlot[i].SetActive(true);
-                itemSlot[i].transform.Find("ItemImage/Sprite").GetComponent<Image>().sprite = Resources.Load<Sprite>($"Item/{itemsByCategory[i + dicIndex * 10].ImageId}");
-                itemSlot[i].transform.Find("ItemName").GetComponent<TextMeshProUGUI>().text = itemsByCategory[i + dicIndex * 10].ItemName;
-            }
+            GameObject pageObject;
 
+            if (i < dictionaryIndexParent.childCount)
+                pageObject = dictionaryIndexParent.GetChild(i).gameObject;
             else
-                itemSlot[i].SetActive(false);
+                pageObject = Instantiate(dictionaryIndexSlot, dictionaryIndexParent);
+
+            pageObject.SetActive(true);
+
+            TextMeshProUGUI pageText = pageObject.GetComponentInChildren<TextMeshProUGUI>();
+
+            if (pageText != null)
+                pageText.text = (i + 1).ToString();
+
+            Button button = pageObject.GetComponentInChildren<Button>();
+
+            if (button != null)
+            {
+                int pageIndex = i;
+
+                button.onClick.RemoveAllListeners();
+                button.onClick.AddListener(() => ChangeDictionaryIndex(pageIndex));
+            }
         }
     }
 
-    Item overlapedItem;
+    /// <summary>
+    /// 선택한 페이지에 해당하는 아이템 슬롯을 표시한다.
+    /// </summary>
+    public void ChangeDictionaryIndex(int pageIndex)
+    {
+        if (itemsByCategory == null)
+            return;
 
+        int pageCount = Mathf.CeilToInt(itemsByCategory.Count / (float)PageSize);
+
+        if (pageIndex < 0 || pageIndex >= pageCount)
+        {
+            if (pageCount == 0)
+            {
+                ClearItemSlots();
+
+                if (DiscriptionContents != null)
+                    DiscriptionContents.SetActive(false);
+            }
+
+            return;
+        }
+
+        currentPage = pageIndex;
+
+        if (scrollbar != null)
+            scrollbar.value = 1f;
+
+        for (int i = 0; i < itemSlot.Count; i++)
+        {
+            int itemIndex = currentPage * PageSize + i;
+
+            if (itemIndex >= itemsByCategory.Count)
+            {
+                itemSlot[i].SetActive(false);
+                continue;
+            }
+
+            Item item = itemsByCategory[itemIndex];
+
+            GameObject slot = itemSlot[i];
+            slot.SetActive(true);
+
+            Transform spriteTransform = slot.transform.Find("ItemImage/Sprite");
+            Transform nameTransform = slot.transform.Find("ItemName");
+
+            if (spriteTransform != null)
+            {
+                Image image = spriteTransform.GetComponent<Image>();
+
+                if (image != null)
+                    image.sprite = Resources.Load<Sprite>($"Item/{item.ImageId}");
+            }
+
+            if (nameTransform != null)
+            {
+                TextMeshProUGUI nameText = nameTransform.GetComponent<TextMeshProUGUI>();
+
+                if (nameText != null)
+                    nameText.text = item.ItemName;
+            }
+        }
+
+        // 현재 페이지의 첫 번째 아이템 설명 표시
+        ChangeItemInfoDescriptionText(0);
+    }
+
+    /// <summary>
+    /// 모든 아이템 슬롯을 비활성화한다.
+    /// </summary>
+    private void ClearItemSlots()
+    {
+        foreach (GameObject slot in itemSlot)
+        {
+            if (slot != null)
+                slot.SetActive(false);
+        }
+    }
+
+    /// <summary>
+    /// 선택한 아이템의 설명과 필요 재료를 표시한다.
+    /// index는 현재 페이지의 슬롯 번호(0~9)이다.
+    /// </summary>
     public void ChangeItemInfoDescriptionText(int index)
     {
-        DiscriptionContents.SetActive(true);
+        int itemIndex = currentPage * PageSize + index;
 
-        itemImage.sprite = Resources.Load<Sprite>($"Item/{itemsByCategory[index].ItemId}");
-        itemNameText.text = itemsByCategory[index].ItemName;
-        itemEffectText.text = itemsByCategory[index].ItemEffect;
-        itemAcquisition.text = "획득 장소: ";
-        foreach (var aquisition in itemsByCategory[index].takeTimeByAcquisition)
+        if (index < 0 || index >= PageSize ||
+            itemIndex < 0 || itemIndex >= itemsByCategory.Count)
         {
-            itemAcquisition.text += $"{GameManager.Instance.aquisitionName[aquisition.Key]} ";
+            if (DiscriptionContents != null)
+                DiscriptionContents.SetActive(false);
+
+            return;
         }
+
+        Item item = itemsByCategory[itemIndex];
+
+        if (DiscriptionContents != null)
+            DiscriptionContents.SetActive(true);
+
+        if (itemImage != null)
+            itemImage.sprite = Resources.Load<Sprite>($"Item/{item.ImageId}");
+
+        if (itemNameText != null)
+            itemNameText.text = item.ItemName;
+
+        if (itemEffectText != null)
+            itemEffectText.text = item.ItemEffect;
+
+        if (itemAcquisition != null)
+        {
+            itemAcquisition.text = "획득 장소: ";
+
+            if (item.takeTimeByAcquisition != null)
+            {
+                foreach (var acquisition in item.takeTimeByAcquisition)
+                {
+                    if (itemManager.aquisitionName.TryGetValue(acquisition.Key, out string name))
+                        itemAcquisition.text += $"{name} ";
+                }
+            }
+        }
+
+        RefreshMaterialSlots(item);
+    }
+
+    /// <summary>
+    /// 선택한 아이템에 필요한 재료 UI를 갱신한다.
+    /// </summary>
+    private void RefreshMaterialSlots(Item item)
+    {
+        if (materialSlot == null)
+            return;
+
+        // 기존 재료 슬롯 비활성화
+        for (int i = 0; i < materialSlot.childCount; i++)
+            materialSlot.GetChild(i).gameObject.SetActive(false);
+
+        // 기존 재료 설명 텍스트 비활성화
+        if (matStringParent != null)
+        {
+            for (int i = 0; i < matStringParent.childCount; i++)
+                matStringParent.GetChild(i).gameObject.SetActive(false);
+        }
+
+        if (item.NeedMaterials == null)
+            return;
 
         int count = 0;
 
-        Transform matStringParent = transform.Find("Scroll View/DescriptionPanel/Contents/MatSlots");
-
-        for (int i = 0; i < matStringParent.childCount; i++)
-            matStringParent.GetChild(i).gameObject.SetActive(false);
-
-        foreach (var mat in itemsByCategory[index].NeedMaterials)
+        foreach (var mat in item.NeedMaterials)
         {
-            GameObject matSlot = null;
+            if (!itemManager.idByMaterialType.TryGetValue(mat.Key, out int materialId))
+                continue;
 
-            if (materialSlot.childCount <= count)
-                matSlot = Instantiate(itemMatSlotPrefab, materialSlot);
+            ItemInfo materialInfo = itemManager.GetItemInfo(materialId);
+
+            if (materialInfo == null)
+                continue;
+
+            GameObject slot;
+
+            if (count < materialSlot.childCount)
+                slot = materialSlot.GetChild(count).gameObject;
             else
-            {
-                matSlot = materialSlot.GetChild(count).gameObject;
-                matSlot.SetActive(true);
-            }
+                slot = Instantiate(itemMatSlotPrefab, materialSlot);
 
-            matSlot.transform.Find("MatImage").GetComponent<Image>().sprite = Resources.Load<Sprite>($"Item/{GameManager.Instance.idByMaterialType[mat.Key]}");
-            matSlot.transform.Find("MatName").GetComponent<Text>().text = $"{GameManager.Instance.itemInfos[GameManager.Instance.idByMaterialType[mat.Key]].itemName}";
-            matSlot.transform.Find("MatCount").GetComponent<Text>().text = $"x {mat.Value}";
+            slot.SetActive(true);
 
-            GameObject matString = null;
-            TextMeshProUGUI matName = null;
-            if (matStringParent.childCount <= count)
-            {
-                matString = new GameObject($"Material{count}");
-                matString.transform.parent = matStringParent;
-                matString.transform.localScale = Vector3.one;
-                matString.transform.localRotation = Quaternion.identity;
+            Transform imageTransform = slot.transform.Find("MatImage");
+            Transform nameTransform = slot.transform.Find("MatName");
+            Transform countTransform = slot.transform.Find("MatCount");
 
-                matName = matString.AddComponent<TextMeshProUGUI>();
-                matName.alignment = TextAlignmentOptions.Center;
-                matName.fontSize = 40f;
-            }
+            if (imageTransform != null)
+                imageTransform.GetComponent<Image>().sprite = Resources.Load<Sprite>($"Item/{materialId}");
 
-            else
-            {
-                matString = matStringParent.GetChild(count).gameObject;
-                matName = matString.GetComponent<TextMeshProUGUI>();
-                matString.SetActive(true);
-            }
+            if (nameTransform != null)
+                nameTransform.GetComponent<Text>().text = materialInfo.itemName;
 
-            matName.text = $"[{GameManager.Instance.itemInfos[GameManager.Instance.idByMaterialType[mat.Key]].itemName}]";
+            if (countTransform != null)
+                countTransform.GetComponent<Text>().text = $"x {mat.Value}";
 
-            Vector2 textSize = matName.GetComponent<RectTransform>().sizeDelta;
-            textSize.x = matName.preferredWidth;
-            textSize.y = 54;
-            matName.GetComponent<RectTransform>().sizeDelta = textSize;
-
-            EventTrigger eventTrigger = matString.AddComponent<EventTrigger>();
-
-            EventTrigger.Entry enterEntry = new EventTrigger.Entry();
-            enterEntry.eventID = EventTriggerType.PointerEnter;
-            enterEntry.callback.AddListener((data) => { MouseOverOnMaterialString(GameManager.Instance.idByMaterialType[mat.Key]); });
-
-            EventTrigger.Entry exitEntry = new EventTrigger.Entry();
-            exitEntry.eventID = EventTriggerType.PointerExit;
-            exitEntry.callback.AddListener((data) => { MouseExitOnMaterialString(GameManager.Instance.idByMaterialType[mat.Key]); });
-
-            eventTrigger.triggers.Add(enterEntry);
-            eventTrigger.triggers.Add(exitEntry);
-
-            for (int i = itemsByCategory[index].NeedMaterials.Count; i < materialSlot.childCount; ++i)
-            {
-                materialSlot.GetChild(i).gameObject.SetActive(false);
-            }
+            RefreshMaterialText(count, materialId, materialInfo.itemName);
 
             count++;
         }
-
-        DiscriptionContents.SetActive(true);
     }
 
-    GameObject materialPanelPrefab;
-    GameObject materialPanel;
-
-    void MouseOverOnMaterialString(int matId)
+    /// <summary>
+    /// 필요 재료 이름을 생성하고 마우스 호버 이벤트를 연결한다.
+    /// </summary>
+    private void RefreshMaterialText(int index, int materialId, string materialName)
     {
+        if (matStringParent == null)
+            return;
 
-        Item item = GameManager.Instance.itemDatas.Where(x => x.ItemId == matId).First();
+        GameObject textObject;
+        TextMeshProUGUI text;
+
+        if (index < matStringParent.childCount)
+        {
+            textObject = matStringParent.GetChild(index).gameObject;
+            text = textObject.GetComponent<TextMeshProUGUI>();
+        }
+        else
+        {
+            textObject = new GameObject($"Material{index}", typeof(RectTransform));
+            textObject.transform.SetParent(matStringParent, false);
+
+            text = textObject.AddComponent<TextMeshProUGUI>();
+            text.alignment = TextAlignmentOptions.Center;
+            text.fontSize = 40f;
+        }
+
+        if (text == null)
+            return;
+
+        textObject.SetActive(true);
+        text.text = $"[{materialName}]";
+        text.raycastTarget = true;
+
+        RectTransform rect = textObject.GetComponent<RectTransform>();
+        rect.sizeDelta = new Vector2(text.preferredWidth, 54f);
+
+        EventTrigger trigger = textObject.GetComponent<EventTrigger>();
+
+        if (trigger == null)
+            trigger = textObject.AddComponent<EventTrigger>();
+
+        // 기존 이벤트를 지우고 현재 재료에 맞게 다시 등록
+        trigger.triggers.Clear();
+
+        EventTrigger.Entry enterEntry = new();
+        enterEntry.eventID = EventTriggerType.PointerEnter;
+        enterEntry.callback.AddListener(data => MouseOverOnMaterialString(materialId));
+
+        EventTrigger.Entry exitEntry = new();
+        exitEntry.eventID = EventTriggerType.PointerExit;
+        exitEntry.callback.AddListener(data => MouseExitOnMaterialString(materialId));
+
+        trigger.triggers.Add(enterEntry);
+        trigger.triggers.Add(exitEntry);
+    }
+
+    /// <summary>
+    /// 재료 이름에 마우스를 올리면 상세 설명 패널을 표시한다.
+    /// </summary>
+    private void MouseOverOnMaterialString(int materialId)
+    {
+        if (itemManager == null)
+            return;
+
+        Item item = itemManager.itemDatas.FirstOrDefault(x => x.ItemId == materialId);
+
+        if (item == null)
+            return;
 
         if (materialPanel == null)
         {
-            materialPanelPrefab = Resources.Load<GameObject>("Panels/MatDescriptionPanel");
-            materialPanel = Instantiate(materialPanelPrefab, transform);
+            GameObject prefab = Resources.Load<GameObject>("Panels/MatDescriptionPanel");
+
+            if (prefab == null)
+            {
+                Debug.LogWarning("[ItemDictionay] MatDescriptionPanel 프리팹이 없습니다.", this);
+                return;
+            }
+
+            materialPanel = Instantiate(prefab, transform);
         }
 
-        materialPanel.transform.Find("ItemImage").GetComponent<Image>().sprite = Resources.Load<Sprite>($"Item/{item.ImageId}");
-        materialPanel.transform.Find("ItemName").GetComponent<TextMeshProUGUI>().text = item.ItemName;
-        materialPanel.transform.Find("ItemEffect").GetComponent<TextMeshProUGUI>().text = item.ItemEffect;
-        materialPanel.transform.Find("ItemAquisition").GetComponent<TextMeshProUGUI>().text = "획득 장소: ";
+        Transform image = materialPanel.transform.Find("ItemImage");
+        Transform name = materialPanel.transform.Find("ItemName");
+        Transform effect = materialPanel.transform.Find("ItemEffect");
+        Transform acquisition = materialPanel.transform.Find("ItemAquisition");
 
-        foreach (var aquisition in item.takeTimeByAcquisition)
+        if (image != null)
+            image.GetComponent<Image>().sprite = Resources.Load<Sprite>($"Item/{item.ImageId}");
+
+        if (name != null)
+            name.GetComponent<TextMeshProUGUI>().text = item.ItemName;
+
+        if (effect != null)
+            effect.GetComponent<TextMeshProUGUI>().text = item.ItemEffect;
+
+        if (acquisition != null)
         {
-            materialPanel.transform.Find("ItemAquisition").GetComponent<TextMeshProUGUI>().text += $"{GameManager.Instance.aquisitionName[aquisition.Key]} ";
+            TextMeshProUGUI text = acquisition.GetComponent<TextMeshProUGUI>();
+            text.text = "획득 장소: ";
+
+            if (item.takeTimeByAcquisition != null)
+            {
+                foreach (var entry in item.takeTimeByAcquisition)
+                {
+                    if (itemManager.aquisitionName.TryGetValue(entry.Key, out string acquisitionName))
+                        text.text += $"{acquisitionName} ";
+                }
+            }
         }
-
-        /*RectTransform rt = materialPanel.GetComponent<RectTransform>();
-        Vector2 panelPos;
-
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(rt, Input.mousePosition, Camera.main, out panelPos);
-
-        rt.localPosition = panelPos;*/
 
         materialPanel.SetActive(true);
     }
 
-    void MouseExitOnMaterialString(int matId)
+    /// <summary>
+    /// 재료 설명 패널을 숨긴다.
+    /// </summary>
+    private void MouseExitOnMaterialString(int materialId)
     {
-        materialPanel.SetActive(false);
+        if (materialPanel != null)
+            materialPanel.SetActive(false);
     }
 }

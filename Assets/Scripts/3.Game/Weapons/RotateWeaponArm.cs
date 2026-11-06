@@ -21,7 +21,7 @@ public class RotateWeaponArm : MonoBehaviour
 
     void Update()
     {
-        if (!gameManager.isPause && Character.Instance.isCanControll)
+        if (!gameManager.isPause)
             LookMousePosition();
     }
 

@@ -16,8 +16,8 @@ public class CreatePanel : MonoBehaviour
     [SerializeField] Transform createItemListParent;
     [SerializeField] GameObject createItemSlotPrefab;
     [SerializeField] GameObject CreateSuccessPanel;
-
-    GameManager gameManager;
+    [SerializeField] InvenControl invenControl;
+    ItemManager itemManager;
 
     Item item;
 
@@ -30,18 +30,23 @@ public class CreatePanel : MonoBehaviour
 
     private void Awake()
     {
-        gameManager = GameManager.Instance;
+        itemManager = ItemManager.Instance;
         createCountText.text = $"제작 개수:\t{createCount}";
     }
 
     private void OnEnable()
     {
+        invenControl.isUIActive = true;
         createType = 0;
 
         UpdateCreateItemList(createType);
         SetCreateItemPanelInfo();
     }
 
+    private void OnDisable()
+    {
+        invenControl.isUIActive = false;
+    }
     public void SetCreateAcquisition(Acquisition acquisition)
     {
         this.acquisition = acquisition;
@@ -56,7 +61,7 @@ public class CreatePanel : MonoBehaviour
 
     public void UpdateCreateItemList(int createType)
     {
-        Item[] createItemList = gameManager.itemDatas.Where(x => x.AcquisitionList.Contains(acquisition)).ToArray();
+        Item[] createItemList = itemManager.itemDatas.Where(x => x.AcquisitionList.Contains(acquisition)).ToArray();
 
         for (int i = 0; i < createItemListParent.childCount; ++i)
             createItemListParent.GetChild(i).gameObject.SetActive(false);
@@ -113,9 +118,9 @@ public class CreatePanel : MonoBehaviour
                 materialPrefab.SetActive(true);
             }
 
-            materialPrefab.transform.Find("MatImage").GetComponent<Image>().sprite = Resources.Load<Sprite>($"Item/{GameManager.Instance.idByMaterialType[material.Key]}");
+            materialPrefab.transform.Find("MatImage").GetComponent<Image>().sprite = Resources.Load<Sprite>($"Item/{ItemManager.Instance.idByMaterialType[material.Key]}");
             TextMeshProUGUI countText = materialPrefab.transform.Find("Count").GetComponent<TextMeshProUGUI>();
-            int haveItemAmount = !gameManager.haveItems.ContainsKey(gameManager.idByMaterialType[material.Key]) ? 0 : gameManager.haveItems[gameManager.idByMaterialType[material.Key]];
+            int haveItemAmount = !itemManager.haveItems.ContainsKey(itemManager.idByMaterialType[material.Key]) ? 0 : itemManager.haveItems[itemManager.idByMaterialType[material.Key]];
             countText.text = $"{material.Value * createCount} / {haveItemAmount}";
             countText.color = haveItemAmount < material.Value * createCount ? Color.red : Color.white;
 
@@ -149,21 +154,21 @@ public class CreatePanel : MonoBehaviour
 
         foreach (var material in item.NeedMaterials)
         {
-            if (!gameManager.haveItems.ContainsKey(gameManager.idByMaterialType[material.Key]))
+            if (!itemManager.haveItems.ContainsKey(itemManager.idByMaterialType[material.Key]))
                 return;
 
-            else if (gameManager.haveItems[gameManager.idByMaterialType[material.Key]] < material.Value)
+            else if (itemManager.haveItems[itemManager.idByMaterialType[material.Key]] < material.Value)
                 return;
         }
 
         foreach (var material in item.NeedMaterials)
         {
-            gameManager.haveItems[gameManager.idByMaterialType[material.Key]] -= material.Value * createCount;
-            Debug.Log($"{gameManager.itemInfos[GameManager.Instance.idByMaterialType[material.Key]].itemName}: {material.Value * createCount}개 소모");
+            itemManager.haveItems[itemManager.idByMaterialType[material.Key]] -= material.Value * createCount;
+            Debug.Log($"{itemManager.itemInfos[ItemManager.Instance.idByMaterialType[material.Key]].itemName}: {material.Value * createCount}개 소모");
         }
 
         //item.AddItem();
-        GameManager.Instance.haveItems[item.ItemId] += createCount;
+        ItemManager.Instance.haveItems[item.ItemId] += createCount;
 
         SetCreateItemPanelInfo();
 
@@ -176,17 +181,17 @@ public class CreatePanel : MonoBehaviour
     {
         foreach (var material in item.NeedMaterials)
         {
-            if (!gameManager.haveMaterials.ContainsKey(material.Key))
+            if (!itemManager.haveMaterials.ContainsKey(material.Key))
                 return;
 
-            else if (gameManager.haveMaterials[material.Key] < material.Value)
+            else if (itemManager.haveMaterials[material.Key] < material.Value)
                 return;
         }
 
         foreach (var material in item.NeedMaterials)
         {
-            gameManager.haveMaterials[material.Key] -= material.Value;
-            Debug.Log($"{gameManager.itemInfos[GameManager.Instance.idByMaterialType[material.Key]].itemName}: {material.Value}개 소모");
+            itemManager.haveMaterials[material.Key] -= material.Value;
+            Debug.Log($"{itemManager.itemInfos[ItemManager.Instance.idByMaterialType[material.Key]].itemName}: {material.Value}개 소모");
         }
 
         item.AddItem();
@@ -197,7 +202,7 @@ public class CreatePanel : MonoBehaviour
     {
         List<ItemInfo> items = new List<ItemInfo>();
 
-        foreach (var itemInfo in gameManager.itemInfos)
+        foreach (var itemInfo in itemManager.itemInfos)
         {
             string[] aquisitions = itemInfo.Value.acquisitions.Split(",");
 

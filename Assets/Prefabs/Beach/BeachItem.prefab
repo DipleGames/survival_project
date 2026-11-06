@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 7169264069267603475}
   - component: {fileID: 1603947642658152993}
-  - component: {fileID: 1703502497753984704}
   m_Layer: 19
   m_Name: CharacterChecker
   m_TagString: Untagged
@@ -46,25 +45,6 @@ SphereCollider:
   serializedVersion: 2
   m_Radius: 4
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &1703502497753984704
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1497709087426124162}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f7635892f5c6a564e970cfe99c0ab707, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  arrow: {fileID: 0}
-  clickUI: {fileID: 5675483485377064698}
-  coll: {fileID: 1603947642658152993}
-  tutoType: 13
-  nextTuto: 0
-  tutoImage: {fileID: 0}
-  needItemImage: {fileID: 0}
 --- !u!1 &1619837401552321815
 GameObject:
   m_ObjectHideFlags: 0
@@ -75,7 +55,6 @@ GameObject:
   m_Component:
   - component: {fileID: 5313619365374561083}
   - component: {fileID: 4071240023943095142}
-  - component: {fileID: 4656188638952120618}
   - component: {fileID: 5499804377006913791}
   - component: {fileID: 1248216460410623440}
   m_Layer: 18
@@ -157,26 +136,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &4656188638952120618
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1619837401552321815}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 339f1af1af527ab4e8547075cb13a298, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  beachPieceList:
-  - {fileID: 11400000, guid: 48d64b482b9b50d40a54f85fa05ab993, type: 2}
-  - {fileID: 11400000, guid: 1409f817f2e97494faa1ac887fb2a16a, type: 2}
-  gatherPoints:
-  - {fileID: 6691247678152933779}
-  - {fileID: 2964632260305361915}
-  spriteRenderer: {fileID: 4071240023943095142}
-  getWoodSound: {fileID: 8300000, guid: 65da1d5a3ca89734f9054747c92203e6, type: 3}
 --- !u!65 &5499804377006913791
 BoxCollider:
   m_ObjectHideFlags: 0
