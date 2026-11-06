@@ -64,7 +64,7 @@ MonoBehaviour:
   hp: 6
   attckDamege: 1
   attackRange: 4
-  childSpriteRenderer: {fileID: 0}
+  childSpriteRenderer: {fileID: 5579710818580747873}
   isVariant: 0
   telegraphDuration: 0.5
   dashDistance: 5
@@ -76,7 +76,7 @@ MonoBehaviour:
     m_Bits: 64
   slashForwardOffset: -0.6
   slashDuration: 0.3
-  slashIndicator: {fileID: 0}
+  slashIndicator: {fileID: 6968369816624160037}
   dodgeChance: 0.6
   dodgeCooldown: 3
   dodgeDistance: 2.5
