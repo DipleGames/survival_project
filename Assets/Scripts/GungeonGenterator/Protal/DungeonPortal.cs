@@ -48,12 +48,11 @@ public class DungeonPortal : MonoBehaviour
     private void EnterDungeon()
     {
         GameObject player = GameObject.FindGameObjectWithTag("Character");
-        GameObject point = GameObject.Find("DungeonReturnPoint");
-        if (player == null || point == null) return;
+        if (player == null) return;
 
         Vector3 PlayerPos = player.transform.position;
-        Vector3 PointPos = point.transform.position;
-        player.transform.position = new Vector3(PointPos.x, PlayerPos.y, PointPos.z);
+        Vector3 offset = new Vector3(-5.0f, 0.0f, -5.0f);
+        player.transform.position = new Vector3(PlayerPos.x + offset.x, PlayerPos.y, PlayerPos.z + offset.z);
 
 
         Debug.LogWarning("던전 입장 실행!");

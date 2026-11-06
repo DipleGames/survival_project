@@ -271582,6 +271582,75 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 428782095}
   m_CullTransparentMesh: 1
+--- !u!1001 &447197046
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 6179610771952989829, guid: dd7b8358d74c41b498b62a6f0dc8bd63, type: 3}
+      propertyPath: portalType
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6179610771952989830, guid: dd7b8358d74c41b498b62a6f0dc8bd63, type: 3}
+      propertyPath: m_RootOrder
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 6179610771952989830, guid: dd7b8358d74c41b498b62a6f0dc8bd63, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.25
+      objectReference: {fileID: 0}
+    - target: {fileID: 6179610771952989830, guid: dd7b8358d74c41b498b62a6f0dc8bd63, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.25
+      objectReference: {fileID: 0}
+    - target: {fileID: 6179610771952989830, guid: dd7b8358d74c41b498b62a6f0dc8bd63, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6179610771952989830, guid: dd7b8358d74c41b498b62a6f0dc8bd63, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6179610771952989830, guid: dd7b8358d74c41b498b62a6f0dc8bd63, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -50
+      objectReference: {fileID: 0}
+    - target: {fileID: 6179610771952989830, guid: dd7b8358d74c41b498b62a6f0dc8bd63, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 6179610771952989830, guid: dd7b8358d74c41b498b62a6f0dc8bd63, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 6179610771952989830, guid: dd7b8358d74c41b498b62a6f0dc8bd63, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6179610771952989830, guid: dd7b8358d74c41b498b62a6f0dc8bd63, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6179610771952989830, guid: dd7b8358d74c41b498b62a6f0dc8bd63, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 90
+      objectReference: {fileID: 0}
+    - target: {fileID: 6179610771952989830, guid: dd7b8358d74c41b498b62a6f0dc8bd63, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6179610771952989830, guid: dd7b8358d74c41b498b62a6f0dc8bd63, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6179610771952989833, guid: dd7b8358d74c41b498b62a6f0dc8bd63, type: 3}
+      propertyPath: m_Name
+      value: DungeonPortal
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: dd7b8358d74c41b498b62a6f0dc8bd63, type: 3}
 --- !u!1 &448425445
 GameObject:
   m_ObjectHideFlags: 0

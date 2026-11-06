@@ -39,19 +39,21 @@ public class DungeonManager : MonoBehaviour
         RoomType roomType = getDungeonRoom(CurrentRoomId).RoomType;
         float XPos = RoomTypeNumber.GetRoomXPosition(roomType);
 
-        Portal.transform.position = new Vector3(XPos, 10.5f, Portal.transform.position.z);
+        Portal.transform.position = new Vector3(XPos, 2.0f, 10.5f);
         //포탈 타입 설정
         Portal.GetComponent<DungeonPortal>().SetPortalType(roomType == RoomType.Boss ?
             DungeonPortal.PortalType.ExitDungeon : DungeonPortal.PortalType.RoomComplete);
 
-        Player.transform.position = new Vector3(XPos, -2.0f, Player.transform.position.z);
-        Player.GetComponent<TestPlayerMove>().SetMoving(true);
+        Player.transform.position = new Vector3(XPos, 1.0f, 0.0f);
+        PlayerMove playerMove = Player.GetComponent<PlayerMove>();
+        playerMove.enabled = true;
     }
 
     public void RoomComplete()
     {
         //임시 : 포탈에 접촉하면 클리어 처리, 추후 클리어 판정이 변경될 수 있음
-        Player.GetComponent<TestPlayerMove>().SetMoving(false);
+        PlayerMove playerMove = Player.GetComponent<PlayerMove>();
+        playerMove.enabled = false;
 
         getDungeonRoom(CurrentRoomId).RoomClear();
         

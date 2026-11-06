@@ -12,8 +12,8 @@ public class TestCameraMove : MonoBehaviour
 
         transform.position = new Vector3(
             target.position.x,
-            target.position.y,
-            transform.position.z
+            20.0f,
+            target.position.z
         );
     }
 }
