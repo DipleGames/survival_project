@@ -19,12 +19,9 @@ public static class WorkAreaSelector
             if (area.IsReserved)
                 continue;
 
-            Vector3 areaPosition =
-                WorkAreaManager.Instance.GetWorldPosition(
-                    area.CellPosition);
+            Vector3 areaPosition = WorkAreaManager.Instance.GetWorldPosition(area.CellPosition);
 
-            float distance = Vector3.SqrMagnitude(
-                areaPosition - skullPosition);
+            float distance = Vector3.SqrMagnitude(areaPosition - skullPosition);
 
             if (distance >= nearestDistance)
                 continue;

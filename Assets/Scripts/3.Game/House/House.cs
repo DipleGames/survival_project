@@ -57,16 +57,16 @@ public class House : MonoBehaviour, IMouseInteraction, IDamageable
 
         foreach (var material in requireMaterials)
         {
-            if (!GameManager.Instance.haveMaterials.ContainsKey(material.Key))
+            if (!ItemManager.Instance.haveMaterials.ContainsKey(material.Key))
                 return false;
 
-            if (GameManager.Instance.haveMaterials[material.Key] < material.Value)
+            if (ItemManager.Instance.haveMaterials[material.Key] < material.Value)
                 return false;
         }
 
         foreach (var material in requireMaterials)
         {
-            GameManager.Instance.haveMaterials[material.Key] -= material.Value;
+            ItemManager.Instance.haveMaterials[material.Key] -= material.Value;
             TempMaterialCount(material.Key, material.Value);
         }
 
@@ -77,10 +77,6 @@ public class House : MonoBehaviour, IMouseInteraction, IDamageable
     {
         switch (type) 
         {
-            case MaterialType.Wood:
-                GameManager.Instance.woodCount -= count; 
-                break;
-
             default:
                 break;
         }

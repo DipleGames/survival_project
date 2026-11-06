@@ -16,7 +16,7 @@ namespace FishingTest
 
         [Header("Scene references")]
         [SerializeField] private Camera worldCamera;
-        [SerializeField] private FishingTestPlayerController player;
+        [SerializeField] private FishingPlayerController player;
 
         [Tooltip("비어 있을 때, 'Lake' 또는 'Sea' 태그가 지정된 모든 활성 타일맵이 자동으로 감지")]
         [SerializeField] private Tilemap[] waterTilemaps;
@@ -186,11 +186,6 @@ namespace FishingTest
                 worldCamera = Camera.main;
             }
 
-            if (player == null && Character.Instance != null)
-            {
-                player = Character.Instance.GetComponent<FishingTestPlayerController>();
-            }
-
             if (player == null && !missingPlayerReported)
             {
                 Debug.LogError("[Tile Fishing] Add FishingTestPlayerController to the Character GameObject.", this);
@@ -207,17 +202,7 @@ namespace FishingTest
         {
             GameManager gm = GameManager.Instance;
 
-            if (gm == null)
-            {
-                return player != null && player.GetComponent<Character>() != null;
-            }
-
-            if (gm.currentScene != "Game" || gm.isPause) 
-            {
-                return true;
-            }
-
-            return GamesceneManager.Instance != null && GamesceneManager.Instance.isNight;
+            return true;
         }
 
         // 현재 마우스 포인터가 EventSystem UI 위에 있는지 확인한다.
@@ -314,11 +299,6 @@ namespace FishingTest
         private void UpdateUiScale()
         {
             float cursorPixels = referenceCursorPixelSize;
-
-            if (GameManager.Instance != null && GameManager.Instance.useCursorNormal != null)
-            {
-                cursorPixels = GameManager.Instance.useCursorNormal.width;
-            }
 
             float scale = Mathf.Max(0.1f, cursorPixels / referenceCursorPixelSize) * uiScaleMultiplier;
 

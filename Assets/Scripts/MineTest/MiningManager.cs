@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.SceneManagement;
 using UnityEngine.Tilemaps;
 using UnityEngine.UI;
 
@@ -14,7 +13,8 @@ namespace MineTest
     {
         [Header("Scene references")]
         [SerializeField] private Camera worldCamera;
-        [SerializeField] private MineTestPlayerController player;
+        [SerializeField] private Player player;
+        private MinePlayerController miningController;
         [SerializeField] private Tilemap ground;
 
         [Tooltip("광물 생성을 허용할 Ground 태그 Tilemap. 비워두면 씬의 모든 Ground Tilemap을 자동으로 참조")]
@@ -27,13 +27,14 @@ namespace MineTest
         [SerializeField] private bool cloneCursorLabel;
 
         [Header("Interaction")]
+        [SerializeField] private bool miningEnabled = true;
         [SerializeField, Min(0.1f)] private float miningRadius = 3f;
         [SerializeField, Min(1)] private int miningAnimationLoops = 2;
         [SerializeField, Min(1)] private int damagePerHit = 10;
         [SerializeField] private LayerMask miningRaycastMask = ~0;
 
         [Header("Auto movement")]
-        [SerializeField, Min(0.1f)] private float autoMoveSpeed = 3f;
+        [SerializeField, Min(0.1f)] private float autoMoveSpeed = 3f; // PlayerStatus에 MoveSpeed가 없을 때 사용할 대체값
 
         [Tooltip("광물이 캐릭터 하체에 오도록 광물보다 화면 위쪽에 서는 거리")]
         [SerializeField, Min(0.05f)] private float approachDistance = 0.8f;
@@ -57,7 +58,6 @@ namespace MineTest
         [SerializeField] private Vector2 labelCursorOffset = new Vector2(-120f, 30f);
         [SerializeField] private Vector2 clickUiCursorOffset = new Vector2(-20f, -80f);
         [SerializeField] private Vector3 clickUiScale = new Vector3(0.04f, 0.04f, 0.04f);
-        [SerializeField, Min(1f)] private float referenceCursorPixelSize = 75f;
         [SerializeField, Min(0.1f)] private float uiScaleMultiplier = 1f;
 
         private readonly List<MiningNode> nodes = new List<MiningNode>();
@@ -80,6 +80,24 @@ namespace MineTest
         public bool PickaxeBroken => pickaxeDurability <= 0;
 
         [SerializeField] private Transform miningParent;
+        /// <summary>
+        /// 야간/전투/이벤트 등 외부 시스템이 채광을 비활성화할 때 사용한다.
+        /// </summary>
+        public void SetMiningEnabled(bool enabled)
+        {
+            if (miningEnabled == enabled)
+                return;
+
+            miningEnabled = enabled;
+
+            if (!miningEnabled)
+            {
+                CancelActiveInteraction();
+                HideHoverVisuals();
+                RestoreNodeOpacity();
+            }
+        }
+
         // 씬 참조, 생성 지형, 곡괭이 내구도와 커서 UI를 초기화한다.
         private void Awake()
         {
@@ -177,23 +195,7 @@ namespace MineTest
         // 비활성화될 때 진행 중인 채광을 중단하고 캐릭터와 화면 연출을 복원한다.
         private void OnDisable()
         {
-            if (miningRoutine != null) 
-            {
-                StopCoroutine(miningRoutine);
-            }
-
-            ReleaseActiveNode();
-
-            miningRoutine = null;
-            autoMoving = false;
-            activeNode = null;
-
-            if (player != null)
-            {
-                player.RestoreDefaultAnimation();
-                player.MovementLocked = false;
-            }
-
+            CancelActiveInteraction();
             HideHoverVisuals();
             RestoreNodeOpacity();
         }
@@ -276,7 +278,7 @@ namespace MineTest
                 return;
             }
 
-            if (player == null)
+            if (player == null || miningController == null)
                 return;
 
             if (PickaxeBroken)
@@ -298,8 +300,8 @@ namespace MineTest
             Vector3 toNode = activeNode.transform.position - player.transform.position;
             toNode.y = 0f;
             
-            player.SetFacingFromWorldX(toNode.x);
-            player.MovementLocked = true;
+            miningController.SetFacingFromWorldX(toNode.x);
+            miningController.MovementLocked = true;
 
             // The camera looks straight down and its screen-up direction is world +Z.
             // Always stand above the mineral on screen so it aligns with the lower body,
@@ -319,30 +321,43 @@ namespace MineTest
         // 캐릭터를 광물 앞의 목표 지점까지 이동시키고 도착하면 채광으로 전환한다.
         private void UpdateAutoMove()
         {
-            if (player == null || activeNode == null)
+            if (player == null || miningController == null || activeNode == null)
             {
                 CancelActiveInteraction();
                 return;
             }
 
             Vector3 next = Vector3.MoveTowards(
-                player.transform.position, autoMoveTarget, autoMoveSpeed * Time.deltaTime);
-            player.Move(next - player.transform.position);
+                player.transform.position, autoMoveTarget, GetAutoMoveSpeed() * Time.deltaTime);
+            miningController.Move(next - player.transform.position);
 
             if (Vector3.Distance(player.transform.position, autoMoveTarget) <= arrivalDistance)
             {
                 autoMoving = false;
-                player.StopMovementVisual();
+                miningController.StopMovementVisual();
 
                 BeginMiningSequence();
             }
+        }
+
+        /// <summary>
+        /// 장비/버프가 적용된 최종 이동속도를 사용한다.
+        /// MoveSpeed 스탯이 등록되지 않았다면 Inspector의 대체 속도를 사용한다.
+        /// </summary>
+        private float GetAutoMoveSpeed()
+        {
+            if (player != null && player.Status != null &&
+                player.Status.Stat.TryGetValue(StatType.MoveSpeed, out float speed))
+                return Mathf.Max(0f, speed);
+
+            return autoMoveSpeed;
         }
 
         // 캐릭터가 광물을 바라보게 한 후 채광 코루틴을 시작한다.
         private void BeginMiningSequence()
         {
             Vector3 toNode = activeNode.transform.position - player.transform.position;
-            player.SetFacingFromWorldX(toNode.x);
+            miningController.SetFacingFromWorldX(toNode.x);
             miningRoutine = StartCoroutine(MiningSequence());
         }
 
@@ -360,36 +375,41 @@ namespace MineTest
             autoMoving = false;
             activeNode = null;
 
-            if (player != null)
+            if (miningController != null)
             {
-                player.StopMovementVisual();
-                player.RestoreDefaultAnimation();
-                player.MovementLocked = false;
+                miningController.StopMovementVisual();
+                miningController.RestoreDefaultAnimation();
+                miningController.MovementLocked = false;
             }
         }
 
         // 채광 애니메이션을 지정 횟수 재생한 뒤 피해를 적용하고 기본 상태로 복귀한다.
         private IEnumerator MiningSequence()
         {
-            player.StartMiningAnimation();
+            miningController.StartMiningAnimation();
 
             yield return null;
 
-            while (activeNode != null && !player.HasCompletedMiningLoops(miningAnimationLoops))
+            while (activeNode != null && player != null && miningController != null &&
+                   !miningController.HasCompletedMiningLoops(miningAnimationLoops))
             {
                 yield return null;
             }
 
-            ApplyMiningHit();
+            if (player != null && miningController != null && activeNode != null)
+                ApplyMiningHit();
+
             ReleaseActiveNode();
-            player.RestoreDefaultAnimation();
+
+            if (miningController != null)
+                miningController.RestoreDefaultAnimation();
 
             activeNode = null;
             miningRoutine = null;
 
-            if (player != null) 
+            if (miningController != null)
             {
-                player.MovementLocked = false;
+                miningController.MovementLocked = false;
             }
         }
 
@@ -615,32 +635,21 @@ namespace MineTest
             return center + map.transform.TransformVector(localOffset);
         }
 
-        // 카메라와 Character의 채광용 플레이어 컨트롤러 참조를 자동으로 찾는다.
+        // GameManager가 씬 로드 후 생성한 Player와 채광 전용 컨트롤러를 연결한다.
         private void ResolveReferences()
         {
-            if (worldCamera == null) 
-            {
+            if (worldCamera == null)
                 worldCamera = Camera.main;
-            }
 
-            if (player != null) 
+            // 플레이어는 씬 로드 후 생성될 수 있으므로, 없는 동안 Update에서 재탐색한다.
+            if (player == null)
             {
-                return;
+                player = FindObjectOfType<Player>();
+                miningController = null;
             }
 
-            Character character = Character.Instance != null ? Character.Instance : FindObjectOfType<Character>();
-
-            if (character == null) 
-            {
-                return;
-            }
-
-            player = character.GetComponent<MineTestPlayerController>();
-
-            if (player == null) 
-            {
-                player = character.gameObject.AddComponent<MineTestPlayerController>();
-            }
+            if (player != null && miningController == null)
+                miningController = player.GetComponent<MinePlayerController>();
         }
 
         // 활성 Tilemap 중 Ground 태그를 가진 생성 가능 지형 목록을 구성한다.
@@ -682,29 +691,14 @@ namespace MineTest
             return false;
         }
 
-        // 현재 씬, 일시정지, 밤 상태를 기준으로 채광이 금지된 상태인지 확인한다.
+        // 채광 활성화 여부, Player 연결 여부와 게임 일시정지 상태를 확인한다.
+        // 씬/밤 상태에 대한 판단은 외부 시스템에서 SetMiningEnabled로 전달한다.
         private bool GameplayUnavailable()
         {
-            // MineTest is a standalone interaction scene. A persistent GameManager can
-            // still report a scene name other than "Game", which previously caused
-            // Update to cancel hover, movement and mining every frame in this scene.
-            if (IsMineTestScene())
-            {
-                return false;
-            }
-
-            GameManager game = GameManager.Instance;
-
-            if (game != null && (game.currentScene != "Game" || game.isPause)) 
-            {
-                return true;
-            }
-
-            return GamesceneManager.Instance != null && GamesceneManager.Instance.isNight;
+            return !miningEnabled || player == null || !player.isActiveAndEnabled ||
+                   miningController == null || !miningController.isActiveAndEnabled ||
+                   player.Status == null || Time.timeScale <= 0f;
         }
-
-        private static bool IsMineTestScene() =>
-            SceneManager.GetActiveScene().name == "MineTest";
 
         // 생성 후보가 기존 광물과 최소 간격보다 가까운지 확인한다.
         private bool IsTooCloseToExistingNode(Vector3 candidate)
@@ -744,24 +738,13 @@ namespace MineTest
             clickUiInstance.SetActive(false);
         }
 
-        // FishingTestController와 같은 계산식으로 현재 커서 크기에 맞춰 클릭 UI 배율을 조절한다.
+        // GameManager의 커서 크기 참조 없이 Inspector에서 설정한 배율을 사용한다.
         private void UpdateUiScale()
         {
-            if (clickUiInstance == null) 
-            {
+            if (clickUiInstance == null)
                 return;
-            }
 
-            float cursorPixels = referenceCursorPixelSize;
-
-            if (GameManager.Instance != null && GameManager.Instance.useCursorNormal != null)
-            {
-                cursorPixels = GameManager.Instance.useCursorNormal.width;
-            }
-
-            float scale = Mathf.Max(0.1f, cursorPixels / referenceCursorPixelSize) * uiScaleMultiplier;
-
-            clickUiInstance.transform.localScale = clickUiScale * scale;
+            clickUiInstance.transform.localScale = clickUiScale * uiScaleMultiplier;
         }
 
         // 현재 호버와 채광 상태에 따라 커서 라벨과 클릭 UI를 표시하고 배치한다.

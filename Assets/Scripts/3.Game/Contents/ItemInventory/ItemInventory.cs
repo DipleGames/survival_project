@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -6,228 +5,329 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 /// <summary>
-/// 인벤토리 UI를 관리하는 클래스
+/// 아이템 인벤토리의 슬롯 생성, 카테고리 전환, 정렬 및 드래그 UI를 관리한다.
 /// </summary>
 public class ItemInventory : MonoBehaviour
 {
-    [SerializeField] GameObject descriptionPanel;
-    [SerializeField] Transform slotParent;
-    [SerializeField] GameObject slotPrefab;
-    [SerializeField] GameObject invenPanel;
-    [SerializeField] GameObject dragSlot;
-    [SerializeField] private InventoryCategoryTabUI categoryTabUI; //카테고리 탭 UI 관리하는 스크립트 참조
-    private Dictionary<int, int?[]> categorySlotItems = new Dictionary<int, int?[]>();
+    [SerializeField] private GameObject descriptionPanel;
+    [SerializeField] private Transform slotParent;
+    [SerializeField] private GameObject slotPrefab;
+    [SerializeField] private GameObject invenPanel;
+    [SerializeField] private GameObject dragSlot;
+    [SerializeField] private InventoryCategoryTabUI categoryTabUI;
+
     private const int SlotCount = 36;
+
+    private readonly Dictionary<int, int?[]> categorySlotItems = new();
+    private List<ItemInvenSlot> slots;
+    private ItemManager itemManager;
+    private int currentCategory;
+    private bool initialized;
+
     public GameObject DragSlot => dragSlot;
 
-    int currentCategory;
-    List<ItemInvenSlot> slots;
-
-    GameManager gameManager;
-
+    /// <summary>
+    /// 인벤토리 슬롯 UI만 생성한다. 아이템 데이터는 아직 읽지 않는다.
+    /// </summary>
     private void Awake()
     {
-        slots = new List<ItemInvenSlot>();
-        gameManager = GameManager.Instance;
-
+        slots = new List<ItemInvenSlot>(SlotCount);
         currentCategory = 0;
 
-        for (int i = 0; i < 36; i++)
+        if (slotPrefab == null || slotParent == null)
         {
-            ItemInvenSlot slot = Instantiate(slotPrefab, slotParent).GetComponent<ItemInvenSlot>();
+            Debug.LogError("[ItemInventory] Slot Prefab 또는 Slot Parent가 할당되지 않았습니다.", this);
+            enabled = false;
+            return;
+        }
+
+        for (int i = 0; i < SlotCount; i++)
+        {
+            GameObject obj = Instantiate(slotPrefab, slotParent);
+            ItemInvenSlot slot = obj.GetComponent<ItemInvenSlot>();
+
+            if (slot == null)
+            {
+                Debug.LogError("[ItemInventory] 슬롯 프리팹에 ItemInvenSlot 컴포넌트가 없습니다.", obj);
+                Destroy(obj);
+                enabled = false;
+                return;
+            }
+
             slot.inventory = this;
             slots.Add(slot);
         }
 
-        descriptionPanel.GetComponent<Text>().text = "";
+        SetDescriptionText("");
 
-        invenPanel.SetActive(false);
-        InitializeSlotData();
+        if (invenPanel != null)
+            invenPanel.SetActive(false);
     }
 
-    private void Update()
+    /// <summary>
+    /// ItemManager 초기화를 보장한 후 슬롯 데이터를 구성하고 UI를 갱신한다.
+    /// </summary>
+    private void Start()
     {
-        if (Input.GetKeyDown(KeyCode.U))
-        {
-            invenPanel.SetActive(!invenPanel.activeSelf);
+        if (!enabled)
+            return;
 
-            if(invenPanel.activeSelf) ChangeCategory(currentCategory);
+        itemManager = ItemManager.Instance;
+
+        if (itemManager == null)
+        {
+            Debug.LogError("[ItemInventory] ItemManager가 씬에 없습니다.", this);
+            enabled = false;
+            return;
         }
+
+        if (!itemManager.Initialize())
+        {
+            Debug.LogError("[ItemInventory] 아이템 데이터를 초기화하지 못했습니다.", this);
+            enabled = false;
+            return;
+        }
+
+        InitializeSlotData();
+        initialized = true;
+        ChangeCategory(currentCategory);
     }
 
+
+    /// <summary>
+    /// 선택된 카테고리의 아이템들을 동기화하고 슬롯 UI를 다시 그린다.
+    /// </summary>
     public void ChangeCategory(int type)
     {
-        if (categoryTabUI != null)
-        {
-            categoryTabUI.SetSelectedCategory(type);
-        }
-        //int index = 0;
-        //foreach (var item in gameManager.haveItems)
-        //{
-        //    if (gameManager.itemInfos[item.Key].itemType == type)
-        //    {
-        //        slots[index].SetSlot(gameManager.itemInfos[item.Key]);
-        //        index++;
-        //    }
-        //}
-        //for (int i = index; i < slots.Count; i++)
-        //{
-        //    slots[i].SetSlot(null);
-        //}
+        if (!initialized)
+            return;
+
         currentCategory = type;
 
-        SyncSlotData(type); //현재 카테고리 배치 데이터와 실제 보유 아이템 동기화
-        RefreshSlots(); //저장된 슬롯 배치 순서대로 UI 갱신
-     
+        if (categoryTabUI != null)
+            categoryTabUI.SetSelectedCategory(type);
 
+        SyncSlotData(type);
+        RefreshSlots();
     }
+
+    /// <summary>
+    /// 현재 보유한 아이템으로 카테고리별 초기 슬롯 배치를 만든다.
+    /// ItemInfo가 없는 아이템은 건너뛴다.
+    /// </summary>
     private void InitializeSlotData()
     {
         categorySlotItems.Clear();
 
-        // 기존 아이템 배치 데이터 초기화
-        foreach (var item in gameManager.haveItems)
+        foreach (var item in itemManager.haveItems)
         {
             int itemId = item.Key;
-            int type = gameManager.itemInfos[itemId].itemType;
 
-            if (!categorySlotItems.ContainsKey(type))
+            if (item.Value <= 0)
+                continue;
+
+            if (!itemManager.itemInfos.TryGetValue(itemId, out ItemInfo info) || info == null)
             {
-                categorySlotItems[type] = new int?[SlotCount];
+                Debug.LogWarning($"[ItemInventory] 아이템 정보가 없는 ID: {itemId}", this);
+                continue;
             }
 
-            int?[] items = categorySlotItems[type];
+            int type = info.itemType;
+
+            if (!categorySlotItems.TryGetValue(type, out int?[] items))
+            {
+                items = new int?[SlotCount];
+                categorySlotItems[type] = items;
+            }
 
             for (int i = 0; i < items.Length; i++)
             {
-                if (!items[i].HasValue)
-                {
-                    items[i] = itemId;
-                    break;
-                }
+                if (items[i].HasValue)
+                    continue;
+
+                items[i] = itemId;
+                break;
             }
         }
     }
 
-    public void MoveItem(ItemInvenSlot fromSlot, ItemInvenSlot toSlot) //인벤토리 내 아이템 움직이는 함수
+    /// <summary>
+    /// 드래그한 두 슬롯의 아이템 배치를 교환한다.
+    /// </summary>
+    public void MoveItem(ItemInvenSlot fromSlot, ItemInvenSlot toSlot)
     {
+        if (!initialized)
+            return;
+
         int fromIndex = slots.IndexOf(fromSlot);
         int toIndex = slots.IndexOf(toSlot);
 
-        if (fromIndex < 0 || toIndex < 0) return;
+        if (fromIndex < 0 || toIndex < 0 || fromIndex == toIndex)
+            return;
 
-        if (fromIndex == toIndex) return;
+        if (!categorySlotItems.TryGetValue(currentCategory, out int?[] items))
+            return;
 
-        if (!categorySlotItems.TryGetValue(currentCategory, out int?[] items)) return;
+        if (!items[fromIndex].HasValue)
+            return;
 
-        // 출발 슬롯에 아이템이 없다면 이동하지 않음
-        if (!items[fromIndex].HasValue) return;
-
-        // 두 슬롯의 아이템 위치 교환
-        int? temp = items[fromIndex];
-
-        items[fromIndex] = items[toIndex];
-        items[toIndex] = temp;
-
+        (items[fromIndex], items[toIndex]) = (items[toIndex], items[fromIndex]);
         RefreshSlots();
     }
 
-    public void SortInventory() // 현재 카테고리의 슬롯 데이터를 정렬하여 빈 슬롯을 뒤로 이동, ChangeCategory에서 진행하던 동기화 및 UI 갱신 작업을 여기서 수행
+    /// <summary>
+    /// 현재 카테고리의 빈 슬롯을 뒤로 보내도록 정렬한다.
+    /// </summary>
+    public void SortInventory()
     {
+        if (!initialized)
+            return;
+
         SyncSlotData(currentCategory);
-
         int?[] items = categorySlotItems[currentCategory];
-
         int writeIndex = 0;
 
         for (int readIndex = 0; readIndex < items.Length; readIndex++)
         {
             if (items[readIndex].HasValue)
-            {
-                items[writeIndex] = items[readIndex];
-                writeIndex++;
-            }
+                items[writeIndex++] = items[readIndex];
         }
 
-        // 남은 슬롯 비우기
         for (int i = writeIndex; i < items.Length; i++)
-        {
             items[i] = null;
-        }
 
         RefreshSlots();
     }
 
+    /// <summary>
+    /// 선택한 아이템의 설명을 표시한다.
+    /// </summary>
     public void SetItemDescription(ItemInfo item)
     {
-        descriptionPanel.GetComponent<Text>().text = $"{item.itemName}\n\n{item.effect.Replace("\\n", "\n")}\n\n{item.decription.Replace("\\n","\n")}";
-    }
-    public void MoveDragSlot(PointerEventData eventData)
-    {
-        RectTransform dragRect = dragSlot.GetComponent<RectTransform>();
-        RectTransformUtility.ScreenPointToWorldPointInRectangle(dragRect, eventData.position, eventData.pressEventCamera, out Vector3 worldPos);
-        dragRect.position = worldPos;
-    }
-
-    private void SyncSlotData(int type)
-    {
-        if (!categorySlotItems.ContainsKey(type))
+        if (item == null)
         {
-            categorySlotItems[type] = new int?[SlotCount];
+            SetDescriptionText("");
+            return;
         }
 
-        int?[] items = categorySlotItems[type];
+        string effect = item.effect?.Replace("\\n", "\n") ?? "";
+        string description = item.decription?.Replace("\\n", "\n") ?? "";
+        SetDescriptionText($"{item.itemName}\n\n{effect}\n\n{description}");
+    }
 
-        // 보유하지 않은 아이템 제거
+    /// <summary>
+    /// Text와 TMP_Text 중 존재하는 컴포넌트로 설명 UI를 갱신한다.
+    /// </summary>
+    private void SetDescriptionText(string value)
+    {
+        if (descriptionPanel == null)
+            return;
+
+        Text legacyText = descriptionPanel.GetComponentInChildren<Text>(true);
+        TMP_Text tmpText = descriptionPanel.GetComponentInChildren<TMP_Text>(true);
+
+        if (legacyText != null)
+            legacyText.text = value;
+        else if (tmpText != null)
+            tmpText.text = value;
+    }
+
+    /// <summary>
+    /// 아이템 드래그 UI를 마우스 위치로 이동한다.
+    /// </summary>
+    public void MoveDragSlot(PointerEventData eventData)
+    {
+        if (dragSlot == null)
+            return;
+
+        RectTransform dragRect = dragSlot.GetComponent<RectTransform>();
+
+        if (dragRect == null)
+            return;
+
+        if (RectTransformUtility.ScreenPointToWorldPointInRectangle(
+            dragRect, eventData.position, eventData.pressEventCamera, out Vector3 worldPos))
+        {
+            dragRect.position = worldPos;
+        }
+    }
+
+    /// <summary>
+    /// 보유 목록을 기준으로 제거된 아이템을 비우고 새 아이템을 추가한다.
+    /// </summary>
+    private void SyncSlotData(int type)
+    {
+        if (!categorySlotItems.TryGetValue(type, out int?[] items))
+        {
+            items = new int?[SlotCount];
+            categorySlotItems[type] = items;
+        }
+
         for (int i = 0; i < items.Length; i++)
         {
-            if (items[i].HasValue &&
-                (!gameManager.haveItems.ContainsKey(items[i].Value) || !gameManager.itemInfos.ContainsKey(items[i].Value) || gameManager.itemInfos[items[i].Value].itemType != type))
+            if (!items[i].HasValue)
+                continue;
+
+            int itemId = items[i].Value;
+
+            if (itemManager.GetItemCount(itemId) <= 0 ||
+                !itemManager.itemInfos.TryGetValue(itemId, out ItemInfo info) ||
+                info == null || info.itemType != type)
             {
                 items[i] = null;
             }
         }
 
-        // 새로 획득한 아이템을 빈 슬롯에 추가
-        foreach (var item in gameManager.haveItems)
+        foreach (var item in itemManager.haveItems)
         {
             int itemId = item.Key;
 
-            if (!gameManager.itemInfos.ContainsKey(itemId)) continue;
+            if (item.Value <= 0 || !itemManager.itemInfos.TryGetValue(itemId, out ItemInfo info) ||
+                info == null || info.itemType != type)
+                continue;
 
-            if (gameManager.itemInfos[itemId].itemType != type) continue;
-
-            if (System.Array.IndexOf(items, (int?)itemId) >= 0) continue;
+            if (System.Array.IndexOf(items, (int?)itemId) >= 0)
+                continue;
 
             for (int i = 0; i < items.Length; i++)
             {
-                if (!items[i].HasValue)
-                {
-                    items[i] = itemId;
-                    break;
-                }
+                if (items[i].HasValue)
+                    continue;
+
+                items[i] = itemId;
+                break;
             }
         }
     }
 
+    /// <summary>
+    /// 저장된 배치에 따라 현재 카테고리의 UI 슬롯을 갱신한다.
+    /// 빈 카테고리에서는 모든 슬롯을 비운다.
+    /// </summary>
     private void RefreshSlots()
     {
-        if (!categorySlotItems.TryGetValue(currentCategory, out int?[] items))
-        {
-            return;
-        }
+        categorySlotItems.TryGetValue(currentCategory, out int?[] items);
 
         for (int i = 0; i < slots.Count; i++)
         {
-            if (i < items.Length && items[i].HasValue)
-            {
-                int itemId = items[i].Value;
-                slots[i].SetSlot(gameManager.itemInfos[itemId]);
-            }
-            else
-            {
-                slots[i].SetSlot(null);
-            }
+            ItemInfo info = null;
+
+            if (items != null && i < items.Length && items[i].HasValue)
+                info = itemManager.GetItemInfo(items[i].Value);
+
+            slots[i].SetSlot(info);
         }
+    }
+
+    /// <summary>
+    /// 외부에서 아이템 수량이나 저장 데이터를 복원한 뒤 UI를 갱신할 때 호출한다.
+    /// </summary>
+    public void RefreshInventory()
+    {
+        if (!initialized)
+            return;
+
+        SyncSlotData(currentCategory);
+        RefreshSlots();
     }
 }

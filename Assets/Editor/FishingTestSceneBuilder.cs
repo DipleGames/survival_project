@@ -83,7 +83,7 @@ public static class FishingTestSceneBuilder
         visualRenderer.color = Color.white;
         visualRenderer.sortingOrder = 10;
 
-        FishingTestPlayerController player = pirate.AddComponent<FishingTestPlayerController>();
+        FishingPlayerController player = pirate.AddComponent<FishingPlayerController>();
         Text label = CreateCursorLabel();
         var managerObject = new GameObject("Fishing Test Controller");
         FishingTestController manager = managerObject.AddComponent<FishingTestController>();

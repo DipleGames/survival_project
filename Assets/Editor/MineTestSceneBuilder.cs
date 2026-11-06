@@ -40,7 +40,7 @@ public static class MineTestSceneBuilder
         Camera camera = CreateCamera();
         Tilemap ground = CreateGround(grass);
         FrameCamera(camera, ground);
-        MineTestPlayerController player = CreatePlayer(scene, piratePrefab, ground);
+        MinePlayerController player = CreatePlayer(scene, piratePrefab, ground);
         Text label = CreateCursorLabel();
 
         var managerObject = new GameObject("MineTest Controller");
@@ -71,7 +71,7 @@ public static class MineTestSceneBuilder
         Tilemap ground = Object.FindObjectsOfType<Tilemap>()
             .FirstOrDefault(map => map.name == "ground");
         MiningManager manager = Object.FindObjectOfType<MiningManager>();
-        MineTestPlayerController player = Object.FindObjectOfType<MineTestPlayerController>();
+        MinePlayerController player = Object.FindObjectOfType<MinePlayerController>();
         if (ground == null || manager == null || player == null)
             throw new System.InvalidOperationException("MineTest 필수 오브젝트가 누락되었습니다.");
 
@@ -150,7 +150,7 @@ public static class MineTestSceneBuilder
         return ground;
     }
 
-    private static MineTestPlayerController CreatePlayer(
+    private static MinePlayerController CreatePlayer(
         UnityEngine.SceneManagement.Scene scene, GameObject piratePrefab, Tilemap ground)
     {
         GameObject pirate = (GameObject)PrefabUtility.InstantiatePrefab(piratePrefab, scene);
@@ -169,7 +169,7 @@ public static class MineTestSceneBuilder
         BoxCollider playerCollider = pirate.AddComponent<BoxCollider>();
         playerCollider.size = new Vector3(0.6f, 1f, 0.6f);
 
-        MineTestPlayerController controller = pirate.AddComponent<MineTestPlayerController>();
+        MinePlayerController controller = pirate.AddComponent<MinePlayerController>();
         RuntimeAnimatorController miningController = AssetDatabase.LoadAssetAtPath<RuntimeAnimatorController>(
             "Assets/Animation/Player/Pirate/Mining/PC_Mining_0.controller");
         var serializedController = new SerializedObject(controller);

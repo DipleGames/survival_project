@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 2208195276284292795}
   - component: {fileID: 2208195276284292797}
   - component: {fileID: 2208195276284292796}
-  - component: {fileID: 2208195276284292798}
   - component: {fileID: 3240569075929780478}
   m_Layer: 5
   m_Name: PieceImage
@@ -78,20 +77,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &2208195276284292798
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2208195276284292794}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 66e94210bd6786c4e842b0b7bd893531, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  itemImage: {fileID: 2208195276284292796}
-  unEquipSound: {fileID: 8300000, guid: db0d35405d234994884056f043443bf4, type: 3}
 --- !u!114 &3240569075929780478
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -109,7 +94,7 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 2208195276284292798}
+        - m_Target: {fileID: 0}
           m_TargetAssemblyTypeName: DiabolicSlotItem, Assembly-CSharp
           m_MethodName: PointerEnter
           m_Mode: 1
@@ -125,7 +110,7 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 2208195276284292798}
+        - m_Target: {fileID: 0}
           m_TargetAssemblyTypeName: DiabolicSlotItem, Assembly-CSharp
           m_MethodName: PointerExit
           m_Mode: 1
