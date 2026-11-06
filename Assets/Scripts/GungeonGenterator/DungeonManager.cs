@@ -45,15 +45,13 @@ public class DungeonManager : MonoBehaviour
             DungeonPortal.PortalType.ExitDungeon : DungeonPortal.PortalType.RoomComplete);
 
         Player.transform.position = new Vector3(XPos, 1.0f, 0.0f);
-        PlayerMove playerMove = Player.GetComponent<PlayerMove>();
-        playerMove.enabled = true;
+        Player.GetComponent<PlayerMove>().MovementLocked = false;
     }
 
     public void RoomComplete()
     {
         //임시 : 포탈에 접촉하면 클리어 처리, 추후 클리어 판정이 변경될 수 있음
-        PlayerMove playerMove = Player.GetComponent<PlayerMove>();
-        playerMove.enabled = false;
+        Player.GetComponent<PlayerMove>().MovementLocked = true;
 
         getDungeonRoom(CurrentRoomId).RoomClear();
         

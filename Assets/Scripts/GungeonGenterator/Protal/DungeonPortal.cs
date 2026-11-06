@@ -35,7 +35,7 @@ public class DungeonPortal : MonoBehaviour
                 break;
 
             case PortalType.ExitDungeon:
-                ExitDungeon();
+                ExitDungeon(other);
                 break;
         }
     }
@@ -59,9 +59,13 @@ public class DungeonPortal : MonoBehaviour
         SceneManager.LoadScene(dungeonSceneName);
     }
 
-    private void ExitDungeon()
+    private void ExitDungeon(Collider playerCollider)
     {
         Debug.LogWarning("던전 탈출 실행!");
+
+        PlayerMove playerMove = playerCollider.GetComponentInParent<PlayerMove>();
+        if (playerMove != null) playerMove.MovementLocked = false;
+
         SceneManager.LoadScene(worldSceneName);
     }
 }
