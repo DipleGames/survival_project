@@ -6,7 +6,7 @@ public class TestPlayerMove : MonoBehaviour
 {
     [SerializeField] private float moveSpeed = 5f;
 
-    private Rigidbody2D rb;
+    private Rigidbody rb;
     private Vector2 moveInput;
     private bool isMoving;
 
@@ -14,7 +14,7 @@ public class TestPlayerMove : MonoBehaviour
 
     private void Awake()
     {
-        rb = GetComponent<Rigidbody2D>();
+        rb = GetComponent<Rigidbody>();
         isMoving = true;
     }
 
@@ -30,6 +30,6 @@ public class TestPlayerMove : MonoBehaviour
     private void FixedUpdate()
     {
         if (!isMoving) return;
-        rb.MovePosition(rb.position + moveInput * moveSpeed * Time.fixedDeltaTime);
+        rb.MovePosition(rb.position + new Vector3(moveInput.x, moveInput.y, 0) * moveSpeed * Time.fixedDeltaTime);
     }
 }

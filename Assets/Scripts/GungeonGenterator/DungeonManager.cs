@@ -39,9 +39,12 @@ public class DungeonManager : MonoBehaviour
         RoomType roomType = getDungeonRoom(CurrentRoomId).RoomType;
         float XPos = RoomTypeNumber.GetRoomXPosition(roomType);
 
-        Player.transform.position = new Vector3(XPos, -2.0f, Player.transform.position.z);
         Portal.transform.position = new Vector3(XPos, 10.5f, Portal.transform.position.z);
+        //포탈 타입 설정
+        Portal.GetComponent<DungeonPortal>().SetPortalType(roomType == RoomType.Boss ?
+            DungeonPortal.PortalType.ExitDungeon : DungeonPortal.PortalType.RoomComplete);
 
+        Player.transform.position = new Vector3(XPos, -2.0f, Player.transform.position.z);
         Player.GetComponent<TestPlayerMove>().SetMoving(true);
     }
 

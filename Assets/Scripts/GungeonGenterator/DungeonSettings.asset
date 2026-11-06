@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7830597eee987944da3573d94d5c9011, type: 3}
   m_Name: DungeonSettings
   m_EditorClassIdentifier: 
-  Depth: 7
+  Depth: 4
   Width: 4
-  AntCount: 4
+  AntCount: 6
   StartEliteRoomChance: 0
   EliteRoomChance: 0.05
   StartTreasureRoomChance: 0.05
