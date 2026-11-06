@@ -1640,7 +1640,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 8727701425004713776}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: PieceCard, Assembly-CSharp
         m_MethodName: OnSelect
         m_Mode: 1
@@ -3065,7 +3065,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2448752358553630308}
-  - component: {fileID: 8727701425004713776}
   m_Layer: 5
   m_Name: PieceCard
   m_TagString: Untagged
@@ -3096,39 +3095,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 500, y: 800}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &8727701425004713776
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7692451682146921659}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 712286f6eae19394f8d9e96fbe6e7c6e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  statPanelImage: {fileID: 671732686416330613}
-  descripPanelImage: {fileID: 1425824275072273312}
-  itemImage: {fileID: 7220187162530343182}
-  itemName: {fileID: 6401013860470252269}
-  maxCount: {fileID: 4247184312195174106}
-  descriptPrefabs:
-  - {fileID: 7856915489747778103}
-  - {fileID: 8008633950805735988}
-  - {fileID: 1620902988497330921}
-  - {fileID: 3385357698429442117}
-  - {fileID: 2492495589257956184}
-  - {fileID: 5360667277636446665}
-  descriptText: {fileID: 6078404686230347481}
-  gradeColors:
-  - {r: 0.9339623, g: 0.2776513, b: 0.2334906, a: 1}
-  - {r: 0.8679245, g: 0.59279907, b: 0.249733, a: 1}
-  - {r: 0.4202118, g: 0.6698113, b: 0.5754717, a: 1}
-  itemShapeViewParent: {fileID: 7834823614305285522}
-  shapeColors:
-  - {r: 0.25882354, g: 0.25882354, b: 0.25882354, a: 1}
-  - {r: 0.6320754, g: 0.6320754, b: 0.6320754, a: 1}
 --- !u!1 &7782824430850578019
 GameObject:
   m_ObjectHideFlags: 0

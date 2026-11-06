@@ -154,7 +154,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3065365571341896564}
-  - component: {fileID: -3701280137840550390}
   - component: {fileID: 7762181416207802861}
   m_Layer: 5
   m_Name: ItemDicionarySlot
@@ -187,19 +186,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 525, y: 130}
   m_Pivot: {x: 0, y: 1}
---- !u!114 &-3701280137840550390
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3065365571341896565}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 978b33b1258afba46bbf6beb0cc4af5b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  scrollView: {fileID: 0}
 --- !u!114 &7762181416207802861
 MonoBehaviour:
   m_ObjectHideFlags: 0

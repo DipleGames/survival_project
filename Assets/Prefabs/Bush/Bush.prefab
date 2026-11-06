@@ -41,7 +41,6 @@ GameObject:
   m_Component:
   - component: {fileID: 632544854061768544}
   - component: {fileID: 5927185803636976845}
-  - component: {fileID: 428181457429613125}
   m_Layer: 19
   m_Name: CharacterChecker
   m_TagString: Untagged
@@ -77,25 +76,6 @@ SphereCollider:
   serializedVersion: 2
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &428181457429613125
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2318804817492436751}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f7635892f5c6a564e970cfe99c0ab707, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  arrow: {fileID: 0}
-  clickUI: {fileID: 6566186335256038341}
-  coll: {fileID: 5927185803636976845}
-  tutoType: 5
-  nextTuto: 0
-  tutoImage: {fileID: -1331469006, guid: 82f706666a6c87e4b9983b42ec673165, type: 3}
-  needItemImage: {fileID: 0}
 --- !u!1 &2418993141755308113
 GameObject:
   m_ObjectHideFlags: 0
@@ -107,7 +87,6 @@ GameObject:
   - component: {fileID: 2418993141755308115}
   - component: {fileID: 2418993141755308114}
   - component: {fileID: 6892218125167748256}
-  - component: {fileID: 4065876531615089374}
   - component: {fileID: 6226669219626314849}
   m_Layer: 18
   m_Name: Bush
@@ -201,29 +180,6 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.9064731, y: 0.7007919, z: 0.1}
   m_Center: {x: 0.008954614, y: 0.22667283, z: -3.314982e-16}
---- !u!114 &4065876531615089374
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2418993141755308113}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 39414ab968e033b4e9ce300e897391c1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  gatherPoint:
-  - {fileID: 4560206074751130886}
-  - {fileID: 5853158047920028481}
-  defaultGaugeUpValue: 10
-  bushPieceList:
-  - {fileID: 11400000, guid: ab34f39b37efd43428cf63615ae0de83, type: 2}
-  - {fileID: 11400000, guid: 910f590978a2cbb468eccabfb1a8605a, type: 2}
-  - {fileID: 11400000, guid: ab487546d2c145d4282ad7431fe253b1, type: 2}
-  spriteRenderer: {fileID: 2418993141755308114}
-  fruitImage: {fileID: 553344388, guid: 515270b66132f084d9d3fdbfce2d8ef6, type: 3}
-  gatheringSound: {fileID: 8300000, guid: 1cf7185285f854b45b041b00a3c82de2, type: 3}
 --- !u!54 &6226669219626314849
 Rigidbody:
   m_ObjectHideFlags: 0
