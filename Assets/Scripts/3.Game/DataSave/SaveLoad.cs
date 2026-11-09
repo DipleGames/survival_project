@@ -12,8 +12,8 @@ public class SaveLoad : MonoBehaviour
     // 게임저장 슬롯
     [SerializeField] GameObject slotButtonPrefab;
     [SerializeField] Transform saveSlotList;
-    [SerializeField] int maxSlots = 20;
-    [SerializeField] GameObject SaveLoadPanel;
+    [SerializeField] int maxSlots = 20; 
+    public GameObject SaveLoadPanel;
     private List<UnityEngine.UI.Button> slotButtons = new List<UnityEngine.UI.Button>();
     public enum SaveLoadMode
     {
@@ -64,9 +64,15 @@ public class SaveLoad : MonoBehaviour
         }
         SaveLoadPanel.SetActive(false);
     }
+
+    public void CloseSaveLoadPanel()
+    {
+        SaveLoadPanel.SetActive(false);
+    }
+
     public void SaveGame(int slot)
     {
-        Character player = Character.Instance;
+        Player player = GameManager.Instance.Player;
         if (player == null) return;
 
         Vector3 pos = player.transform.position;
@@ -88,7 +94,7 @@ public class SaveLoad : MonoBehaviour
 
     public void LoadGame(int slot)
     {
-        Character player = Character.Instance;
+        Player player = GameManager.Instance.Player;
         if (player == null) return;
 
         if (!File.Exists(GetPath(slot)))

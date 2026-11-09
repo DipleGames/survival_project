@@ -3,135 +3,191 @@ using UnityEngine.SceneManagement;
 
 public class OptionUI : MonoBehaviour
 {
+    [Header("Option Panels")]
     [SerializeField] protected GameObject panel;
     [SerializeField] protected GameObject KeySoundSettingPanel;
-    [SerializeField] OptionSettingsUI optionSettings;
-    [SerializeField] GameObject CheckHomePanel;
-    [SerializeField] GameObject statPanel;
+    [SerializeField] private OptionSettingsUI optionSettings;
+    [SerializeField] private GameObject CheckHomePanel;
+    [SerializeField] private GameObject statPanel;
     [SerializeField] protected GameObject backPanel;
 
-    [SerializeField]protected GameManager gameManager;
-    SoundManager soundManager;
-    GamesceneManager gamesceneManager;
+    [Header("Compenent")]
+    [SerializeField] protected GameManager gameManager;
+    [SerializeField] private SaveLoad saveLoad;
+
+    private SoundManager soundManager;
+
+    private CursorLockMode previousCursorLockState;
+    private bool previousCursorVisible;
 
     private void Start()
     {
-        //optionPannel
-        panel.SetActive(false);
-        //OptionScroll -> OptionSettingsUI에서 키세팅과 사운드 조절 기능이 있는 패널
-        KeySoundSettingPanel.SetActive(false);
-        CheckHomePanel.SetActive(false);
-        if(gameManager == null)
-            gameManager = GameManager.Instance;
-        soundManager = SoundManager.Instance;
-        gamesceneManager = GamesceneManager.Instance;
+        if (panel != null)
+            panel.SetActive(false);
 
-        //optionSettings.Initialize(panel);
-        optionSettings.Initialize(KeySoundSettingPanel);
+        if (KeySoundSettingPanel != null)
+            KeySoundSettingPanel.SetActive(false);
+
+        if (CheckHomePanel != null)
+            CheckHomePanel.SetActive(false);
+
+        if (gameManager == null)
+            gameManager = GameManager.Instance;
+
+        soundManager = SoundManager.Instance;
+
+        if (optionSettings != null)
+            optionSettings.Initialize(KeySoundSettingPanel);
     }
 
     private void Update()
     {
-        // 키 변경 중 ESC는 공통 컴포넌트가 취소로 처리합니다.
-        if (optionSettings.IsWaitingForKey)
+        if (!Input.GetKeyDown(KeyCode.Escape))
             return;
 
-        if (!TutorialManager.Instance.IsTutoProgressing && !gameManager.isClear)
-        {
-            if (Input.GetKeyDown(KeyCode.Escape) && !gameManager.isPause)
-                PauseGame();
+        // 키 설정 변경 중에는 ESC로 패널을 닫지 않음
+        if (optionSettings != null && optionSettings.IsWaitingForKey)
+            return;
 
-            else if (Input.GetKeyDown(KeyCode.Escape) && gameManager.isPause)
-                ReturnToGame();
+        // 1순위: 세이브/로드 패널이 열려 있다면 해당 패널만 닫기
+        if (saveLoad.SaveLoadPanel != null && saveLoad.SaveLoadPanel.activeSelf)
+        {
+            saveLoad.CloseSaveLoadPanel();
+            return;
         }
-    }
 
-    virtual public void PauseGame()
-    {
-        if (!gameManager.isPause)
+        // 2순위: 옵션 세부 설정 패널이 열려 있다면 해당 패널만 닫기
+        if (KeySoundSettingPanel != null && KeySoundSettingPanel.activeSelf)
         {
-            Cursor.lockState = CursorLockMode.None;
-
-            if (gameManager.currentScene == "Game")
-            {
-                Vector2 cursorHotSpot = new Vector3(gameManager.useCursorNormal.width * 0.5f, gameManager.useCursorNormal.height * 0.5f);
-                Cursor.SetCursor(gameManager.useCursorNormal, cursorHotSpot, CursorMode.ForceSoftware);
-            }
-
-            if (backPanel != null)
-                backPanel.SetActive(true);
-
-            if (statPanel != null)
-                statPanel.SetActive(true);
-
+            KeySoundSettingPanel.SetActive(false);
             panel.SetActive(true);
-            gameManager.GamePause(true);
+            return;
         }
-    }
-    virtual public void ReturnToGame()
-    {
-        if (gameManager.isPause)
+
+        // 3순위: 타이틀 이동 확인 패널 닫기
+        if (CheckHomePanel != null && CheckHomePanel.activeSelf)
         {
-            Cursor.lockState = CursorLockMode.Confined;
-
-            if (gameManager.currentScene == "Game")
-            {
-                if (!gamesceneManager.isNight)
-                {
-                    Vector2 cursorHotSpot = new Vector3(gameManager.useCursorNormal.width * 0.5f, gameManager.useCursorNormal.height * 0.5f);
-                    Cursor.SetCursor(gameManager.useCursorNormal, cursorHotSpot, CursorMode.ForceSoftware);
-                }
-
-                else
-                {
-                    Vector2 cursorHotSpot = new Vector3(gameManager.useCursorAttack.width * 0.5f, gameManager.useCursorAttack.height * 0.5f);
-                    Cursor.SetCursor(gameManager.useCursorAttack, cursorHotSpot, CursorMode.ForceSoftware);
-                }
-            }
-
-            if (backPanel != null)
-                backPanel.SetActive(false);
-
-            if (statPanel != null)
-                statPanel.SetActive(false);
-
-            optionSettings.CancelKeyChange();
-            panel.SetActive(false);
-            Invoke("UnPauseGame", Time.deltaTime);
-
-            Cursor.visible = gameManager.isCursorVisible;
+            CloseCheckHomePanel();
+            return;
         }
+
+        if (gameManager == null)
+            return;
+
+        // 4순위: 메인 옵션 패널 열기 / 닫기
+        if (gameManager.isPause)
+            ReturnToGame();
+        else
+            PauseGame();
     }
 
-    void UnPauseGame()
+    /// <summary>
+    /// 게임을 일시정지하고 옵션 UI를 표시한다.
+    /// </summary>
+    public virtual void PauseGame()
     {
-        gameManager.GamePause(false);
+        if (gameManager == null || gameManager.isPause)
+            return;
+
+        // 기존 커서 상태 저장
+        previousCursorLockState = Cursor.lockState;
+        previousCursorVisible = Cursor.visible;
+
+        // 옵션 UI 조작을 위해 커서 활성화
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+
+        if (backPanel != null)
+            backPanel.SetActive(true);
+
+        if (statPanel != null)
+            statPanel.SetActive(true);
+
+        if (panel != null)
+            panel.SetActive(true);
+
+        gameManager.GamePause(true);
     }
 
+    /// <summary>
+    /// 옵션 UI를 닫고 게임을 재개한다.
+    /// </summary>
+    public virtual void ReturnToGame()
+    {
+        if (gameManager == null || !gameManager.isPause)
+            return;
+
+        if (backPanel != null)
+            backPanel.SetActive(false);
+
+        if (statPanel != null)
+            statPanel.SetActive(false);
+
+        if (optionSettings != null)
+            optionSettings.CancelKeyChange();
+
+        if (panel != null)
+            panel.SetActive(false);
+
+        // 게임 재개
+        gameManager.GamePause(false);
+
+        // 기존 커서 상태 복원
+        Cursor.lockState = previousCursorLockState;
+        Cursor.visible = previousCursorVisible;
+    }
+
+    /// <summary>
+    /// 타이틀 이동 확인 패널을 연다.
+    /// </summary>
     public void OpenCheckHomePanel()
     {
-        CheckHomePanel.SetActive(true);
+        if (CheckHomePanel != null)
+            CheckHomePanel.SetActive(true);
     }
 
+    /// <summary>
+    /// 타이틀 이동 확인 패널을 닫는다.
+    /// </summary>
     public void CloseCheckHomePanel()
     {
-        CheckHomePanel.SetActive(false);
+        if (CheckHomePanel != null)
+            CheckHomePanel.SetActive(false);
     }
 
+    /// <summary>
+    /// 게임을 종료하고 타이틀 씬으로 이동한다.
+    /// </summary>
     public void TitleScene()
     {
-        optionSettings.SaveMuteSettings();
-        optionSettings.CancelKeyChange();
-        if (soundManager.gameObject != null)
+        // 설정 저장 및 키 변경 종료
+        if (optionSettings != null)
+        {
+            optionSettings.SaveMuteSettings();
+            optionSettings.CancelKeyChange();
+        }
+
+        // 일시정지 해제
+        if (gameManager != null)
+            gameManager.GamePause(false);
+
+        // 타이틀에서 커서 사용 가능하도록 설정
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+
+        // 플레이어 제거
+        if (gameManager != null && gameManager.Player != null)
+            Destroy(gameManager.Player.gameObject);
+
+        // 사운드 매니저 제거
+        if (soundManager != null)
             Destroy(soundManager.gameObject);
 
-        if (gameManager.gameObject != null)
+        // 게임 매니저 제거
+        if (gameManager != null)
             Destroy(gameManager.gameObject);
 
-        if (Character.Instance.gameObject != null)
-            Destroy(Character.Instance.gameObject);
-
+        // 타이틀 씬 이동
         SceneManager.LoadScene("StartTitle");
     }
-
 }

@@ -48,6 +48,8 @@ public class GatherableObj : InteractableObj, IGatherable
     public UnityEngine.Object ReservedBy => _reservation.ReservedBy;
     public bool IsReserved => _reservation.IsReserved;
 
+    Player player = GameManager.Instance.Player;
+
     protected virtual void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
@@ -61,10 +63,10 @@ public class GatherableObj : InteractableObj, IGatherable
 
     protected virtual void Update()
     {
-        if (Character.Instance == null)
-            isClose = Vector3.Distance(character.transform.position, transform.position) < interactableDistance;
+        if (player == null)
+            isClose = Vector3.Distance(player.transform.position, transform.position) < interactableDistance;
         else
-            isClose = Vector3.Distance(Character.Instance.transform.position, transform.position) < interactableDistance;
+            isClose = Vector3.Distance(player.transform.position, transform.position) < interactableDistance;
     }
 
     public override void InteractionLeftButtonFuc(GameObject hitObject)

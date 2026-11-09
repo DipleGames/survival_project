@@ -15,9 +15,8 @@ public class LogTree : MonoBehaviour, IMouseInteraction
     bool canLog = false;
     [HideInInspector] int posNum;
 
-    Character character;
+    Player player;
     GameManager gameManager;
-    GamesceneManager gamesceneManager;
     SoundManager soundManager;
 
     Vector3 obstacleAngle;
@@ -31,9 +30,8 @@ public class LogTree : MonoBehaviour, IMouseInteraction
     private void Start()
     {
         canLog = false;
-        character = Character.Instance;
         gameManager = GameManager.Instance;
-        gamesceneManager = GamesceneManager.Instance;
+        player = gameManager.Player;
         soundManager = SoundManager.Instance;
 
         outlineColor = spriteRenderer.material.GetColor("_SolidOutline");
@@ -41,18 +39,7 @@ public class LogTree : MonoBehaviour, IMouseInteraction
 
     private void Update()
     {
-        if (gamesceneManager.isNight)
-        {
-            if (canLog)
-            {
-                canLog = false;
-            }
-
-            else if (isLogging)
-            {
-                Destroy(gameObject);
-            }
-        }
+        
     }
 
     private void OnDisable()
@@ -65,13 +52,12 @@ public class LogTree : MonoBehaviour, IMouseInteraction
         }
 
         isLogging = false;
-        character.canFlip = true;
-        character.isCanControll = true;
+
     }
 
     Vector3 LogAngle()
     {
-        Vector3 logDir = (Character.Instance.transform.position - transform.position).normalized;
+        Vector3 logDir = (player.transform.position - transform.position).normalized;
 
         float angle = Mathf.Atan2(logDir.z, logDir.x) * Mathf.Rad2Deg;
 
@@ -109,7 +95,6 @@ public class LogTree : MonoBehaviour, IMouseInteraction
             arrow.SetActive(false);
             obstacleAngle = LogAngle();
             canLog = false;
-            character.MoveToInteractableObject(logPoses[posNum].position, gameObject, 3, 1, posNum, -1);
 
             if(posNum == 0)
             {
@@ -120,13 +105,6 @@ public class LogTree : MonoBehaviour, IMouseInteraction
         }
     }
 
-    void SpawnObstacle()
-    {
-        GameObject ob = Instantiate(obstacle, transform.position, Quaternion.Euler(obstacleAngle), GamesceneManager.Instance.treeParent);
-        ob.GetComponentInChildren<Obstacle>().SetObstacleImage(posNum);
-
-        Destroy(gameObject);
-    }
 
     public void CanInteraction(bool _canInteraction)
     {
@@ -135,42 +113,7 @@ public class LogTree : MonoBehaviour, IMouseInteraction
 
     public IEnumerator EndInteraction(Animator anim, float waitTime)
     {
-        isLogging = true;
-
-        if (gameManager.specialStatus[SpecialStatus.DoubleAxe])
-        {
-            waitTime *= 0.5f;
-        }
-
-        currentSfx = soundManager.PlaySFXAndReturn(loggingSound, true);
-
-        yield return CoroutineCaching.WaitForSeconds(waitTime);
-
-        isLogging = false;
-
-        character.isCanControll = true;
-        character.canFlip = true;
-
-        if (currentSfx != null)
-        {
-            soundManager.StopLoopSFX(currentSfx);
-        }
-
-        if (gamesceneManager.isNight)
-            yield break;
-
-        soundManager.PlaySFX(instanceObstacleSound);
-
-        int getWoodQuantity = Random.Range(1, 6);
-
-        character.getItemUI.GetComponent<GetItemUI>().SetGetItemImage(woodSprite, getWoodQuantity);
-        character.getItemUI.gameObject.SetActive(true);
-        gameManager.woodCount += getWoodQuantity;
-        anim.SetBool("isLogging", false);
-
-        character.ChangeAnimationController(0);
-
-        SpawnObstacle();
+        yield return null;
     }
 
     /*private void OnDrawGizmos()
