@@ -385043,6 +385043,14 @@ PrefabInstance:
       propertyPath: optionPanel
       value: 
       objectReference: {fileID: 1972012132}
+    - target: {fileID: 4832086914533710092, guid: cdf95aff8a272e548bfe5bbaffbdf5d8, type: 3}
+      propertyPath: ItemInventory
+      value: 
+      objectReference: {fileID: 1957668864}
+    - target: {fileID: 4832086914533710092, guid: cdf95aff8a272e548bfe5bbaffbdf5d8, type: 3}
+      propertyPath: EquipmentManager
+      value: 
+      objectReference: {fileID: 281281243}
     - target: {fileID: 4902837314588756060, guid: cdf95aff8a272e548bfe5bbaffbdf5d8, type: 3}
       propertyPath: m_Name
       value: OptionUI 1

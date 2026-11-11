@@ -150,6 +150,10 @@ public class ItemInventory : MonoBehaviour
             }
         }
     }
+    public Dictionary<int, int?[]> CallInventoryData()
+    {
+        return categorySlotItems;
+    }
 
     /// <summary>
     /// 드래그한 두 슬롯의 아이템 배치를 교환한다.
@@ -329,5 +333,69 @@ public class ItemInventory : MonoBehaviour
 
         SyncSlotData(currentCategory);
         RefreshSlots();
+    }
+
+    //Load
+    public bool RestoreSlots(List<InventorySlotSaveData> savedSlots)
+    {
+        if (!initialized)
+        {
+            Debug.LogError("인벤토리 초기화가 완료되지 않았습니다.");
+            return false;
+        }
+
+        if (savedSlots == null)
+        {
+            Debug.LogError("저장된 슬롯 목록이 없습니다.");
+            return false;
+        }
+
+        // 이전 배치 제거
+        categorySlotItems.Clear();
+
+        foreach (var saved in savedSlots)
+        {
+            if (saved == null)
+                continue;
+
+            // 잘못된 슬롯 번호 제외
+            if (saved.slotIndex < 0 || saved.slotIndex >= SlotCount)
+                continue;
+
+            // 카테고리별 슬롯 배열 생성
+            if (!categorySlotItems.TryGetValue(
+                saved.category, out int?[] items))
+            {
+                items = new int?[SlotCount];
+                categorySlotItems.Add(saved.category, items);
+            }
+
+            // 새 배열은 null로 초기화되므로 빈 슬롯은 건너뜀
+            if (saved.itemId == -1)
+                continue;
+
+            ItemInfo info = itemManager.GetItemInfo(saved.itemId);
+
+            // 존재하고, 보유하고 있으며, 카테고리가 맞는 아이템만 배치
+            if (info == null ||
+                itemManager.GetItemCount(saved.itemId) <= 0 ||
+                info.itemType != saved.category)
+            {
+                continue;
+            }
+
+            // 중복 배치 및 같은 슬롯 덮어쓰기 방지
+            if (items[saved.slotIndex].HasValue ||
+                System.Array.IndexOf(items, (int?)saved.itemId) >= 0)
+            {
+                continue;
+            }
+
+            items[saved.slotIndex] = saved.itemId;
+        }
+
+        SetDescriptionText("");
+        RefreshInventory();
+        return true;
     }
 }

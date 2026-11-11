@@ -73,4 +73,15 @@ public class EquipmentManager : MonoBehaviour
         if (equippedItemId == itemId)
             UnequipItem();
     }
+
+    public void LoadEquipment(int itemId)
+    {
+        if(itemId == -1)
+        {
+            UnequipItem();
+            return;
+        }
+        equippedItemId = itemId;
+        EquipItem(itemManager.itemInfos[itemId]);
+    }
 }

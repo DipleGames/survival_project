@@ -200,4 +200,30 @@ public class ItemManager : Singleton<ItemManager>
             AddItem(pair.Key, count++);
     }
 #endif
+
+    // Load
+    public bool RestoreItems(List<ItemStackSaveData> savedItems)
+    {
+        if (!Initialize())
+            return false;
+
+        if (savedItems == null)
+        {
+            Debug.LogError("저장된 아이템 목록이 없습니다.");
+            return false;
+        }
+
+        // 기존 수량과 합쳐지지 않도록 초기화
+        haveItems.Clear();
+
+        foreach (var item in savedItems)
+        {
+            if (item == null)
+                continue;
+
+            AddItem(item.itemId, item.count);
+        }
+
+        return true;
+    }
 }
