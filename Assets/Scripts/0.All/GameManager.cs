@@ -39,7 +39,7 @@ public class GameManager : Singleton<GameManager>
         StartCoroutine(LoadSceneAndSpawnPlayer(sceneName));
     }
 
-    private IEnumerator LoadSceneAndSpawnPlayer(string sceneName)
+    /*private IEnumerator LoadSceneAndSpawnPlayer(string sceneName)
     {
         _isLoading = true;
 
@@ -62,11 +62,54 @@ public class GameManager : Singleton<GameManager>
         sceneFade.FadeIn();
 
         _isLoading = false;
+    }*/
+    private IEnumerator LoadSceneAndSpawnPlayer(string sceneName)
+    {
+        _isLoading = true;
+        GamePause(false);
+
+        sceneFade.gameObject.SetActive(true);
+
+        SceneManager.sceneLoaded += OnSceneLoaded;
+
+        yield return SceneManager.LoadSceneAsync(sceneName);
+
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+
+        // OnSceneLoaded에서 플레이어 생성 후,
+        // 새 씬 컴포넌트들의 Start 실행을 기다림
+        yield return null;
+        yield return new WaitForEndOfFrame();
+
+        // 복원 코드
+        if (pendingLoadData != null)
+        {
+            SaveLoad saveLoad = FindObjectOfType<SaveLoad>(true);
+
+            if (saveLoad != null)
+            {
+                saveLoad.RestoreGame(pendingLoadData);
+                pendingLoadData = null;
+            }
+            else
+            {
+                Debug.LogError("새 씬에서 SaveLoad를 찾지 못했습니다.");
+            }
+        }
+
+        sceneFade.FadeIn();
+        _isLoading = false;
     }
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         currentScene = scene.name;
+
+        if(currentScene == "Game")
+        {
+            SoundManager.Instance.PlayBGM(1,true);
+        }
+
 
         // 기존 플레이어 참조 초기화
         Player = null;
@@ -97,5 +140,19 @@ public class GameManager : Singleton<GameManager>
     public void TogglePause()
     {
         GamePause(!isPause);
+    }
+
+    private SaveData pendingLoadData;
+
+    public void LoadSavedGame(SaveData data)
+    {
+        if (_isLoading)
+            return;
+
+        if (data == null || data.player == null)
+            return;
+
+        pendingLoadData = data;
+        ToNextScene(data.ScenceName);
     }
 }
