@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 using Room = DungeonRoomNode;
 
@@ -17,6 +18,12 @@ public class DungeonMapView : MonoBehaviour
     [SerializeField] private GameObject LinePrefab;
     [SerializeField] private float lineWidth = 6f; // 선 두께
 
+    // UI - 방 번호랑 실제 버튼 매핑
+    public Dictionary<int, DungeonRoomButton> RoomButtons { get; } = new();
+
+    // UI - 방 연결선 매핑
+    public Dictionary<(int, int), Image> RoomLines { get; } = new();
+
     public void UpdateInteractableRooms(int roomID)
     {
         int currentId = roomID;
@@ -24,14 +31,14 @@ public class DungeonMapView : MonoBehaviour
         var currentRoom = DungeonManager.Instance.getDungeonRoom(currentId);
 
         //매니저의 데이터셋에서 버튼 딕셔너리 가져오기
-        var roomButtons = DungeonManager.Instance.DungeonData.RoomButtons;
+        var roomButtons = RoomButtons;
 
         //버튼 비활성화 : 이전 층은 뭐...
-        for(int i = currentFloor; i <= DungeonManager.Instance.getDepth(); ++i)
+        for (int i = currentFloor; i <= DungeonManager.Instance.getDepth(); ++i)
         {
             foreach(var rooms in DungeonManager.Instance.getFloor(i))
             {
-                DungeonManager.Instance.DungeonData.RoomButtons[rooms].GetComponent<UnityEngine.UI.Button>().interactable = false;
+                roomButtons[rooms].GetComponent<Button>().interactable = false;
             }
         }
 
@@ -47,7 +54,7 @@ public class DungeonMapView : MonoBehaviour
         }
     }
 
-    public void SetVisible(bool visible){ gameObject.SetActive(visible); }
+    public void DisplayMapView(bool visible){ gameObject.SetActive(visible); }
 
     void Start() { StartCoroutine(DrawMapView()); }
 
@@ -60,14 +67,15 @@ public class DungeonMapView : MonoBehaviour
         }
 
         var builder = new DungeonMapViewBuilder(
-            FloorContainer,
-            Floor,
-            Btn_Room,
-            Btn_EmptyRoom,
-            LinesContainer,
-            LinePrefab,
-            lineWidth
-        );
+        this,
+    FloorContainer,
+    Floor,
+    Btn_Room,
+    Btn_EmptyRoom,
+    LinesContainer,
+    LinePrefab,
+    lineWidth
+);
 
         // 방 UI 생성
         builder.BuildRooms();
@@ -83,6 +91,22 @@ public class DungeonMapView : MonoBehaviour
         UpdateInteractableRooms(0);
 
         // UI 숨기기
-        SetVisible(false);
+        DisplayMapView(false);
+    }
+
+    public void SetVisitedLine(int fromId, int toId)
+    {
+        var roomLines = RoomLines;
+
+        if (roomLines.TryGetValue((fromId, toId), out Image line))
+        {
+            line.color = Color.green;
+        }
+    }
+
+    private void OnDestroy() 
+    {
+        RoomButtons.Clear();
+        RoomLines.Clear();
     }
 }

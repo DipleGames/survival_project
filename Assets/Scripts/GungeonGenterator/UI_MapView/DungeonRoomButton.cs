@@ -35,6 +35,8 @@ public class DungeonRoomButton : MonoBehaviour
             || manager.getDungeonRoom(roomId).IsComplete)  //클리어한 방에서는 이동 불가
             return;
         
+
+
         manager.MoveTo(roomId);
     }
 }

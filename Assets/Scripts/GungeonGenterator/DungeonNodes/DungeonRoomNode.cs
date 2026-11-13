@@ -12,31 +12,6 @@ public enum RoomType
     Boss,
 }
 
-public static class  RoomTypeNumber
-{
-    public const float Gap = 50.0f;
-    public static float GetRoomXPosition(RoomType type)
-    {
-        switch (type)
-        {
-            case RoomType.Start:
-                return Gap * 0;
-            case RoomType.Normal:
-                return Gap * 0;
-            case RoomType.Shop:
-                return Gap * 1;
-            case RoomType.Treasure:
-                return Gap * 2;
-            case RoomType.Elite:
-                return Gap * 3;
-            case RoomType.Boss:
-                return Gap * 4;
-            default:
-                return 0; // Invalid RoomType
-        }
-    }
-}
-
 public class DungeonRoomNode
 {
     //현재 방의 위치 층수*100 + 인덱스 : 2층 3번방이면 Id는 203

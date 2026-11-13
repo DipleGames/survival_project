@@ -2,7 +2,7 @@ using UnityEngine;
 
 [CreateAssetMenu(
     fileName = "DungeonSettings",
-    menuName = "Dungeon/Dungeon Settings"
+    menuName = "Dungeon/Dungeon Map Settings"
 )]
 
 public class DungeonSettings : ScriptableObject

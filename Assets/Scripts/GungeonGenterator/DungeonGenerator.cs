@@ -37,10 +37,9 @@ public class DungeonGenerator
         DungeonMap.Add(BossId, new Room(BossId, RoomType.Boss));
 
         // 출발 지점에서 균형에 맞춰 출발시키게 함
-        BalancedRandomPicker startPicker = new BalancedRandomPicker(settings.Width);
         for (int i = 0; i < settings.AntCount; i++)
         {
-            int startIdx = startPicker.GetNextIndex();
+            int startIdx = Random.Range(0, settings.Width);
             RunAntPath(startIdx);
         }
 
