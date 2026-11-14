@@ -4,139 +4,86 @@ using UnityEngine;
 
 public class DungeonMonsterSpawn : MonoBehaviour
 {
-    enum MonsterType
-    {
-        Archer,
-        Shield,
-        SmallBazic,
-        BigBazic
-    }
-
-    struct MonsterData
-    {
-        public int Weight;
-        public GameObject Prefab;
-    }
-
-    [Header("Monster Settings")]
-    [SerializeField] private DungeonMonsterSetting NormalMonsterSetting;
-    [SerializeField] private DungeonMonsterSetting EliteMonsterSetting;
-    [SerializeField] private DungeonMonsterSetting BossMonsterSetting;
-
-    [Header("Monster Prefabs")]
-    [SerializeField] private GameObject PrfArcher;
-    [SerializeField] private GameObject PrfShield;
-    [SerializeField] private GameObject PrfSmallBazic;
-    [SerializeField] private GameObject PrfBigBazic;
-
     //몬스터 스폰 영역을 위한 콜라이더
     private Collider spawnCollider;
     //몬스터가 모두 제거되었는지 확인하기 위한 코루틴
     private Coroutine CompleteRoomCheckCoroutine;
 
-
-    private Dictionary<MonsterType, MonsterData> monster = new();
-
-    public void Awake()
-    {
-        spawnCollider = GetComponent<Collider>();
-    }
+    public void Awake() { spawnCollider = GetComponent<Collider>(); }
 
     public void UpdateMonsterSpawner(RoomType roomType)
     {
-        transform.position = DungeonManager.Instance.GetRoomPosition(roomType).MonsterSpawnPosition;
+        RoomTypeSettings setting = DungeonManager.Instance.GetDungeonSetting(roomType);
 
-        switch (roomType)
-        {
-            case RoomType.Normal:
-                SpawnMonsters(NormalMonsterSetting); break;
+        if (setting == null) return;
 
-            case RoomType.Elite:
-                SpawnMonsters(EliteMonsterSetting); break;
+        //몬스터 스포너 위치 갱신
+        transform.position = setting.MonsterSpawnerPosition;
 
-            case RoomType.Boss:
-                SpawnMonsters(BossMonsterSetting); break;
-        }
+        //몬스터 스폰을 사용하지 않는 방은 제외
+        if (!setting.UseMonsterSpawn) return;
+
+        SpawnMonsters(setting);
     }
 
-    private void SpawnMonsters(DungeonMonsterSetting setting)
+    private void SpawnMonsters(RoomTypeSettings setting)
     {
-        if(setting == null) return;
-
         //스폰할 몬스터 수 결정
-        int min = setting.monsterCountMin;
-        int max = Mathf.Max(min, setting.monsterCountMax);
+        int min = setting.MonsterCountMin;
+        int max = Mathf.Max(min, setting.MonsterCountMax);
         int monsterCount = Random.Range(min, max + 1);
 
-        SetMonsterData(setting);
+        //몬스터 스폰 영역
+        Bounds bounds = spawnCollider.bounds;
 
         for (int i = 0; i < monsterCount; i++)
         {
-            GameObject prefab = GetRandomMonsterPrefab();
+            GameObject prefab = GetRandomMonsterPrefab(setting);
             if (prefab == null) continue;
-
-            Bounds bounds = spawnCollider.bounds;
 
             float x = Random.Range(bounds.min.x, bounds.max.x);
             float z = Random.Range(bounds.min.z, bounds.max.z);
 
             Vector3 spawnPos = new Vector3(x, 0f, z);
 
-            Instantiate(prefab, spawnPos, Quaternion.Euler(90f, 0f, 0f), transform);
+            GameObject spawned = Instantiate(
+                prefab,
+                spawnPos,
+                Quaternion.Euler(90f, 0f, 0f),
+                transform
+            );
         }
 
-        if(CompleteRoomCheckCoroutine != null) StopCoroutine(CompleteRoomCheckCoroutine);
+        if (CompleteRoomCheckCoroutine != null) StopCoroutine(CompleteRoomCheckCoroutine);
+        //몬스터가 모두 제거되었는지 확인하는 코루틴 시작(모두 제거되면 방 클리어 처리)
         CompleteRoomCheckCoroutine = StartCoroutine(CheckMonsterClear());
     }
 
-    private void SetMonsterData(DungeonMonsterSetting setting)
+    private GameObject GetRandomMonsterPrefab(RoomTypeSettings setting)
     {
-        monster.Clear();
-
-        monster.Add(MonsterType.Archer,
-            new MonsterData
-            {
-                Weight = setting.SpawnArcherWeight,
-                Prefab = PrfArcher
-            });
-
-        monster.Add(MonsterType.Shield,
-            new MonsterData
-            {
-                Weight = setting.SpawnShieldWeight,
-                Prefab = PrfShield
-            });
-
-        monster.Add(MonsterType.SmallBazic,
-            new MonsterData
-            {
-                Weight = setting.SpawnSmallBazicWeight,
-                Prefab = PrfSmallBazic
-            });
-
-        monster.Add(MonsterType.BigBazic,
-            new MonsterData
-            {
-                Weight = setting.SpawnBigBazicWeight,
-                Prefab = PrfBigBazic
-            });
-    }
-
-    private GameObject GetRandomMonsterPrefab()
-    {
-        //가중치 전체 합하기
+        // 전체 가중치 합
         int totalWeight = 0;
-        foreach (var data in monster.Values) totalWeight += data.Weight;
+        foreach (var data in setting.MonsterSpawnList)
+        {
+            if (data == null || data.MonsterPrefab == null) continue;
+            totalWeight += Mathf.Max(0, data.SpawnWeight);
+        }
 
         if (totalWeight <= 0) return null;
 
-        //랜덤 인덱스 생성
-        int Index = Random.Range(0, totalWeight);
+        //전체 가중치 범위 내에서 최댓값을 제외한 랜덤한 숫자 선택
+        int index = Random.Range(0, totalWeight);
 
-        foreach (var data in monster.Values)
+        foreach (var data in setting.MonsterSpawnList)
         {
-            if (Index < data.Weight) return data.Prefab;
-            Index -= data.Weight;
+            //버그 방지: 몬스터 프리팹이 없는 경우 스킵
+            if (data == null || data.MonsterPrefab == null) continue;
+            //음수 가중치 방지
+            int weight = Mathf.Max(0, data.SpawnWeight);
+            //랜덤 숫자가 현재 몬스터의 가중치 범위에 속하면 선택
+            if (index < weight) return data.MonsterPrefab;
+            //현재 몬스터의 가중치만큼 차감하여 다음 몬스터의 범위 검사
+            index -= weight;
         }
 
         return null;

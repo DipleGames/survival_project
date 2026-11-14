@@ -10,7 +10,6 @@ public class DungeonManager : MonoBehaviour
 
     [Header("Dungeon Settings(ScriptableObject)")]
     [SerializeField] private DungeonSettings settings;
-    [SerializeField] private DungeonRoomPositionSettings PositionByRoomTypeSettings;
 
     [Header("Dungeon GameObject")]
     [SerializeField] private DungeonMapView mapView;
@@ -35,11 +34,11 @@ public class DungeonManager : MonoBehaviour
     public List<int> getFloor(int floor) { return DungeonData.FloorMap[floor]; }
 
     public bool IsPlayingRoom() { return getDungeonRoom(CurrentRoomId).IsComplete == false; }
-    public RoomTypePositionData GetRoomPosition(RoomType roomType) { return PositionByRoomTypeSettings.GetRoomPosition(roomType); }
+    public RoomTypeSettings GetDungeonSetting(RoomType roomType) { return settings.GetRoomSettings(roomType); }
 
     public void RoomComplete()
     {
-        getDungeonRoom(CurrentRoomId).RoomClear();
+        getDungeonRoom(CurrentRoomId).RoomComplete();
         Portal.GetComponent<DungeonPortal>().SetDoorState(true);
     }
 
@@ -54,12 +53,12 @@ public class DungeonManager : MonoBehaviour
     public void MoveTo(int roomId)
     {
         int prevRoomId = CurrentRoomId;
-        // 실제 방 이동
+        //실제 방 이동
         CurrentRoomId = roomId;
-        // 지나온 연결선 색칠
+        //지나온 연결선 색칠
         mapView.SetVisitedLine(prevRoomId, roomId);
 
-        // 이동할 방의 타입 확인
+        //이동할 방의 타입 확인
         RoomType roomType = getDungeonRoom(CurrentRoomId).RoomType;
 
         //포탈 데이터 갱신
@@ -67,20 +66,20 @@ public class DungeonManager : MonoBehaviour
         portal.UpdatePortalInDungeonData(roomType);
         portal.SetDoorState(false);
 
-        // 상점이나 보물방은 이동 즉시 클리어 처리
-        if (roomType == RoomType.Shop || roomType == RoomType.Treasure) { RoomComplete(); }
+        //몬스터를 스폰하지 않는 방이라면 바로 클리어 처리
+        if (!GetDungeonSetting(roomType).UseMonsterSpawn) { RoomComplete(); }
 
         //플레이어 위치 이동
         GameObject player = GameManager.Instance.Player.gameObject;
-        player.transform.position = GetRoomPosition(roomType).PlayerPosition;
+        player.transform.position = GetDungeonSetting(roomType).PlayerSpawnPosition;
 
-        // 카메라 갱신 후 맵 닫기
+        //카메라 갱신 후 맵 닫기
         StartCoroutine(FinishRoomMove(player));
     }
 
     private IEnumerator FinishRoomMove(GameObject player)
     {
-        // 카메라가 새 플레이어 위치를 반영할 프레임 확보
+        //카메라가 새 플레이어 위치를 반영할 프레임 확보
         yield return null;
         yield return new WaitForEndOfFrame();
 
@@ -107,10 +106,10 @@ public class DungeonManager : MonoBehaviour
         GameObject player = GameManager.Instance.Player.gameObject;
         player.GetComponent<PlayerCombatController>().isCombatMode = true;
         //플레이어 위치 초기화
-        player.transform.position = GetRoomPosition(RoomType.Start).PlayerPosition;
+        player.transform.position = GetDungeonSetting(RoomType.Start).PlayerSpawnPosition;
 
         //포탈 위치 초기화
-        Portal.transform.position = GetRoomPosition(RoomType.Start).PortalPosition;
+        Portal.transform.position = GetDungeonSetting(RoomType.Start).PortalSpawnPosition;
 
         //몬스터 스포너 위치 설정
         monsterSpawner.UpdateMonsterSpawner(RoomType.Start);

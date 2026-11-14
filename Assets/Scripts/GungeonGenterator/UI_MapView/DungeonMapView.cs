@@ -7,7 +7,7 @@ using Room = DungeonRoomNode;
 
 public class DungeonMapView : MonoBehaviour
 {
-    [Header("Dungeon Map Room")]
+    [Header("Dungeon Map Room Buttons")]
     [SerializeField] private Transform FloorContainer;
     [SerializeField] private GameObject Floor;
     [SerializeField] private GameObject Btn_Room;
@@ -67,15 +67,15 @@ public class DungeonMapView : MonoBehaviour
         }
 
         var builder = new DungeonMapViewBuilder(
-        this,
-    FloorContainer,
-    Floor,
-    Btn_Room,
-    Btn_EmptyRoom,
-    LinesContainer,
-    LinePrefab,
-    lineWidth
-);
+            this, 
+            FloorContainer,
+            Floor,
+            Btn_Room,
+            Btn_EmptyRoom,
+            LinesContainer,
+            LinePrefab,
+            lineWidth
+            );
 
         // 방 UI 생성
         builder.BuildRooms();

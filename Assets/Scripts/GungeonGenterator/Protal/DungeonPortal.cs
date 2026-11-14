@@ -42,24 +42,16 @@ public class DungeonPortal : MonoBehaviour
 
         switch (portalType)
         {
-            case PortalType.RoomComplete:
-                CompleteRoom();
-                break;
-
-            case PortalType.EnterDungeon:
-                EnterDungeon();
-                break;
-
-            case PortalType.ExitDungeon:
-                ExitDungeon();
-                break;
+            //마을에서 던전으로 이동 시의 포탈
+            case PortalType.EnterDungeon: EnterDungeon(); break;
+            //던전 보스룸을 제외한 모든 방 클리어 시 포탈 활성화
+            case PortalType.RoomComplete: CompleteRoom(); break;
+            //던전에서 마을로 이동 시의 포탈(보스룸 클리어 후)
+            case PortalType.ExitDungeon: ExitDungeon(); break;
         }
     }
 
-    private void CompleteRoom()
-    {
-        DungeonManager.Instance.DisplayMapView();
-    }
+    private void CompleteRoom(){ DungeonManager.Instance.DisplayMapView(); }
 
     private void EnterDungeon()
     {
@@ -75,8 +67,7 @@ public class DungeonPortal : MonoBehaviour
 
         // 씬 이동 전에 플레이어 이동 제한 해제
         Player player = GameManager.Instance.Player;
-        if (player != null && player.TryGetComponent(out PlayerMove playerMove))
-            playerMove.MovementLocked = false;
+        if (player != null && player.TryGetComponent(out PlayerMove playerMove)) playerMove.MovementLocked = false;
 
         GameManager.Instance.ToNextScene(townSceneName);
     }
@@ -94,6 +85,6 @@ public class DungeonPortal : MonoBehaviour
         //포탈 타입 설정
         portalType = roomType == RoomType.Boss ? PortalType.ExitDungeon : PortalType.RoomComplete;
         //포탈 위치 설정
-        transform.position = DungeonManager.Instance.GetRoomPosition(roomType).PortalPosition;
+        transform.position = DungeonManager.Instance.GetDungeonSetting(roomType).PortalSpawnPosition;
     }
 }

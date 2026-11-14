@@ -37,7 +37,7 @@ public class DungeonRoomNode
     }
 
     //방을 클리어 했다면 호출
-    public void RoomClear() { IsComplete = true; }
+    public void RoomComplete() { IsComplete = true; }
 
     //방 잇기(던전 생성에만 사용)
     public void AddNeighbor(int _neighbor) { Neighbors.Add(_neighbor); }
