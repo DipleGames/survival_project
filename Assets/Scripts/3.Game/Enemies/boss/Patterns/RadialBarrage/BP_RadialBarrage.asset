@@ -1,0 +1,42 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b0d09262d4e42b0b252f1493c4dcc0f, type: 3}
+  m_Name: BP_RadialBarrage
+  m_EditorClassIdentifier:
+  patternName: Radial Barrage
+  cooldown: 9
+  selectionWeight: 1
+  recoveryDuration: 1.5
+  volleyCount: 3
+  telegraphDuration: 1.2
+  volleyInterval: 0.5
+  projectileCount: 32
+  safeAngle: 80
+  minimumGapRotation: 45
+  maximumGapRotation: 90
+  projectileSpeed: 8
+  projectileRadius: 0.15
+  spawnRadius: 1.2
+  travelDistance: 12
+  projectileHeight: 0.5
+  damage: 1
+  playerLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  obstacleLayers:
+    serializedVersion: 2
+    m_Bits: 2180096
+  displayMaterial: {fileID: 2100000, guid: 3e9e2a5d85ed40818f07ad66bc187bed, type: 2}
+  dangerColor: {r: 1, g: 0.15, b: 0.05, a: 0.25}
+  safeColor: {r: 0.1, g: 1, b: 0.35, a: 0.35}
+  projectileColor: {r: 1, g: 0.3, b: 0.05, a: 1}
+  warningHeight: 0.05

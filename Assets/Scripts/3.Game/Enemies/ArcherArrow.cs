@@ -134,6 +134,8 @@ public class ArcherArrow : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         if (!initialized || consumed) return;
+        // 반사 감지 영역과의 접촉은 플레이어나 지형에 명중한 것으로 처리하지 않습니다.
+        if (other.GetComponent<ArrowReflectionTrigger>() != null) return;
 
         if (reflected)
         {

@@ -5549,7 +5549,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   facingRenderers: []
-  miningAnimatorController: {fileID: 9100000, guid: f7d74ad42290f264386975d3d6f346dc, type: 2}
+  miningAnimatorController: {fileID: 9100000, guid: 16685f4616573c240968e2b445efa262, type: 2}
 --- !u!114 &4378101287687771804
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5626,6 +5626,9 @@ MonoBehaviour:
   _targetLayers:
     serializedVersion: 2
     m_Bits: 128
+  _reflectableLayers:
+    serializedVersion: 2
+    m_Bits: 8388608
 --- !u!114 &4378101287687771783
 MonoBehaviour:
   m_ObjectHideFlags: 0

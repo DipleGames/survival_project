@@ -154,7 +154,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MineTest.MiningManager
   worldCamera: {fileID: 1200114469}
-  player: {fileID: 946242043343594184}
+  player: {fileID: 0}
   ground: {fileID: 1902988670}
   spawnGrounds:
   - {fileID: 1902988670}
@@ -163,6 +163,7 @@ MonoBehaviour:
   clickUiPrefab: {fileID: 168152292318205621, guid: 97fd0804a16c1c5479c4ef2fe2f77af9, type: 3}
   cursorLabel: {fileID: 1727676478}
   cloneCursorLabel: 0
+  miningEnabled: 1
   miningRadius: 3
   miningAnimationLoops: 2
   damagePerHit: 10
@@ -187,8 +188,8 @@ MonoBehaviour:
   labelCursorOffset: {x: 90, y: 10}
   clickUiCursorOffset: {x: 0, y: -70}
   clickUiScale: {x: 0.04, y: 0.04, z: 0.04}
-  referenceCursorPixelSize: 75
   uiScaleMultiplier: 1
+  miningParent: {fileID: 0}
 --- !u!4 &299504202
 Transform:
   m_ObjectHideFlags: 0
@@ -8237,8 +8238,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   facingRenderers: []
-  miningAnimatorIndex: 6
-  miningAnimatorController: {fileID: 9100000, guid: f7d74ad42290f264386975d3d6f346dc, type: 2}
+  miningAnimatorController: {fileID: 9100000, guid: 16685f4616573c240968e2b445efa262, type: 2}
 --- !u!1 &1118564556411963026
 GameObject:
   m_ObjectHideFlags: 0

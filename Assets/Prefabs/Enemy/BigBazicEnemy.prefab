@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 6830878220494395789}
   - component: {fileID: 5798973510643826076}
   - component: {fileID: 1788759440942002801}
+  - component: {fileID: 7843179087190424781}
   m_Layer: 7
   m_Name: BigBazicEnemy
   m_TagString: Untagged
@@ -67,7 +68,7 @@ MonoBehaviour:
   childSpriteRenderer: {fileID: 5579710818580747873}
   isVariant: 0
   telegraphDuration: 0.5
-  dashDistance: 5
+  dashDistance: 4.5
   dashDuration: 0.2
   cooldownTime: 1.5
   attackBoxSize: {x: 1, y: 0.2, z: 1.3}
@@ -81,6 +82,21 @@ MonoBehaviour:
   dodgeCooldown: 3
   dodgeDistance: 2.5
   dodgeDuration: 0.25
+--- !u!114 &7843179087190424781
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3249728092591637564}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7de1afaba74e6204098f79788159ad94, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetRenderer: {fileID: 5579710818580747873}
+  hitColor: {r: 1, g: 0, b: 0, a: 1}
+  flashDuration: 0.4
 --- !u!1 &4698245477699011171
 GameObject:
   m_ObjectHideFlags: 0

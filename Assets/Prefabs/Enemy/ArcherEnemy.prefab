@@ -96,6 +96,7 @@ GameObject:
   - component: {fileID: 1413734866787300825}
   - component: {fileID: 2599719725925898477}
   - component: {fileID: 4563046241505771570}
+  - component: {fileID: 6759540272620364265}
   m_Layer: 7
   m_Name: ArcherEnemy
   m_TagString: Untagged
@@ -147,8 +148,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeed: 3
   hp: 8
-  attckDamege: 1
-  attackRange: 4
+  attckDamege: 2
+  attackRange: 6
   childSpriteRenderer: {fileID: 1048092540031147556}
   fastRetreatSpeed: 6
   shootingDistanceTolerance: 0.5
@@ -197,6 +198,21 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 116
   m_CollisionDetection: 0
+--- !u!114 &6759540272620364265
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7997783304129186937}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7de1afaba74e6204098f79788159ad94, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetRenderer: {fileID: 1048092540031147556}
+  hitColor: {r: 1, g: 0, b: 0, a: 1}
+  flashDuration: 0.4
 --- !u!1001 &5511665078087656317
 PrefabInstance:
   m_ObjectHideFlags: 0

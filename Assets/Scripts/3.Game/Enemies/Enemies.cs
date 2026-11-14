@@ -9,9 +9,12 @@ public class Enemies : EnemyStats, IDamageable, IKnockbackable
     public SpriteRenderer childSpriteRenderer;
     protected bool defaultFacingRight;
     protected Color originalColor;
+    protected HitFlashEffect hitFlashEffect;
 
     protected void InitializePlayerReference()
     {
+        hitFlashEffect = GetComponent<HitFlashEffect>();
+
         if (player == null)
         {
             GameObject playerObject = GameObject.FindGameObjectWithTag("Character");
@@ -35,16 +38,6 @@ public class Enemies : EnemyStats, IDamageable, IKnockbackable
         hp -= damage;
 
         return hp <= 0;
-    }
-
-    protected void PlayHitFlash(SpriteRenderer spriteRenderer, Color originalColor, float duration = 0.2f)
-    {
-        if (spriteRenderer == null)
-            return;
-
-        spriteRenderer.DOKill();
-        spriteRenderer.color = Color.red;
-        spriteRenderer.DOColor(originalColor, duration);
     }
 
     protected void UpdateFacingDirection(SpriteRenderer spriteRenderer)
@@ -101,7 +94,7 @@ public class Enemies : EnemyStats, IDamageable, IKnockbackable
 
         Debug.Log($"[{gameObject.name}] 피격! 남은 HP: {hp}");
 
-        PlayHitFlash(childSpriteRenderer, originalColor);
+        hitFlashEffect?.PlayHitFlash();
 
         if (isDead)
         {

@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecbf6fcd6a0d04945a49ed6fb7b8c9c2, type: 3}
+  m_Name: BP_Varga_Phase2
+  m_EditorClassIdentifier: 
+  phaseName: Phase2
+  animatorController: {fileID: 9100000, guid: e74d4f1c9076be3449f900842f9bceb4, type: 2}
+  enterHealthRatio: 0.5
+  patterns:
+  - {fileID: 11400000, guid: 1de6d9dbc908a364194d599f681155a2, type: 2}
+  - {fileID: 11400000, guid: 5946bb2096e1a3243b2e92f6e430468e, type: 2}
+  - {fileID: 11400000, guid: 5d10c493a0d511f4fa5fb188373079ed, type: 2}
+  - {fileID: 11400000, guid: 6a4135c1821228545b6bd6861bf9a412, type: 2}
