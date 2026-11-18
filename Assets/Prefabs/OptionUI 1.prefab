@@ -2253,7 +2253,7 @@ RectTransform:
   - {fileID: 469192169}
   - {fileID: 742810609526150802}
   m_Father: {fileID: 4902837313861553122}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
@@ -3525,7 +3525,7 @@ RectTransform:
   m_Children:
   - {fileID: 2531631945169765766}
   m_Father: {fileID: 4902837313861553122}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -5920,7 +5920,7 @@ RectTransform:
   - {fileID: 8652507537812705319}
   - {fileID: 41436475113956995}
   m_Father: {fileID: 4902837313861553122}
-  m_RootOrder: 2
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -6541,7 +6541,7 @@ RectTransform:
   m_Children:
   - {fileID: 2513496798156897219}
   m_Father: {fileID: 4902837313861553122}
-  m_RootOrder: 7
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -6857,12 +6857,12 @@ RectTransform:
   m_Children:
   - {fileID: 4902837314117181942}
   - {fileID: 4902837315409045380}
-  - {fileID: 8537364599957581123}
   - {fileID: 1368606061}
   - {fileID: 4403868463631107236}
   - {fileID: 2303811801451727683}
   - {fileID: 8080284268868082029}
   - {fileID: 1322504791424833306}
+  - {fileID: 8537364599957581123}
   m_Father: {fileID: 4902837314588756061}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -7103,6 +7103,7 @@ MonoBehaviour:
   statPanel: {fileID: 1368606060}
   backPanel: {fileID: 0}
   gameManager: {fileID: 0}
+  saveLoad: {fileID: 0}
 --- !u!114 &1623322421
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7123,7 +7124,7 @@ MonoBehaviour:
   sUnMark: {fileID: 5085087055106155668}
   normalToggle: {fileID: 8555162102499984947}
   doubleToggle: {fileID: 8555162102887977714}
-  gameManager: {fileID: 0}
+  normalCursorTextures: []
   keyTexts:
   - {fileID: 8555162100993027855}
   - {fileID: 8555162101455480685}
@@ -7149,6 +7150,10 @@ MonoBehaviour:
   saveSlotList: {fileID: 4640019661220660620}
   maxSlots: 20
   SaveLoadPanel: {fileID: 847654580135934139}
+  EquipmentManager: {fileID: 0}
+  ItemInventory: {fileID: 0}
+  QuickSlot: {fileID: 0}
+  GameManager: {fileID: 0}
 --- !u!1 &4902837315409045383
 GameObject:
   m_ObjectHideFlags: 0
@@ -8710,7 +8715,7 @@ RectTransform:
   m_Children:
   - {fileID: 1123980362932490079}
   m_Father: {fileID: 4902837313861553122}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -9267,7 +9272,7 @@ RectTransform:
   m_Children:
   - {fileID: 1360181517027522569}
   m_Father: {fileID: 4902837313861553122}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}

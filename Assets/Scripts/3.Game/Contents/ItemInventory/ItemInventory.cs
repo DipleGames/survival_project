@@ -150,10 +150,32 @@ public class ItemInventory : MonoBehaviour
             }
         }
     }
-    public Dictionary<int, int?[]> CallInventoryData()
+    /*public Dictionary<int, int?[]> CallInventoryData()
     {
+
         return categorySlotItems;
+    }*/
+
+    public List<InventorySlotSaveData> CallInventoryData()
+    {
+        var data = new List<InventorySlotSaveData>();
+        foreach (var category in categorySlotItems)
+        {
+            int?[] items = category.Value;
+
+            for (int i = 0; i < items.Length; i++)
+            {
+                data.Add(new InventorySlotSaveData
+                {
+                    category = category.Key,
+                    slotIndex = i,
+                    itemId = items[i] ?? -1
+                });
+            }
+        }
+        return data;
     }
+
 
     /// <summary>
     /// 드래그한 두 슬롯의 아이템 배치를 교환한다.

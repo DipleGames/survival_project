@@ -18,9 +18,9 @@ public class SaveLoad : MonoBehaviour
     private List<UnityEngine.UI.Button> slotButtons = new List<UnityEngine.UI.Button>();
     [SerializeField] EquipmentManager EquipmentManager;
     [SerializeField] ItemInventory ItemInventory;
-    [SerializeField] QuickSlot QuickSlot;
+    //[SerializeField] QuickSlot QuickSlot;
     [SerializeField] GameManager GameManager;
-
+    [SerializeField] QuickSlotManager QuickSlotManager;
     public enum SaveLoadMode
     {
         Save,
@@ -106,7 +106,7 @@ public class SaveLoad : MonoBehaviour
                 });
             }
             // 인벤토리 슬롯상태 저장
-            var inventoryData = ItemInventory.CallInventoryData();
+            /*var inventoryData = ItemInventory.CallInventoryData();
             data.player.inventory.inventorySlots.Clear();
             foreach (var category in inventoryData)
             {
@@ -122,7 +122,11 @@ public class SaveLoad : MonoBehaviour
                             itemId = slots[i] ?? -1
                         });
                 }
-            }
+            }*/
+            data.player.inventory.inventorySlots = ItemInventory.CallInventoryData();
+            data.player.inventory.quickSlots = QuickSlotManager.CallQuickSlotData();
+
+
             // 그외 재료 - 아직 Load 미지정
             data.player.inventory.materials = new List<MaterialSaveData>();
             foreach (var material in ItemManager.Instance.haveMaterials)
@@ -133,7 +137,6 @@ public class SaveLoad : MonoBehaviour
                     count = material.Value
                 });
             }
-            data.player.inventory.quickSlots = new List<QuickSlotSaveData>();
 
         }
 
@@ -242,6 +245,9 @@ public class SaveLoad : MonoBehaviour
             return;
         // 장비 복원 
         EquipmentManager.LoadEquipment(data.player.equippedItemId);
+        // 퀵슬롯 복원
+        QuickSlotManager.LoadQuickSlotData(inventory.quickSlots);
+
 
         Debug.Log("플레이어 복원 완료");
     }
