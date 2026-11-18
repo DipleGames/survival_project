@@ -266,9 +266,8 @@ public class BigBazicEnemy : Enemies
         // 몸체도 동일한 좌우 방향을 바라보게 한다.
         UpdateFacingDirection(childSpriteRenderer);
 
-        // 이펙트와 공격 판정이 공유하는 중심
+        // 실제 공격 판정 중심은 기존 오프셋 계산을 그대로 사용한다.
         Vector3 attackCenter = transform.position;
-
         attackCenter.x += horizontalSign * Mathf.Abs(slashForwardOffset);
 
         // -----------------------------
@@ -279,9 +278,15 @@ public class BigBazicEnemy : Enemies
         {
             slashIndicator.DOKill();
 
-            slashIndicator.position = attackCenter;
+            SpriteRenderer indicatorSR = slashIndicator.GetComponentInChildren<SpriteRenderer>(true);
+            Transform indicatorVisual = indicatorSR != null
+                ? indicatorSR.transform
+                : (slashIndicator.childCount > 0 ? slashIndicator.GetChild(0) : null);
 
-            SpriteRenderer indicatorSR = slashIndicator.GetComponent<SpriteRenderer>();
+            if (indicatorVisual != null)
+            {
+                indicatorVisual.position = attackCenter;
+            }
 
             if (indicatorSR != null)
             {
@@ -390,7 +395,7 @@ public class BigBazicEnemy : Enemies
         {
             slashIndicator.DOKill();
 
-            SpriteRenderer indicatorSR = slashIndicator.GetComponent<SpriteRenderer>();
+            SpriteRenderer indicatorSR = slashIndicator.GetComponentInChildren<SpriteRenderer>(true);
 
             if (indicatorSR != null)
             {
@@ -498,7 +503,7 @@ public class BigBazicEnemy : Enemies
         {
             slashIndicator.DOKill();
 
-            SpriteRenderer indicatorSR = slashIndicator.GetComponent<SpriteRenderer>();
+            SpriteRenderer indicatorSR = slashIndicator.GetComponentInChildren<SpriteRenderer>(true);
 
             if (indicatorSR != null)
             {

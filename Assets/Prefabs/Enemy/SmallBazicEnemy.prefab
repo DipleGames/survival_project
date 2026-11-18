@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 4998988373881691819}
   - component: {fileID: 4998988373881691734}
   - component: {fileID: 2426582534178843249}
+  - component: {fileID: 7317298076754649920}
   m_Layer: 7
   m_Name: SmallBazicEnemy
   m_TagString: Untagged
@@ -74,6 +75,21 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.75, y: 1.5, z: 0.2}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &7317298076754649920
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4998988373881691735}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7de1afaba74e6204098f79788159ad94, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetRenderer: {fileID: 8276313093957859460}
+  hitColor: {r: 1, g: 0, b: 0, a: 1}
+  flashDuration: 0.4
 --- !u!1 &5021907584316588213
 GameObject:
   m_ObjectHideFlags: 0

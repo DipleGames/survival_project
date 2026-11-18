@@ -60,8 +60,7 @@ public class ItemInventory : MonoBehaviour
 
         SetDescriptionText("");
 
-        if (invenPanel != null)
-            invenPanel.SetActive(false);
+        if (invenPanel != null)invenPanel.SetActive(false);
     }
 
     /// <summary>
@@ -104,8 +103,7 @@ public class ItemInventory : MonoBehaviour
 
         currentCategory = type;
 
-        if (categoryTabUI != null)
-            categoryTabUI.SetSelectedCategory(type);
+        if (categoryTabUI != null)categoryTabUI.SetSelectedCategory(type);
 
         SyncSlotData(type);
         RefreshSlots();
@@ -132,7 +130,8 @@ public class ItemInventory : MonoBehaviour
                 continue;
             }
 
-            int type = info.itemType;
+            //int type = info.itemType;
+            int type = GetInventoryCategory(info.itemType);  
 
             if (!categorySlotItems.TryGetValue(type, out int?[] items))
             {
@@ -176,6 +175,12 @@ public class ItemInventory : MonoBehaviour
         return data;
     }
 
+
+    //아이템의 실제 타입을 인벤토리에서 사용할 카테고리 번호로 변환하는 함수. 테스트용 Weapon을 인벤토리상에 보이도록 하기 위함.
+    private int GetInventoryCategory(int itemType)
+    {
+        return itemType == (int)ItemType.Weapon ? (int)ItemType.Tool : itemType; //itemType이 Weapon이면 Tool로 변환, 아니면 그대로 반환
+    }
 
     /// <summary>
     /// 드래그한 두 슬롯의 아이템 배치를 교환한다.
@@ -296,9 +301,7 @@ public class ItemInventory : MonoBehaviour
 
             int itemId = items[i].Value;
 
-            if (itemManager.GetItemCount(itemId) <= 0 ||
-                !itemManager.itemInfos.TryGetValue(itemId, out ItemInfo info) ||
-                info == null || info.itemType != type)
+            if (itemManager.GetItemCount(itemId) <= 0 || !itemManager.itemInfos.TryGetValue(itemId, out ItemInfo info) || info == null || GetInventoryCategory(info.itemType) != type) //info.itemType != type으로 확인하던 부분 수정
             {
                 items[i] = null;
             }
@@ -308,8 +311,7 @@ public class ItemInventory : MonoBehaviour
         {
             int itemId = item.Key;
 
-            if (item.Value <= 0 || !itemManager.itemInfos.TryGetValue(itemId, out ItemInfo info) ||
-                info == null || info.itemType != type)
+            if (item.Value <= 0 || !itemManager.itemInfos.TryGetValue(itemId, out ItemInfo info) || info == null || info.itemType != type)
                 continue;
 
             if (System.Array.IndexOf(items, (int?)itemId) >= 0)
@@ -338,8 +340,7 @@ public class ItemInventory : MonoBehaviour
         {
             ItemInfo info = null;
 
-            if (items != null && i < items.Length && items[i].HasValue)
-                info = itemManager.GetItemInfo(items[i].Value);
+            if (items != null && i < items.Length && items[i].HasValue) info = itemManager.GetItemInfo(items[i].Value);
 
             slots[i].SetSlot(info);
         }

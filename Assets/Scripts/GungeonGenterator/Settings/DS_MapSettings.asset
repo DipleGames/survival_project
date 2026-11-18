@@ -1,0 +1,96 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7830597eee987944da3573d94d5c9011, type: 3}
+  m_Name: DS_MapSettings
+  m_EditorClassIdentifier: 
+  Depth: 4
+  Width: 4
+  AntCount: 5
+  Rooms:
+  - RoomType: 0
+    PlayerSpawnPosition: {x: 0, y: 0, z: -55}
+    PortalSpawnPosition: {x: 0, y: 0, z: -42}
+    MonsterSpawnerPosition: {x: 0, y: 0, z: 0}
+    UseRoomChance: 0
+    StartChance: 0
+    IncreaseChance: 0
+    UseMonsterSpawn: 0
+    MonsterCountMin: 0
+    MonsterCountMax: 0
+    MonsterSpawnList: []
+  - RoomType: 1
+    PlayerSpawnPosition: {x: 0, y: 0, z: -55}
+    PortalSpawnPosition: {x: 0, y: 0, z: -42}
+    MonsterSpawnerPosition: {x: 0, y: 0, z: -50}
+    UseRoomChance: 0
+    StartChance: 0
+    IncreaseChance: 0
+    UseMonsterSpawn: 1
+    MonsterCountMin: 1
+    MonsterCountMax: 2
+    MonsterSpawnList:
+    - MonsterPrefab: {fileID: 7997783304129186937, guid: 9f6ba57578ae00a4fa1c4b495c28e694, type: 3}
+      SpawnWeight: 1
+  - RoomType: 2
+    PlayerSpawnPosition: {x: 50, y: 0, z: -55}
+    PortalSpawnPosition: {x: 54, y: 0, z: -47}
+    MonsterSpawnerPosition: {x: 0, y: 0, z: 0}
+    UseRoomChance: 1
+    StartChance: 0
+    IncreaseChance: 0.05
+    UseMonsterSpawn: 0
+    MonsterCountMin: 0
+    MonsterCountMax: 0
+    MonsterSpawnList: []
+  - RoomType: 3
+    PlayerSpawnPosition: {x: 100, y: 0, z: -55}
+    PortalSpawnPosition: {x: 100, y: 0, z: -47}
+    MonsterSpawnerPosition: {x: 0, y: 0, z: 0}
+    UseRoomChance: 1
+    StartChance: 0.05
+    IncreaseChance: 0.05
+    UseMonsterSpawn: 0
+    MonsterCountMin: 0
+    MonsterCountMax: 0
+    MonsterSpawnList: []
+  - RoomType: 4
+    PlayerSpawnPosition: {x: 150, y: 0, z: -55}
+    PortalSpawnPosition: {x: 150, y: 0, z: -42}
+    MonsterSpawnerPosition: {x: 150, y: 0, z: -50}
+    UseRoomChance: 1
+    StartChance: 0
+    IncreaseChance: 0.05
+    UseMonsterSpawn: 1
+    MonsterCountMin: 2
+    MonsterCountMax: 3
+    MonsterSpawnList:
+    - MonsterPrefab: {fileID: 4998988373881691735, guid: 7f1a3429e32419d4e85a7871b7ed364a, type: 3}
+      SpawnWeight: 1
+    - MonsterPrefab: {fileID: 3249728092591637564, guid: c5a9dbf90a356d048b5f3f822bbee5ef, type: 3}
+      SpawnWeight: 1
+  - RoomType: 5
+    PlayerSpawnPosition: {x: 200, y: 0, z: -55}
+    PortalSpawnPosition: {x: 200, y: 0, z: -42}
+    MonsterSpawnerPosition: {x: 200, y: 0, z: -50}
+    UseRoomChance: 0
+    StartChance: 0
+    IncreaseChance: 0
+    UseMonsterSpawn: 1
+    MonsterCountMin: 3
+    MonsterCountMax: 4
+    MonsterSpawnList:
+    - MonsterPrefab: {fileID: 7997783304129186937, guid: 9f6ba57578ae00a4fa1c4b495c28e694, type: 3}
+      SpawnWeight: 1
+    - MonsterPrefab: {fileID: 3249728092591637564, guid: c5a9dbf90a356d048b5f3f822bbee5ef, type: 3}
+      SpawnWeight: 1
+    - MonsterPrefab: {fileID: 4998988373881691735, guid: 7f1a3429e32419d4e85a7871b7ed364a, type: 3}
+      SpawnWeight: 1

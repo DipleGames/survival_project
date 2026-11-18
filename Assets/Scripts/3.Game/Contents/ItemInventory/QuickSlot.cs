@@ -15,14 +15,47 @@ public class QuickSlot : MonoBehaviour,
     // 다른 슬롯에서 현재 아이템을 조회하기 위한 프로퍼티
     public ItemInfo ItemInfo => itemInfo;
 
+    private void Awake()
+    {
+        allSlots.Add(this);
+        // 게임 시작 시 빈 슬롯 상태로 초기화
+        SetItemDirect(null);
+    }
+
+    private void OnDestroy()
+    {
+        allSlots.Remove(this);
+    }
+
     // 퀵슬롯에 아이템 설정
     public void SetItem(ItemInfo item)
     {
+        // 이미 다른 퀵슬롯에 등록된 동일 아이템 제거
+        if (item != null)
+        {
+            foreach (QuickSlot slot in allSlots)
+            {
+                if (slot != this &&slot.itemInfo?.itemId == item.itemId)
+                {
+                    slot.SetItemDirect(null);
+                }
+            }
+        }
+
+        SetItemDirect(item);
+    }
+    // 아이템 정보와 이미지만 직접 변경
+    private void SetItemDirect(ItemInfo item)
+    {
         itemInfo = item;
 
-        itemImage.sprite = item == null
-            ? null
-            : Resources.Load<Sprite>($"Item/{item.itemId}");
+        // 아이템 아이콘 변경
+        itemImage.sprite = item == null ? null : Resources.Load<Sprite>($"Item/{item.itemId}");
+
+        itemImage.enabled = item != null;
+
+        // 기존 슬롯 배경 유지, 색상만 변경
+        slotBackground.color = item == null ? Color.white : new Color(0.85f, 0.7f, 0.5f, 1f);
     }
 
     public void OnDrop(PointerEventData eventData)
@@ -59,5 +92,15 @@ public class QuickSlot : MonoBehaviour,
     public void OnEndDrag(PointerEventData eventData)
     {
         dragSlot.gameObject.SetActive(false);
+    }
+    public static void ClearItemFromAll(int itemId)
+    {
+        foreach (QuickSlot slot in allSlots)
+        {
+            if (slot.itemInfo?.itemId == itemId)
+            {
+                slot.SetItemDirect(null);
+            }
+        }
     }
 }

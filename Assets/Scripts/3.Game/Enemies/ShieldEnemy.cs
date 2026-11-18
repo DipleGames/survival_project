@@ -67,7 +67,7 @@ public class ShieldEnemy : Enemies
     {
         shieldHp -= damage;
 
-        PlayHitFlash(childSpriteRenderer, originalColor);
+        hitFlashEffect?.PlayHitFlash();
 
         if (shieldHp <= 0)
         {

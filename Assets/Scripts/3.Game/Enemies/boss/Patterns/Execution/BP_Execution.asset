@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eee3fb907e2c7224ba2b3d56627411a1, type: 3}
+  m_Name: BP_Execution
+  m_EditorClassIdentifier: 
+  patternName: "\uD729\uC4F8\uAE30 \uD328\uD134"
+  cooldown: 3
+  selectionWeight: 1
+  recoveryDuration: 2
+  activationRange: 3
+  attackRadius: 3
+  attackAngle: 120
+  damage: 2
+  playerLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  telegraphDuration: 0.7
+  attackDuration: 0.6
+  executionAnimationClip: {fileID: 7400000, guid: 507b7992c29149c69c8225b813237312, type: 2}
+  executionAnimationState: ExecutionAttack
+  idleAnimationState: Idle

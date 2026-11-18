@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c595e72abfd2d33409fe5c6ad0813e93, type: 3}
+  m_Name: BP_Spike
+  m_EditorClassIdentifier: 
+  patternName: "\uAC00\uC2DC \uD328\uD134"
+  cooldown: 3
+  selectionWeight: 1
+  recoveryDuration: 1.5
+  spikeCount: 3
+  attackRadius: 1.2
+  damage: 1
+  playerLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  telegraphDuration: 0.5
+  spikeInterval: 0.2
+  attackDuration: 0.4
+  warningPrefab: {fileID: 2070877560, guid: 60174bab51c9466db9f6b8bdcc6b1fc4, type: 3}
+  impactPrefab: {fileID: 1248190942714355876, guid: 6f6bdaa4d3767a14bbe0531e209a6897, type: 3}
