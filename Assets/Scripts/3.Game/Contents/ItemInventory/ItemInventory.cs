@@ -60,7 +60,8 @@ public class ItemInventory : MonoBehaviour
 
         SetDescriptionText("");
 
-        if (invenPanel != null)invenPanel.SetActive(false);
+        if (invenPanel != null)
+            invenPanel.SetActive(false);
     }
 
     /// <summary>
@@ -103,7 +104,8 @@ public class ItemInventory : MonoBehaviour
 
         currentCategory = type;
 
-        if (categoryTabUI != null)categoryTabUI.SetSelectedCategory(type);
+        if (categoryTabUI != null)
+            categoryTabUI.SetSelectedCategory(type);
 
         SyncSlotData(type);
         RefreshSlots();
@@ -130,8 +132,7 @@ public class ItemInventory : MonoBehaviour
                 continue;
             }
 
-            //int type = info.itemType;
-            int type = GetInventoryCategory(info.itemType);  
+            int type = GetInventoryCategory(info.itemType);
 
             if (!categorySlotItems.TryGetValue(type, out int?[] items))
             {
@@ -155,6 +156,11 @@ public class ItemInventory : MonoBehaviour
         return categorySlotItems;
     }*/
 
+    private static int GetInventoryCategory(int itemType)
+    {
+        return itemType == (int)ItemType.Weapon ? (int)ItemType.Tool : itemType;
+    }
+
     public List<InventorySlotSaveData> CallInventoryData()
     {
         var data = new List<InventorySlotSaveData>();
@@ -175,12 +181,6 @@ public class ItemInventory : MonoBehaviour
         return data;
     }
 
-
-    //아이템의 실제 타입을 인벤토리에서 사용할 카테고리 번호로 변환하는 함수. 테스트용 Weapon을 인벤토리상에 보이도록 하기 위함.
-    private int GetInventoryCategory(int itemType)
-    {
-        return itemType == (int)ItemType.Weapon ? (int)ItemType.Tool : itemType; //itemType이 Weapon이면 Tool로 변환, 아니면 그대로 반환
-    }
 
     /// <summary>
     /// 드래그한 두 슬롯의 아이템 배치를 교환한다.
@@ -301,7 +301,9 @@ public class ItemInventory : MonoBehaviour
 
             int itemId = items[i].Value;
 
-            if (itemManager.GetItemCount(itemId) <= 0 || !itemManager.itemInfos.TryGetValue(itemId, out ItemInfo info) || info == null || GetInventoryCategory(info.itemType) != type) //info.itemType != type으로 확인하던 부분 수정
+            if (itemManager.GetItemCount(itemId) <= 0 ||
+                !itemManager.itemInfos.TryGetValue(itemId, out ItemInfo info) ||
+                info == null || GetInventoryCategory(info.itemType) != type)
             {
                 items[i] = null;
             }
@@ -311,7 +313,8 @@ public class ItemInventory : MonoBehaviour
         {
             int itemId = item.Key;
 
-            if (item.Value <= 0 || !itemManager.itemInfos.TryGetValue(itemId, out ItemInfo info) || info == null || info.itemType != type)
+            if (item.Value <= 0 || !itemManager.itemInfos.TryGetValue(itemId, out ItemInfo info) ||
+                info == null || GetInventoryCategory(info.itemType) != type)
                 continue;
 
             if (System.Array.IndexOf(items, (int?)itemId) >= 0)
@@ -340,7 +343,8 @@ public class ItemInventory : MonoBehaviour
         {
             ItemInfo info = null;
 
-            if (items != null && i < items.Length && items[i].HasValue) info = itemManager.GetItemInfo(items[i].Value);
+            if (items != null && i < items.Length && items[i].HasValue)
+                info = itemManager.GetItemInfo(items[i].Value);
 
             slots[i].SetSlot(info);
         }
@@ -385,12 +389,14 @@ public class ItemInventory : MonoBehaviour
             if (saved.slotIndex < 0 || saved.slotIndex >= SlotCount)
                 continue;
 
+            int category = GetInventoryCategory(saved.category);
+
             // 카테고리별 슬롯 배열 생성
             if (!categorySlotItems.TryGetValue(
-                saved.category, out int?[] items))
+                category, out int?[] items))
             {
                 items = new int?[SlotCount];
-                categorySlotItems.Add(saved.category, items);
+                categorySlotItems.Add(category, items);
             }
 
             // 새 배열은 null로 초기화되므로 빈 슬롯은 건너뜀
@@ -402,7 +408,7 @@ public class ItemInventory : MonoBehaviour
             // 존재하고, 보유하고 있으며, 카테고리가 맞는 아이템만 배치
             if (info == null ||
                 itemManager.GetItemCount(saved.itemId) <= 0 ||
-                info.itemType != saved.category)
+                GetInventoryCategory(info.itemType) != category)
             {
                 continue;
             }

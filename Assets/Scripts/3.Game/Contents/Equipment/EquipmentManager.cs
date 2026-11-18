@@ -113,6 +113,19 @@ public class EquipmentManager : MonoBehaviour
         return itemManager.itemInfos[equippedItemId];
     }
 
+    public void LoadEquipment(int itemId)
+    {
+        itemManager = ItemManager.Instance;
+        if (itemManager != null)
+        {
+            foreach (WeaponEquipment weapon in weapons)
+                itemManager.RestoreEquipmentInstances(weapon.InventoryItemId, weapon.Data.MaxDurability);
+        }
+
+        if (!EquipItem(itemManager?.GetItemInfo(itemId)))
+            UnequipItem();
+    }
+
     // 장착된 아이템이 제거되면 해제
     public void OnItemRemoved(int itemId)
     {

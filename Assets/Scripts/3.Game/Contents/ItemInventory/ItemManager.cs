@@ -257,6 +257,15 @@ public class ItemManager : Singleton<ItemManager>
 #endif
 
     // Load
+    public void RestoreEquipmentInstances(int itemId, int maxDurability)
+    {
+        equipmentInstances.RemoveAll(instance => instance.ItemId == itemId);
+
+        int count = GetItemCount(itemId);
+        for (int i = 0; i < count; i++)
+            equipmentInstances.Add(new EquipmentItemInstance(itemId, maxDurability));
+    }
+
     public bool RestoreItems(List<ItemStackSaveData> savedItems)
     {
         if (!Initialize())

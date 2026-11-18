@@ -1,5 +1,4 @@
-
-using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -10,6 +9,9 @@ public class QuickSlot : MonoBehaviour,
     [SerializeField] Image itemImage;
     [SerializeField] ItemInventoryDrag dragSlot;
     [SerializeField] QuickSlotManager quickSlotManager;
+    [SerializeField] Image slotBackground;
+
+    private static readonly HashSet<QuickSlot> allSlots = new();
     ItemInfo itemInfo;
 
     // 다른 슬롯에서 현재 아이템을 조회하기 위한 프로퍼티
@@ -35,7 +37,7 @@ public class QuickSlot : MonoBehaviour,
         {
             foreach (QuickSlot slot in allSlots)
             {
-                if (slot != this &&slot.itemInfo?.itemId == item.itemId)
+                if (slot != this && slot.itemInfo?.itemId == item.itemId)
                 {
                     slot.SetItemDirect(null);
                 }

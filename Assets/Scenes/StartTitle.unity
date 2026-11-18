@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.3731193, g: 0.38073996, b: 0.35872698, a: 1}
+  m_IndirectSpecularColor: {r: 0.37311953, g: 0.38074014, b: 0.3587274, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -2270,7 +2270,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 936130855}
-  - component: {fileID: 936130856}
   - component: {fileID: 936130854}
   - component: {fileID: 936130859}
   m_Layer: 0
@@ -2314,14 +2313,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!81 &936130856
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 936130853}
-  m_Enabled: 1
 --- !u!114 &936130859
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2783,6 +2774,18 @@ MonoBehaviour:
     effect: "\uD669\uD640\uD55C \uC0DD\uC120 \uAD6C\uC774 \uC81C\uC791 \uC7AC\uB8CC"
     decription: "\uBC14\uB2F7\uBB3C\uC744 \uAC00\uC5F4\uD574\uC11C \uC5BB\uC740 \uC18C\uAE08\uC774\uB2E4.\\n\uC77C\uBC18\uC18C\uAE08\uACFC
       \uC0C9\uC774 \uC870\uAE08 \uB2E4\uB978 \uAC83 \uAC19\uB2E4."
+  - itemId: 1001
+    itemName: Sword
+    itemType: 5
+    acquisitions: 0
+    needMaterialTypes: 
+    needMaterialCounts: 
+    takeTimeByAcquisition: 0
+    takePercentByAcquisition: 
+    isConsumable: 0
+    maxCount: 1
+    effect: "\uAE30\uBCF8 \uADFC\uC811 \uBB34\uAE30"
+    decription: "BaseDamage 10\uC778 \uD14C\uC2A4\uD2B8\uC6A9 \uBB34\uAE30"
 --- !u!1 &970037970
 GameObject:
   m_ObjectHideFlags: 0
@@ -4910,8 +4913,8 @@ MonoBehaviour:
   SaveLoadPanel: {fileID: 531359112}
   EquipmentManager: {fileID: 0}
   ItemInventory: {fileID: 0}
-  QuickSlot: {fileID: 0}
   GameManager: {fileID: 936130854}
+  QuickSlotManager: {fileID: 0}
 --- !u!1 &1335804717026733290
 GameObject:
   m_ObjectHideFlags: 0
