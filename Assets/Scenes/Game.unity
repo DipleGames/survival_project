@@ -266078,7 +266078,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemImage: {fileID: 2050584469}
   dragSlot: {fileID: 7854070763288325099}
+<<<<<<< HEAD
+  quickSlotManager: {fileID: 1493959282}
+=======
   slotBackground: {fileID: 326593893}
+>>>>>>> develop
 --- !u!114 &326593891
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -273045,7 +273049,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemImage: {fileID: 1503905144}
   dragSlot: {fileID: 7854070763288325099}
+<<<<<<< HEAD
+  quickSlotManager: {fileID: 1493959282}
+=======
   slotBackground: {fileID: 495805365}
+>>>>>>> develop
 --- !u!114 &495805368
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -280625,7 +280633,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemImage: {fileID: 1759935800}
   dragSlot: {fileID: 7854070763288325099}
+<<<<<<< HEAD
+  quickSlotManager: {fileID: 1493959282}
+=======
   slotBackground: {fileID: 787803167}
+>>>>>>> develop
 --- !u!114 &787803165
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -287789,7 +287801,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemImage: {fileID: 262667392}
   dragSlot: {fileID: 7854070763288325099}
+<<<<<<< HEAD
+  quickSlotManager: {fileID: 1493959282}
+=======
   slotBackground: {fileID: 1069604148}
+>>>>>>> develop
 --- !u!114 &1069604146
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -296074,6 +296090,7 @@ GameObject:
   - component: {fileID: 1493959281}
   - component: {fileID: 1493959280}
   - component: {fileID: 1493959279}
+  - component: {fileID: 1493959282}
   m_Layer: 5
   m_Name: QuickSlot
   m_TagString: Untagged
@@ -296171,6 +296188,25 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1493959277}
   m_CullTransparentMesh: 1
+--- !u!114 &1493959282
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1493959277}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 69ee542346b9fc64fbc3a6abd246d0d5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  quickSlots:
+  - {fileID: 495805367}
+  - {fileID: 326593890}
+  - {fileID: 787803164}
+  - {fileID: 1936935568}
+  - {fileID: 2056751226}
+  - {fileID: 1069604145}
 --- !u!1 &1503641595
 GameObject:
   m_ObjectHideFlags: 0
@@ -297206,7 +297242,7 @@ MonoBehaviour:
   clickUiCursorOffset: {x: 0, y: -70}
   clickUiScale: {x: 0.04, y: 0.04, z: 0.04}
   uiScaleMultiplier: 1
-  miningParent: {fileID: 0}
+  miningParent: {fileID: 2118159001}
 --- !u!4 &1550089958
 Transform:
   m_ObjectHideFlags: 0
@@ -386916,7 +386952,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemImage: {fileID: 1256443738}
   dragSlot: {fileID: 7854070763288325099}
+<<<<<<< HEAD
+  quickSlotManager: {fileID: 1493959282}
+=======
   slotBackground: {fileID: 1936935571}
+>>>>>>> develop
 --- !u!114 &1936935569
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -387426,6 +387466,18 @@ PrefabInstance:
       propertyPath: optionPanel
       value: 
       objectReference: {fileID: 1972012132}
+    - target: {fileID: 4832086914533710092, guid: cdf95aff8a272e548bfe5bbaffbdf5d8, type: 3}
+      propertyPath: ItemInventory
+      value: 
+      objectReference: {fileID: 1957668864}
+    - target: {fileID: 4832086914533710092, guid: cdf95aff8a272e548bfe5bbaffbdf5d8, type: 3}
+      propertyPath: EquipmentManager
+      value: 
+      objectReference: {fileID: 281281243}
+    - target: {fileID: 4832086914533710092, guid: cdf95aff8a272e548bfe5bbaffbdf5d8, type: 3}
+      propertyPath: QuickSlotManager
+      value: 
+      objectReference: {fileID: 1493959282}
     - target: {fileID: 4902837314588756060, guid: cdf95aff8a272e548bfe5bbaffbdf5d8, type: 3}
       propertyPath: m_Name
       value: OptionUI 1
@@ -388181,7 +388233,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemImage: {fileID: 376549363}
   dragSlot: {fileID: 7854070763288325099}
+<<<<<<< HEAD
+  quickSlotManager: {fileID: 1493959282}
+=======
   slotBackground: {fileID: 2056751229}
+>>>>>>> develop
 --- !u!114 &2056751227
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -388851,6 +388907,37 @@ MonoBehaviour:
   m_CameraActivatedEvent:
     m_PersistentCalls:
       m_Calls: []
+--- !u!1 &2118159000
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2118159001}
+  m_Layer: 0
+  m_Name: MiningObj
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2118159001
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2118159000}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 861.31067, y: 535.7007, z: -215.963}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 20
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2128402616
 GameObject:
   m_ObjectHideFlags: 0

@@ -149,6 +149,32 @@ public class ItemInventory : MonoBehaviour
             }
         }
     }
+    /*public Dictionary<int, int?[]> CallInventoryData()
+    {
+
+        return categorySlotItems;
+    }*/
+
+    public List<InventorySlotSaveData> CallInventoryData()
+    {
+        var data = new List<InventorySlotSaveData>();
+        foreach (var category in categorySlotItems)
+        {
+            int?[] items = category.Value;
+
+            for (int i = 0; i < items.Length; i++)
+            {
+                data.Add(new InventorySlotSaveData
+                {
+                    category = category.Key,
+                    slotIndex = i,
+                    itemId = items[i] ?? -1
+                });
+            }
+        }
+        return data;
+    }
+
 
     //아이템의 실제 타입을 인벤토리에서 사용할 카테고리 번호로 변환하는 함수. 테스트용 Weapon을 인벤토리상에 보이도록 하기 위함.
     private int GetInventoryCategory(int itemType)
@@ -330,5 +356,69 @@ public class ItemInventory : MonoBehaviour
 
         SyncSlotData(currentCategory);
         RefreshSlots();
+    }
+
+    //Load
+    public bool RestoreSlots(List<InventorySlotSaveData> savedSlots)
+    {
+        if (!initialized)
+        {
+            Debug.LogError("인벤토리 초기화가 완료되지 않았습니다.");
+            return false;
+        }
+
+        if (savedSlots == null)
+        {
+            Debug.LogError("저장된 슬롯 목록이 없습니다.");
+            return false;
+        }
+
+        // 이전 배치 제거
+        categorySlotItems.Clear();
+
+        foreach (var saved in savedSlots)
+        {
+            if (saved == null)
+                continue;
+
+            // 잘못된 슬롯 번호 제외
+            if (saved.slotIndex < 0 || saved.slotIndex >= SlotCount)
+                continue;
+
+            // 카테고리별 슬롯 배열 생성
+            if (!categorySlotItems.TryGetValue(
+                saved.category, out int?[] items))
+            {
+                items = new int?[SlotCount];
+                categorySlotItems.Add(saved.category, items);
+            }
+
+            // 새 배열은 null로 초기화되므로 빈 슬롯은 건너뜀
+            if (saved.itemId == -1)
+                continue;
+
+            ItemInfo info = itemManager.GetItemInfo(saved.itemId);
+
+            // 존재하고, 보유하고 있으며, 카테고리가 맞는 아이템만 배치
+            if (info == null ||
+                itemManager.GetItemCount(saved.itemId) <= 0 ||
+                info.itemType != saved.category)
+            {
+                continue;
+            }
+
+            // 중복 배치 및 같은 슬롯 덮어쓰기 방지
+            if (items[saved.slotIndex].HasValue ||
+                System.Array.IndexOf(items, (int?)saved.itemId) >= 0)
+            {
+                continue;
+            }
+
+            items[saved.slotIndex] = saved.itemId;
+        }
+
+        SetDescriptionText("");
+        RefreshInventory();
+        return true;
     }
 }

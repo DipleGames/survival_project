@@ -51,9 +51,9 @@ public class EquipmentSlotUI : MonoBehaviour,
         // 일반 인벤토리 -> 장착 슬롯
         ItemInvenSlot fromInventory = eventData.pointerDrag.GetComponent<ItemInvenSlot>();
 
-        if (fromInventory != null)
+        if (fromInventory != null && fromInventory.ItemInfo != null)
         {
-            equipmentManager.EquipItem(dragSlot.itemInfo);
+            equipmentManager.EquipItem(fromInventory.ItemInfo);
         }
     }
 

@@ -3169,7 +3169,7 @@ MonoBehaviour:
   sUnMark: {fileID: 3066630535976591810}
   normalToggle: {fileID: 3066630536864016021}
   doubleToggle: {fileID: 3066630536455123540}
-  gameManager: {fileID: 0}
+  normalCursorTextures: []
   keyTexts:
   - {fileID: 3066630537244479401}
   - {fileID: 3066630537841149899}

@@ -1,5 +1,5 @@
 
-using System.Collections.Generic;
+using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -9,8 +9,7 @@ public class QuickSlot : MonoBehaviour,
 {
     [SerializeField] Image itemImage;
     [SerializeField] ItemInventoryDrag dragSlot;
-    [SerializeField] private Image slotBackground;
-    private static readonly List<QuickSlot> allSlots = new();
+    [SerializeField] QuickSlotManager quickSlotManager;
     ItemInfo itemInfo;
 
     // 다른 슬롯에서 현재 아이템을 조회하기 위한 프로퍼티
@@ -61,58 +60,8 @@ public class QuickSlot : MonoBehaviour,
 
     public void OnDrop(PointerEventData eventData)
     {
-        if (eventData.pointerDrag == null) return;
-
-        // 1. 장착 슬롯 -> 퀵슬롯
-        EquipmentSlotUI fromEquipment = eventData.pointerDrag.GetComponent<EquipmentSlotUI>();
-
-        if (fromEquipment != null)
-        {
-            EquipmentManager manager = fromEquipment.EquipmentManager;
-
-            ItemInfo equippedItem = manager.GetEquippedItem();
-            ItemInfo previousItem = itemInfo;
-
-            // 퀵슬롯에 기존 아이템이 있다면 장착 가능 여부 검사 후 교환
-            if (previousItem != null)
-            {
-                if (!manager.EquipItem(previousItem)) return;
-            }
-            else
-            {
-                // 빈 퀵슬롯으로 옮긴 경우 장착 해제
-                manager.UnequipItem();
-            }
-
-            SetItem(equippedItem);
-            return;
-        }
-
-        // 2. 퀵슬롯 -> 퀵슬롯
-        QuickSlot fromQuick = eventData.pointerDrag.GetComponent<QuickSlot>();
-
-        if (fromQuick != null)
-        {
-            if (fromQuick == this) return;
-
-            ItemInfo draggedItem = fromQuick.ItemInfo;
-            ItemInfo previousItem = itemInfo;
-
-            fromQuick.SetItemDirect(previousItem);
-            SetItemDirect(draggedItem);
-
-            return;
-        }
-
-        // 3. 일반 인벤토리 -> 퀵슬롯
-        ItemInvenSlot fromInventory = eventData.pointerDrag.GetComponent<ItemInvenSlot>();
-
-        if (fromInventory != null)
-        {
-            ItemInfo draggedItem = fromInventory.inventory.DragSlot.GetComponent<ItemInventoryDrag>().itemInfo;
-
-            SetItem(draggedItem);
-        }
+        // 코드 QuickSlotManager에서 처리
+        quickSlotManager.HandleDrop(this, eventData);
     }
 
     public void OnBeginDrag(PointerEventData eventData)
