@@ -65,7 +65,7 @@ public class ItemDictionay : MonoBehaviour
             itemSlot.Add(slot);
         }
 
-        ChangeCategory(0);
+        ChangeCategory((int)ItemInventory.InventoryTab.Equipment);
 
         if (InventoryView != null)
             InventoryView.SetActive(false);
@@ -89,7 +89,7 @@ public class ItemDictionay : MonoBehaviour
 
         foreach (Item item in items)
         {
-            if ((int)item.Type == category)
+            if (ItemInventory.IsInTab(item.Type, (ItemInventory.InventoryTab)category))
                 itemsByCategory.Add(item);
         }
 
