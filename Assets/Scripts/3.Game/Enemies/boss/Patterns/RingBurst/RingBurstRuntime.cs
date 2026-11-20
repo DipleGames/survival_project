@@ -28,7 +28,7 @@ public class RingBurstRuntime : MonoBehaviour
         {
             if (hit.transform.IsChildOf(transform)) continue;
             Player player = hit.GetComponentInParent<Player>();
-            // 캐릭터의 지면 위치 기준. 경고와 같은 XZ 반지름으로 판정합니다.
+            // 캐릭터의 지면 위치 기준. 경고와 같은 XZ 반지름으로 판정
             Vector3 position = player != null ? player.transform.position : hit.transform.position;
             Vector3 offset = position - center;
             offset.y = 0f;
@@ -36,11 +36,11 @@ public class RingBurstRuntime : MonoBehaviour
             if (distance > outer * outer || (inner > 0f && distance <= inner * inner)) continue;
             if (player != null)
             {
-                if (hitPlayers.Add(player) && player.Health != null)
-                    player.Health.TakeDamage(Mathf.Max(0, damage));
+                if (!hitPlayers.Add(player)) continue;
+                player.Health?.TakeDamage(Mathf.Max(0, damage));
             }
-            else
-                Debug.Log($"[대지 균열] 플레이어 판정 적중: {hit.name}, 피해량: {damage}");
+
+            Debug.Log($"[{name}] 대지 균열 적중: {hit.name}, Damage: {damage}");
         }
     }
 

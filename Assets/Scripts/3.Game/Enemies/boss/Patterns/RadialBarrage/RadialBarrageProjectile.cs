@@ -93,10 +93,10 @@ public class RadialBarrageProjectile : MonoBehaviour
         {
             Player player = other.GetComponentInParent<Player>();
 
-            if (player != null && player.Health != null)
-                player.Health.TakeDamage(damage);
-            else
-                Debug.Log($"[보스 탄막] 플레이어 판정 적중: {other.name}, 피해량: {damage}");
+            if (player != null)
+                player.Health?.TakeDamage(damage);
+
+            Debug.Log($"[{(owner != null ? owner.name : name)}] 탄막 적중: {other.name}, Damage: {damage}");
         }
         Consume();
         return true;
