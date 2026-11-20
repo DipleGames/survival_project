@@ -12,31 +12,6 @@ public enum RoomType
     Boss,
 }
 
-public static class  RoomTypeNumber
-{
-    public const float Gap = 50.0f;
-    public static float GetRoomXPosition(RoomType type)
-    {
-        switch (type)
-        {
-            case RoomType.Start:
-                return Gap * 0;
-            case RoomType.Normal:
-                return Gap * 0;
-            case RoomType.Shop:
-                return Gap * 1;
-            case RoomType.Treasure:
-                return Gap * 2;
-            case RoomType.Elite:
-                return Gap * 3;
-            case RoomType.Boss:
-                return Gap * 4;
-            default:
-                return 0; // Invalid RoomType
-        }
-    }
-}
-
 public class DungeonRoomNode
 {
     //현재 방의 위치 층수*100 + 인덱스 : 2층 3번방이면 Id는 203
@@ -62,7 +37,7 @@ public class DungeonRoomNode
     }
 
     //방을 클리어 했다면 호출
-    public void RoomClear() { IsComplete = true; }
+    public void RoomComplete() { IsComplete = true; }
 
     //방 잇기(던전 생성에만 사용)
     public void AddNeighbor(int _neighbor) { Neighbors.Add(_neighbor); }

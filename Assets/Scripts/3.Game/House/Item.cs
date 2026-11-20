@@ -30,7 +30,15 @@ public enum MaterialType
     Count
 }
 
-public enum ItemType { Facility, Consumable, Tool, Material, Piece, Weapon };
+public enum ItemType
+{
+    Facility = 0, // 기존 씬에 등록된 설치물 데이터와 호환
+    Consumable = 1,
+    Tool = 2,
+    Material = 3,
+    Piece = 4,
+    Weapon = 5
+}
 
 public enum Acquisition
 {

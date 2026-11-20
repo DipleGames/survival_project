@@ -115,7 +115,7 @@ public class InvenControl : MonoBehaviour
 
     public void itemInvenCon()
     {
-        itemInventory.ChangeCategory(0);// 기존 코드에서 0을 넣는것같아서 일단 0 입력 => 작동중에 문제없는상태
+        itemInventory.ChangeCategory((int)ItemInventory.InventoryTab.Equipment);
     }
 
     public void CloseUI(int Index)

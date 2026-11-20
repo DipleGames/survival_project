@@ -9,6 +9,14 @@ using UnityEngine.UI;
 /// </summary>
 public class ItemInventory : MonoBehaviour
 {
+    public enum InventoryTab { Equipment, Consumable, Miscellaneous }
+
+    private static readonly int[] EquipmentCategories = { (int)ItemType.Tool };
+    private static readonly int[] ConsumableCategories = { (int)ItemType.Consumable };
+    private static readonly int[] MiscellaneousCategories =
+    {
+        (int)ItemType.Material, (int)ItemType.Piece, (int)ItemType.Facility
+    };
     [SerializeField] private GameObject descriptionPanel;
     [SerializeField] private Transform slotParent;
     [SerializeField] private GameObject slotPrefab;
@@ -21,7 +29,8 @@ public class ItemInventory : MonoBehaviour
     private readonly Dictionary<int, int?[]> categorySlotItems = new();
     private List<ItemInvenSlot> slots;
     private ItemManager itemManager;
-    private int currentCategory;
+    private readonly List<int> visibleCategories = new();
+    private InventoryTab currentTab;
     private bool initialized;
 
     public GameObject DragSlot => dragSlot;
@@ -32,7 +41,6 @@ public class ItemInventory : MonoBehaviour
     private void Awake()
     {
         slots = new List<ItemInvenSlot>(SlotCount);
-        currentCategory = 0;
 
         if (slotPrefab == null || slotParent == null)
         {
@@ -41,7 +49,18 @@ public class ItemInventory : MonoBehaviour
             return;
         }
 
-        for (int i = 0; i < SlotCount; i++)
+        if (!EnsureSlotCount(SlotCount))
+            return;
+
+        SetDescriptionText("");
+
+        if (invenPanel != null)
+            invenPanel.SetActive(false);
+    }
+
+    private bool EnsureSlotCount(int count)
+    {
+        while (slots.Count < count)
         {
             GameObject obj = Instantiate(slotPrefab, slotParent);
             ItemInvenSlot slot = obj.GetComponent<ItemInvenSlot>();
@@ -51,17 +70,14 @@ public class ItemInventory : MonoBehaviour
                 Debug.LogError("[ItemInventory] 슬롯 프리팹에 ItemInvenSlot 컴포넌트가 없습니다.", obj);
                 Destroy(obj);
                 enabled = false;
-                return;
+                return false;
             }
 
             slot.inventory = this;
             slots.Add(slot);
         }
 
-        SetDescriptionText("");
-
-        if (invenPanel != null)
-            invenPanel.SetActive(false);
+        return true;
     }
 
     /// <summary>
@@ -88,68 +104,78 @@ public class ItemInventory : MonoBehaviour
             return;
         }
 
-        InitializeSlotData();
         initialized = true;
-        ChangeCategory(currentCategory);
+        ChangeCategory((int)InventoryTab.Equipment);
     }
 
 
     /// <summary>
     /// 선택된 카테고리의 아이템들을 동기화하고 슬롯 UI를 다시 그린다.
     /// </summary>
-    public void ChangeCategory(int type)
+    public void ChangeCategory(int tab)
     {
-        if (!initialized)
+        if (!initialized || tab < (int)InventoryTab.Equipment || tab > (int)InventoryTab.Miscellaneous)
             return;
 
-        currentCategory = type;
-
+        currentTab = (InventoryTab)tab;
         if (categoryTabUI != null)
-            categoryTabUI.SetSelectedCategory(type);
+            categoryTabUI.SetSelectedCategory(tab);
 
-        SyncSlotData(type);
-        RefreshSlots();
+        SetDescriptionText("");
+        RefreshInventory();
     }
 
-    /// <summary>
-    /// 현재 보유한 아이템으로 카테고리별 초기 슬롯 배치를 만든다.
-    /// ItemInfo가 없는 아이템은 건너뛴다.
-    /// </summary>
-    private void InitializeSlotData()
+    private void SyncAllSlotData()
     {
-        categorySlotItems.Clear();
+        SyncSlotData((int)ItemType.Tool);
+        SyncSlotData((int)ItemType.Consumable);
+        foreach (int category in MiscellaneousCategories)
+            SyncSlotData(category);
+    }
 
-        foreach (var item in itemManager.haveItems)
+    private static int[] GetTabCategories(InventoryTab tab)
+    {
+        return tab switch
         {
-            int itemId = item.Key;
+            InventoryTab.Equipment => EquipmentCategories,
+            InventoryTab.Consumable => ConsumableCategories,
+            InventoryTab.Miscellaneous => MiscellaneousCategories,
+            _ => System.Array.Empty<int>()
+        };
+    }
 
-            if (item.Value <= 0)
-                continue;
+    internal static bool IsInTab(ItemType itemType, InventoryTab tab)
+    {
+        return System.Array.IndexOf(GetTabCategories(tab), GetSlotCategory((int)itemType)) >= 0;
+    }
 
-            if (!itemManager.itemInfos.TryGetValue(itemId, out ItemInfo info) || info == null)
-            {
-                Debug.LogWarning($"[ItemInventory] 아이템 정보가 없는 ID: {itemId}", this);
-                continue;
-            }
+    private static int GetSlotCategory(int itemType)
+    {
+        // 기존 저장 데이터에서 무기는 도구 슬롯 배치에 포함된다.
+        return itemType == (int)ItemType.Weapon ? (int)ItemType.Tool : itemType;
+    }
 
-            int type = info.itemType;
-
-            if (!categorySlotItems.TryGetValue(type, out int?[] items))
-            {
-                items = new int?[SlotCount];
-                categorySlotItems[type] = items;
-            }
+    public List<InventorySlotSaveData> CallInventoryData()
+    {
+        SyncAllSlotData();
+        var data = new List<InventorySlotSaveData>();
+        foreach (var category in categorySlotItems)
+        {
+            int?[] items = category.Value;
 
             for (int i = 0; i < items.Length; i++)
             {
-                if (items[i].HasValue)
-                    continue;
-
-                items[i] = itemId;
-                break;
+                data.Add(new InventorySlotSaveData
+                {
+                    category = category.Key,
+                    slotIndex = i,
+                    itemId = items[i] ?? -1
+                });
             }
         }
+        return data;
     }
+
 
     /// <summary>
     /// 드래그한 두 슬롯의 아이템 배치를 교환한다.
@@ -165,8 +191,13 @@ public class ItemInventory : MonoBehaviour
         if (fromIndex < 0 || toIndex < 0 || fromIndex == toIndex)
             return;
 
-        if (!categorySlotItems.TryGetValue(currentCategory, out int?[] items))
+        int group = fromIndex / SlotCount;
+        if (group >= visibleCategories.Count || group != toIndex / SlotCount)
             return;
+
+        int?[] items = categorySlotItems[visibleCategories[group]];
+        fromIndex %= SlotCount;
+        toIndex %= SlotCount;
 
         if (!items[fromIndex].HasValue)
             return;
@@ -183,8 +214,17 @@ public class ItemInventory : MonoBehaviour
         if (!initialized)
             return;
 
-        SyncSlotData(currentCategory);
-        int?[] items = categorySlotItems[currentCategory];
+        foreach (int category in visibleCategories)
+        {
+            SyncSlotData(category);
+            CompactSlots(categorySlotItems[category]);
+        }
+
+        RefreshSlots();
+    }
+
+    private static void CompactSlots(int?[] items)
+    {
         int writeIndex = 0;
 
         for (int readIndex = 0; readIndex < items.Length; readIndex++)
@@ -195,8 +235,6 @@ public class ItemInventory : MonoBehaviour
 
         for (int i = writeIndex; i < items.Length; i++)
             items[i] = null;
-
-        RefreshSlots();
     }
 
     /// <summary>
@@ -212,7 +250,13 @@ public class ItemInventory : MonoBehaviour
 
         string effect = item.effect?.Replace("\\n", "\n") ?? "";
         string description = item.decription?.Replace("\\n", "\n") ?? "";
-        SetDescriptionText($"{item.itemName}\n\n{effect}\n\n{description}");
+        string equipmentLabel = (ItemType)item.itemType switch
+        {
+            ItemType.Tool => "\n생활 장비",
+            ItemType.Weapon => "\n전투 장비",
+            _ => ""
+        };
+        SetDescriptionText($"{item.itemName}{equipmentLabel}\n\n{effect}\n\n{description}");
     }
 
     /// <summary>
@@ -272,7 +316,7 @@ public class ItemInventory : MonoBehaviour
 
             if (itemManager.GetItemCount(itemId) <= 0 ||
                 !itemManager.itemInfos.TryGetValue(itemId, out ItemInfo info) ||
-                info == null || info.itemType != type)
+                info == null || GetSlotCategory(info.itemType) != type)
             {
                 items[i] = null;
             }
@@ -283,7 +327,7 @@ public class ItemInventory : MonoBehaviour
             int itemId = item.Key;
 
             if (item.Value <= 0 || !itemManager.itemInfos.TryGetValue(itemId, out ItemInfo info) ||
-                info == null || info.itemType != type)
+                info == null || GetSlotCategory(info.itemType) != type)
                 continue;
 
             if (System.Array.IndexOf(items, (int?)itemId) >= 0)
@@ -306,16 +350,19 @@ public class ItemInventory : MonoBehaviour
     /// </summary>
     private void RefreshSlots()
     {
-        categorySlotItems.TryGetValue(currentCategory, out int?[] items);
+        int visibleSlotCount = visibleCategories.Count * SlotCount;
+        if (!EnsureSlotCount(visibleSlotCount))
+            return;
 
         for (int i = 0; i < slots.Count; i++)
         {
-            ItemInfo info = null;
+            bool visible = i < visibleSlotCount;
+            slots[i].gameObject.SetActive(visible);
+            if (!visible)
+                continue;
 
-            if (items != null && i < items.Length && items[i].HasValue)
-                info = itemManager.GetItemInfo(items[i].Value);
-
-            slots[i].SetSlot(info);
+            int? itemId = categorySlotItems[visibleCategories[i / SlotCount]][i % SlotCount];
+            slots[i].SetSlot(itemId.HasValue ? itemManager.GetItemInfo(itemId.Value) : null);
         }
     }
 
@@ -327,7 +374,85 @@ public class ItemInventory : MonoBehaviour
         if (!initialized)
             return;
 
-        SyncSlotData(currentCategory);
+        SyncAllSlotData();
+        visibleCategories.Clear();
+
+        int[] categories = GetTabCategories(currentTab);
+        foreach (int category in categories)
+        {
+            if (System.Array.Exists(categorySlotItems[category], item => item.HasValue))
+                visibleCategories.Add(category);
+        }
+
+        if (visibleCategories.Count == 0)
+            visibleCategories.Add(categories[0]);
+
         RefreshSlots();
+    }
+
+    //Load
+    public bool RestoreSlots(List<InventorySlotSaveData> savedSlots)
+    {
+        if (!initialized)
+        {
+            Debug.LogError("인벤토리 초기화가 완료되지 않았습니다.");
+            return false;
+        }
+
+        if (savedSlots == null)
+        {
+            Debug.LogError("저장된 슬롯 목록이 없습니다.");
+            return false;
+        }
+
+        // 이전 배치 제거
+        categorySlotItems.Clear();
+
+        foreach (var saved in savedSlots)
+        {
+            if (saved == null)
+                continue;
+
+            // 잘못된 슬롯 번호 제외
+            if (saved.slotIndex < 0 || saved.slotIndex >= SlotCount)
+                continue;
+
+            int category = GetSlotCategory(saved.category);
+
+            // 카테고리별 슬롯 배열 생성
+            if (!categorySlotItems.TryGetValue(
+                category, out int?[] items))
+            {
+                items = new int?[SlotCount];
+                categorySlotItems.Add(category, items);
+            }
+
+            // 새 배열은 null로 초기화되므로 빈 슬롯은 건너뜀
+            if (saved.itemId == -1)
+                continue;
+
+            ItemInfo info = itemManager.GetItemInfo(saved.itemId);
+
+            // 존재하고, 보유하고 있으며, 카테고리가 맞는 아이템만 배치
+            if (info == null ||
+                itemManager.GetItemCount(saved.itemId) <= 0 ||
+                GetSlotCategory(info.itemType) != category)
+            {
+                continue;
+            }
+
+            // 중복 배치 및 같은 슬롯 덮어쓰기 방지
+            if (items[saved.slotIndex].HasValue ||
+                System.Array.IndexOf(items, (int?)saved.itemId) >= 0)
+            {
+                continue;
+            }
+
+            items[saved.slotIndex] = saved.itemId;
+        }
+
+        SetDescriptionText("");
+        RefreshInventory();
+        return true;
     }
 }

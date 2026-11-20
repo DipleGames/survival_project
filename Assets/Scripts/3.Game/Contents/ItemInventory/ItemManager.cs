@@ -8,6 +8,8 @@ public class ItemManager : Singleton<ItemManager>
     public Dictionary<int, int> haveItems = new();
     public List<Item> itemDatas = new();
 
+    [SerializeField] private List<EquipmentItemInstance> equipmentInstances = new(); //장착 아이템 인스턴스 목록을 생성함
+
     [Header("Material Data")]
     public Dictionary<MaterialType, int> haveMaterials = new();
 
@@ -51,6 +53,50 @@ public class ItemManager : Singleton<ItemManager>
     {
         Initialize();
         DebugHaveItems();
+    }
+
+    // 개별 장비 생성 및 인벤토리 수량 증가
+    public EquipmentItemInstance AddEquipmentInstance(
+        int itemId, int maxDurability)
+    {
+        EquipmentItemInstance instance =
+            new EquipmentItemInstance(itemId, maxDurability);
+
+        equipmentInstances.Add(instance);
+        AddItem(itemId, 1);
+
+        return instance;
+    }
+
+    // 고유 ID를 기반으로 장비 인스턴스 조회
+    public EquipmentItemInstance GetEquipmentInstance(string instanceId)
+    {
+        return equipmentInstances.Find(
+            item => item.InstanceId == instanceId);
+    }
+
+    // 특정 ItemId의 사용 가능한 장비 인스턴스를 조회
+    public EquipmentItemInstance GetAvailableEquipmentInstance(int itemId)
+    {
+        return equipmentInstances.Find(
+            item => item.ItemId == itemId && !item.IsBroken);
+    }
+
+    // 개별 장비 제거 및 인벤토리 수량 감소
+    public bool RemoveEquipmentInstance(string instanceId)
+    {
+        EquipmentItemInstance instance = GetEquipmentInstance(instanceId);
+
+        if (instance == null)
+            return false;
+
+        // 보유 수량 차감 성공 시 인스턴스 제거
+        if (!TryRemoveItem(instance.ItemId, 1))
+            return false;
+
+        equipmentInstances.Remove(instance);
+
+        return true;
     }
 
     /// <summary>
@@ -197,7 +243,51 @@ public class ItemManager : Singleton<ItemManager>
         int count = 10;
 
         foreach (var pair in itemInfos)
-            AddItem(pair.Key, count++);
+        {
+            if (pair.Key == 1001) //기존 코드대로 진행헀을때 Sword가 44개 수량으로 지급되는 문제가 있어 무기는 하나만 지급되도록 수정함
+            {
+                AddEquipmentInstance(pair.Key, 100);
+            }
+            else
+            {
+                AddItem(pair.Key, count++);
+            }
+        }
     }
 #endif
+
+    // Load
+    public void RestoreEquipmentInstances(int itemId, int maxDurability)
+    {
+        equipmentInstances.RemoveAll(instance => instance.ItemId == itemId);
+
+        int count = GetItemCount(itemId);
+        for (int i = 0; i < count; i++)
+            equipmentInstances.Add(new EquipmentItemInstance(itemId, maxDurability));
+    }
+
+    public bool RestoreItems(List<ItemStackSaveData> savedItems)
+    {
+        if (!Initialize())
+            return false;
+
+        if (savedItems == null)
+        {
+            Debug.LogError("저장된 아이템 목록이 없습니다.");
+            return false;
+        }
+
+        // 기존 수량과 합쳐지지 않도록 초기화
+        haveItems.Clear();
+
+        foreach (var item in savedItems)
+        {
+            if (item == null)
+                continue;
+
+            AddItem(item.itemId, item.count);
+        }
+
+        return true;
+    }
 }
