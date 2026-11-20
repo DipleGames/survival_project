@@ -11,6 +11,10 @@ public class ItemInvenSlot : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     
     GameObject dragSlot;
     ItemInfo itemInfo;
+    // 외부에서 itemInfo 값을 읽을 수 있게 하는 프로퍼티
+    // 퀵슬롯에서 드래그&드랍시 발생하는 오류 체크
+    public ItemInfo ItemInfo => itemInfo;
+
 
     [HideInInspector] public ItemInventory inventory;
 

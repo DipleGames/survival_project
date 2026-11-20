@@ -131,7 +131,7 @@ public class ComboAttackController : MonoBehaviour
         PlayHitImpulse();
         if (step.AttackSFX != null)
         {
-            AudioManager.Instance.PlaySFX(step.AttackSFX);
+            SoundManager.Instance.PlaySFX(step.AttackSFX);
         }
     }
 
