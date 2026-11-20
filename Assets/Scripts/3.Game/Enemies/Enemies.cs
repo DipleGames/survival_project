@@ -17,6 +17,11 @@ public class Enemies : EnemyStats, IDamageable, IKnockbackable
 
     private bool deathStarted;
 
+    public void Awake()
+    {
+        //OnEnemyDied += 구독할 메서드
+    }
+
     protected void InitializePlayerReference()
     {
         hitFlashEffect = GetComponent<HitFlashEffect>();
