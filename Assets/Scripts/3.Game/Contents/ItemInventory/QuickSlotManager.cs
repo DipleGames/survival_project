@@ -5,6 +5,36 @@ using UnityEngine;
 public class QuickSlotManager : MonoBehaviour
 {
     [SerializeField] QuickSlot[] quickSlots;
+
+    private ItemManager itemManager;
+    private void Start()
+    {
+        itemManager = ItemManager.Instance;
+
+        if (itemManager != null)
+            itemManager.OnItemCountChanged += HandleItemCountChanged;
+
+        // 처음 등록되어 있는 아이템 수량 표시
+        foreach (QuickSlot slot in quickSlots)
+            slot.RefreshQuantity();
+    }
+
+    // 아이템 수량 변경 이벤트 처리
+    private void HandleItemCountChanged(int itemId, int count)
+    {
+        foreach (QuickSlot slot in quickSlots)
+        {
+            if (slot.ItemInfo?.itemId == itemId)
+                slot.RefreshQuantity();
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (itemManager != null)
+            itemManager.OnItemCountChanged -= HandleItemCountChanged;
+    }
+
     public List<QuickSlotSaveData> CallQuickSlotData()
     {
         var data = new List<QuickSlotSaveData>();
@@ -22,7 +52,14 @@ public class QuickSlotManager : MonoBehaviour
 
         return data;
     }
+    // 퀵슬롯 인덱스에 해당하는 슬롯 반환, 퀵슬롯 컨트롤러에서 사용.
+    public QuickSlot GetSlot(int index)
+    {
+        if (index < 0 || index >= quickSlots.Length)
+            return null;
 
+        return quickSlots[index];
+    }
     public void LoadQuickSlotData(List<QuickSlotSaveData> data)
     {
         // 이전 등록 정보 제거

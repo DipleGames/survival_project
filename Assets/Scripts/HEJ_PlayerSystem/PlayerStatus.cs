@@ -33,6 +33,9 @@ public class PlayerStatus
     // 스탯 변경 시 외부에 알리는 이벤트
     public event Action OnStatsChanged;
 
+    // 소비 아이템 등으로 획득한 영구 스탯 증가량 (보류, _stat 딕셔너리 사용해볼것)
+    private readonly Dictionary<StatType, float> permanentBonuses = new();
+
     /// <summary>
     /// 초기 스탯 데이터를 전달받아 기본 스탯과 최종 스탯을 초기화한다.
     /// </summary>
@@ -68,7 +71,16 @@ public class PlayerStatus
             _stat[pair.Key] = pair.Value;
         }
 
-        // 3. 장비 보너스 적용
+        // 3. 영구 스탯 보너스 적용
+        foreach (var pair in permanentBonuses)
+        {
+            if (_stat.ContainsKey(pair.Key))
+                _stat[pair.Key] += pair.Value;
+            else
+                _stat[pair.Key] = pair.Value;
+        }
+
+        // 4. 장비 보너스 적용
         if (equipmentBonuses != null)
         {
             foreach (Stat bonus in equipmentBonuses)
@@ -80,7 +92,7 @@ public class PlayerStatus
             }
         }
 
-        // 4. 스탯 변경 이벤트 발생
+        // 5. 스탯 변경 이벤트 발생
         OnStatsChanged?.Invoke();
     }
 
@@ -90,5 +102,21 @@ public class PlayerStatus
     public void ResetStat()
     {
         RecalculateStats(Array.Empty<Stat>());
+    }
+
+    /// <summary>
+    /// 영구 스탯 보너스를 누적하고 현재 스탯에도 반영한다. 현재 스탯은 readonly이므로 직접 수정할 수 없고, _stat 딕셔너리를 통해 수정해야 한다.
+    /// </summary>
+    public void AddPermanentBonus(StatType type, float amount)
+    {
+        if (amount <= 0f)
+            return;
+
+        permanentBonuses.TryGetValue(type, out float previous);
+        permanentBonuses[type] = previous + amount;
+
+        _stat[type] = GetStat(type) + amount;
+
+        OnStatsChanged?.Invoke();
     }
 }

@@ -1,11 +1,13 @@
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class ItemManager : Singleton<ItemManager>
 {
     [Header("Item Data")]
     public Dictionary<int, ItemInfo> itemInfos = new();
     public Dictionary<int, int> haveItems = new();
+    public event Action<int, int> OnItemCountChanged; // 아이템 수량 변경 시 호출되는 이벤트
     public List<Item> itemDatas = new();
 
     [SerializeField] private List<EquipmentItemInstance> equipmentInstances = new(); //장착 아이템 인스턴스 목록을 생성함
@@ -200,6 +202,9 @@ public class ItemManager : Singleton<ItemManager>
         }
 
         haveItems[itemId] = GetItemCount(itemId) + count;
+
+        // 수량 증가 알림
+        OnItemCountChanged?.Invoke(itemId, haveItems[itemId]);
     }
 
     /// <summary>
@@ -216,6 +221,9 @@ public class ItemManager : Singleton<ItemManager>
             haveItems.Remove(itemId);
         else
             haveItems[itemId] = remaining;
+
+        // 수량 감소 알림
+        OnItemCountChanged?.Invoke(itemId, remaining);
 
         return true;
     }
