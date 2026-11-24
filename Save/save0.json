@@ -1,10 +1,1086 @@
 {
-    "playerX": 2.971656322479248,
-    "playerY": 0.0,
-    "playerZ": -42.589385986328128
-}
-{
-    "playerX": 0.0,
-    "playerY": 0.05000128969550133,
-    "playerZ": -56.0
+    "saveVersion": 1,
+    "ScenceName": "Game",
+    "player": {
+        "position": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": -56.0
+        },
+        "currentHp": 100.0,
+        "equippedItemId": -1,
+        "inventory": {
+            "items": [
+                {
+                    "itemId": 1000000,
+                    "count": 10
+                },
+                {
+                    "itemId": 1000001,
+                    "count": 11
+                },
+                {
+                    "itemId": 1000002,
+                    "count": 12
+                },
+                {
+                    "itemId": 1000003,
+                    "count": 13
+                },
+                {
+                    "itemId": 1000004,
+                    "count": 14
+                },
+                {
+                    "itemId": 1010000,
+                    "count": 15
+                },
+                {
+                    "itemId": 1010001,
+                    "count": 16
+                },
+                {
+                    "itemId": 1010002,
+                    "count": 17
+                },
+                {
+                    "itemId": 1010003,
+                    "count": 18
+                },
+                {
+                    "itemId": 1020000,
+                    "count": 19
+                },
+                {
+                    "itemId": 1020001,
+                    "count": 20
+                },
+                {
+                    "itemId": 1030000,
+                    "count": 21
+                },
+                {
+                    "itemId": 1030001,
+                    "count": 22
+                },
+                {
+                    "itemId": 2020000,
+                    "count": 23
+                },
+                {
+                    "itemId": 2020001,
+                    "count": 24
+                },
+                {
+                    "itemId": 2020002,
+                    "count": 25
+                },
+                {
+                    "itemId": 2030000,
+                    "count": 26
+                },
+                {
+                    "itemId": 2030001,
+                    "count": 27
+                },
+                {
+                    "itemId": 2030002,
+                    "count": 28
+                },
+                {
+                    "itemId": 2030003,
+                    "count": 29
+                },
+                {
+                    "itemId": 2030004,
+                    "count": 30
+                },
+                {
+                    "itemId": 2030005,
+                    "count": 31
+                },
+                {
+                    "itemId": 2030006,
+                    "count": 32
+                },
+                {
+                    "itemId": 2030007,
+                    "count": 33
+                },
+                {
+                    "itemId": 2030008,
+                    "count": 34
+                },
+                {
+                    "itemId": 2030009,
+                    "count": 35
+                },
+                {
+                    "itemId": 2030010,
+                    "count": 36
+                },
+                {
+                    "itemId": 2030011,
+                    "count": 37
+                },
+                {
+                    "itemId": 2030012,
+                    "count": 38
+                },
+                {
+                    "itemId": 2030013,
+                    "count": 39
+                },
+                {
+                    "itemId": 2030014,
+                    "count": 40
+                },
+                {
+                    "itemId": 2030015,
+                    "count": 41
+                },
+                {
+                    "itemId": 1030002,
+                    "count": 42
+                },
+                {
+                    "itemId": 1030003,
+                    "count": 43
+                },
+                {
+                    "itemId": 1001,
+                    "count": 1
+                }
+            ],
+            "inventorySlots": [
+                {
+                    "category": 2,
+                    "slotIndex": 0,
+                    "itemId": 1010003
+                },
+                {
+                    "category": 2,
+                    "slotIndex": 1,
+                    "itemId": 1020000
+                },
+                {
+                    "category": 2,
+                    "slotIndex": 2,
+                    "itemId": 1020001
+                },
+                {
+                    "category": 2,
+                    "slotIndex": 3,
+                    "itemId": 2020000
+                },
+                {
+                    "category": 2,
+                    "slotIndex": 4,
+                    "itemId": 2020001
+                },
+                {
+                    "category": 2,
+                    "slotIndex": 5,
+                    "itemId": 2020002
+                },
+                {
+                    "category": 2,
+                    "slotIndex": 6,
+                    "itemId": 1001
+                },
+                {
+                    "category": 2,
+                    "slotIndex": 7,
+                    "itemId": -1
+                },
+                {
+                    "category": 2,
+                    "slotIndex": 8,
+                    "itemId": -1
+                },
+                {
+                    "category": 2,
+                    "slotIndex": 9,
+                    "itemId": -1
+                },
+                {
+                    "category": 2,
+                    "slotIndex": 10,
+                    "itemId": -1
+                },
+                {
+                    "category": 2,
+                    "slotIndex": 11,
+                    "itemId": -1
+                },
+                {
+                    "category": 2,
+                    "slotIndex": 12,
+                    "itemId": -1
+                },
+                {
+                    "category": 2,
+                    "slotIndex": 13,
+                    "itemId": -1
+                },
+                {
+                    "category": 2,
+                    "slotIndex": 14,
+                    "itemId": -1
+                },
+                {
+                    "category": 2,
+                    "slotIndex": 15,
+                    "itemId": -1
+                },
+                {
+                    "category": 2,
+                    "slotIndex": 16,
+                    "itemId": -1
+                },
+                {
+                    "category": 2,
+                    "slotIndex": 17,
+                    "itemId": -1
+                },
+                {
+                    "category": 2,
+                    "slotIndex": 18,
+                    "itemId": -1
+                },
+                {
+                    "category": 2,
+                    "slotIndex": 19,
+                    "itemId": -1
+                },
+                {
+                    "category": 2,
+                    "slotIndex": 20,
+                    "itemId": -1
+                },
+                {
+                    "category": 2,
+                    "slotIndex": 21,
+                    "itemId": -1
+                },
+                {
+                    "category": 2,
+                    "slotIndex": 22,
+                    "itemId": -1
+                },
+                {
+                    "category": 2,
+                    "slotIndex": 23,
+                    "itemId": -1
+                },
+                {
+                    "category": 2,
+                    "slotIndex": 24,
+                    "itemId": -1
+                },
+                {
+                    "category": 2,
+                    "slotIndex": 25,
+                    "itemId": -1
+                },
+                {
+                    "category": 2,
+                    "slotIndex": 26,
+                    "itemId": -1
+                },
+                {
+                    "category": 2,
+                    "slotIndex": 27,
+                    "itemId": -1
+                },
+                {
+                    "category": 2,
+                    "slotIndex": 28,
+                    "itemId": -1
+                },
+                {
+                    "category": 2,
+                    "slotIndex": 29,
+                    "itemId": -1
+                },
+                {
+                    "category": 2,
+                    "slotIndex": 30,
+                    "itemId": -1
+                },
+                {
+                    "category": 2,
+                    "slotIndex": 31,
+                    "itemId": -1
+                },
+                {
+                    "category": 2,
+                    "slotIndex": 32,
+                    "itemId": -1
+                },
+                {
+                    "category": 2,
+                    "slotIndex": 33,
+                    "itemId": -1
+                },
+                {
+                    "category": 2,
+                    "slotIndex": 34,
+                    "itemId": -1
+                },
+                {
+                    "category": 2,
+                    "slotIndex": 35,
+                    "itemId": -1
+                },
+                {
+                    "category": 1,
+                    "slotIndex": 0,
+                    "itemId": 1010000
+                },
+                {
+                    "category": 1,
+                    "slotIndex": 1,
+                    "itemId": 1010001
+                },
+                {
+                    "category": 1,
+                    "slotIndex": 2,
+                    "itemId": 1010002
+                },
+                {
+                    "category": 1,
+                    "slotIndex": 3,
+                    "itemId": -1
+                },
+                {
+                    "category": 1,
+                    "slotIndex": 4,
+                    "itemId": -1
+                },
+                {
+                    "category": 1,
+                    "slotIndex": 5,
+                    "itemId": -1
+                },
+                {
+                    "category": 1,
+                    "slotIndex": 6,
+                    "itemId": -1
+                },
+                {
+                    "category": 1,
+                    "slotIndex": 7,
+                    "itemId": -1
+                },
+                {
+                    "category": 1,
+                    "slotIndex": 8,
+                    "itemId": -1
+                },
+                {
+                    "category": 1,
+                    "slotIndex": 9,
+                    "itemId": -1
+                },
+                {
+                    "category": 1,
+                    "slotIndex": 10,
+                    "itemId": -1
+                },
+                {
+                    "category": 1,
+                    "slotIndex": 11,
+                    "itemId": -1
+                },
+                {
+                    "category": 1,
+                    "slotIndex": 12,
+                    "itemId": -1
+                },
+                {
+                    "category": 1,
+                    "slotIndex": 13,
+                    "itemId": -1
+                },
+                {
+                    "category": 1,
+                    "slotIndex": 14,
+                    "itemId": -1
+                },
+                {
+                    "category": 1,
+                    "slotIndex": 15,
+                    "itemId": -1
+                },
+                {
+                    "category": 1,
+                    "slotIndex": 16,
+                    "itemId": -1
+                },
+                {
+                    "category": 1,
+                    "slotIndex": 17,
+                    "itemId": -1
+                },
+                {
+                    "category": 1,
+                    "slotIndex": 18,
+                    "itemId": -1
+                },
+                {
+                    "category": 1,
+                    "slotIndex": 19,
+                    "itemId": -1
+                },
+                {
+                    "category": 1,
+                    "slotIndex": 20,
+                    "itemId": -1
+                },
+                {
+                    "category": 1,
+                    "slotIndex": 21,
+                    "itemId": -1
+                },
+                {
+                    "category": 1,
+                    "slotIndex": 22,
+                    "itemId": -1
+                },
+                {
+                    "category": 1,
+                    "slotIndex": 23,
+                    "itemId": -1
+                },
+                {
+                    "category": 1,
+                    "slotIndex": 24,
+                    "itemId": -1
+                },
+                {
+                    "category": 1,
+                    "slotIndex": 25,
+                    "itemId": -1
+                },
+                {
+                    "category": 1,
+                    "slotIndex": 26,
+                    "itemId": -1
+                },
+                {
+                    "category": 1,
+                    "slotIndex": 27,
+                    "itemId": -1
+                },
+                {
+                    "category": 1,
+                    "slotIndex": 28,
+                    "itemId": -1
+                },
+                {
+                    "category": 1,
+                    "slotIndex": 29,
+                    "itemId": -1
+                },
+                {
+                    "category": 1,
+                    "slotIndex": 30,
+                    "itemId": -1
+                },
+                {
+                    "category": 1,
+                    "slotIndex": 31,
+                    "itemId": -1
+                },
+                {
+                    "category": 1,
+                    "slotIndex": 32,
+                    "itemId": -1
+                },
+                {
+                    "category": 1,
+                    "slotIndex": 33,
+                    "itemId": -1
+                },
+                {
+                    "category": 1,
+                    "slotIndex": 34,
+                    "itemId": -1
+                },
+                {
+                    "category": 1,
+                    "slotIndex": 35,
+                    "itemId": -1
+                },
+                {
+                    "category": 3,
+                    "slotIndex": 0,
+                    "itemId": 1030000
+                },
+                {
+                    "category": 3,
+                    "slotIndex": 1,
+                    "itemId": 1030001
+                },
+                {
+                    "category": 3,
+                    "slotIndex": 2,
+                    "itemId": 2030000
+                },
+                {
+                    "category": 3,
+                    "slotIndex": 3,
+                    "itemId": 2030001
+                },
+                {
+                    "category": 3,
+                    "slotIndex": 4,
+                    "itemId": 2030002
+                },
+                {
+                    "category": 3,
+                    "slotIndex": 5,
+                    "itemId": 2030003
+                },
+                {
+                    "category": 3,
+                    "slotIndex": 6,
+                    "itemId": 2030004
+                },
+                {
+                    "category": 3,
+                    "slotIndex": 7,
+                    "itemId": 2030005
+                },
+                {
+                    "category": 3,
+                    "slotIndex": 8,
+                    "itemId": 2030006
+                },
+                {
+                    "category": 3,
+                    "slotIndex": 9,
+                    "itemId": 2030007
+                },
+                {
+                    "category": 3,
+                    "slotIndex": 10,
+                    "itemId": 2030008
+                },
+                {
+                    "category": 3,
+                    "slotIndex": 11,
+                    "itemId": 2030009
+                },
+                {
+                    "category": 3,
+                    "slotIndex": 12,
+                    "itemId": 2030010
+                },
+                {
+                    "category": 3,
+                    "slotIndex": 13,
+                    "itemId": 2030011
+                },
+                {
+                    "category": 3,
+                    "slotIndex": 14,
+                    "itemId": 2030012
+                },
+                {
+                    "category": 3,
+                    "slotIndex": 15,
+                    "itemId": 2030013
+                },
+                {
+                    "category": 3,
+                    "slotIndex": 16,
+                    "itemId": 2030014
+                },
+                {
+                    "category": 3,
+                    "slotIndex": 17,
+                    "itemId": 2030015
+                },
+                {
+                    "category": 3,
+                    "slotIndex": 18,
+                    "itemId": 1030002
+                },
+                {
+                    "category": 3,
+                    "slotIndex": 19,
+                    "itemId": 1030003
+                },
+                {
+                    "category": 3,
+                    "slotIndex": 20,
+                    "itemId": -1
+                },
+                {
+                    "category": 3,
+                    "slotIndex": 21,
+                    "itemId": -1
+                },
+                {
+                    "category": 3,
+                    "slotIndex": 22,
+                    "itemId": -1
+                },
+                {
+                    "category": 3,
+                    "slotIndex": 23,
+                    "itemId": -1
+                },
+                {
+                    "category": 3,
+                    "slotIndex": 24,
+                    "itemId": -1
+                },
+                {
+                    "category": 3,
+                    "slotIndex": 25,
+                    "itemId": -1
+                },
+                {
+                    "category": 3,
+                    "slotIndex": 26,
+                    "itemId": -1
+                },
+                {
+                    "category": 3,
+                    "slotIndex": 27,
+                    "itemId": -1
+                },
+                {
+                    "category": 3,
+                    "slotIndex": 28,
+                    "itemId": -1
+                },
+                {
+                    "category": 3,
+                    "slotIndex": 29,
+                    "itemId": -1
+                },
+                {
+                    "category": 3,
+                    "slotIndex": 30,
+                    "itemId": -1
+                },
+                {
+                    "category": 3,
+                    "slotIndex": 31,
+                    "itemId": -1
+                },
+                {
+                    "category": 3,
+                    "slotIndex": 32,
+                    "itemId": -1
+                },
+                {
+                    "category": 3,
+                    "slotIndex": 33,
+                    "itemId": -1
+                },
+                {
+                    "category": 3,
+                    "slotIndex": 34,
+                    "itemId": -1
+                },
+                {
+                    "category": 3,
+                    "slotIndex": 35,
+                    "itemId": -1
+                },
+                {
+                    "category": 4,
+                    "slotIndex": 0,
+                    "itemId": -1
+                },
+                {
+                    "category": 4,
+                    "slotIndex": 1,
+                    "itemId": -1
+                },
+                {
+                    "category": 4,
+                    "slotIndex": 2,
+                    "itemId": -1
+                },
+                {
+                    "category": 4,
+                    "slotIndex": 3,
+                    "itemId": -1
+                },
+                {
+                    "category": 4,
+                    "slotIndex": 4,
+                    "itemId": -1
+                },
+                {
+                    "category": 4,
+                    "slotIndex": 5,
+                    "itemId": -1
+                },
+                {
+                    "category": 4,
+                    "slotIndex": 6,
+                    "itemId": -1
+                },
+                {
+                    "category": 4,
+                    "slotIndex": 7,
+                    "itemId": -1
+                },
+                {
+                    "category": 4,
+                    "slotIndex": 8,
+                    "itemId": -1
+                },
+                {
+                    "category": 4,
+                    "slotIndex": 9,
+                    "itemId": -1
+                },
+                {
+                    "category": 4,
+                    "slotIndex": 10,
+                    "itemId": -1
+                },
+                {
+                    "category": 4,
+                    "slotIndex": 11,
+                    "itemId": -1
+                },
+                {
+                    "category": 4,
+                    "slotIndex": 12,
+                    "itemId": -1
+                },
+                {
+                    "category": 4,
+                    "slotIndex": 13,
+                    "itemId": -1
+                },
+                {
+                    "category": 4,
+                    "slotIndex": 14,
+                    "itemId": -1
+                },
+                {
+                    "category": 4,
+                    "slotIndex": 15,
+                    "itemId": -1
+                },
+                {
+                    "category": 4,
+                    "slotIndex": 16,
+                    "itemId": -1
+                },
+                {
+                    "category": 4,
+                    "slotIndex": 17,
+                    "itemId": -1
+                },
+                {
+                    "category": 4,
+                    "slotIndex": 18,
+                    "itemId": -1
+                },
+                {
+                    "category": 4,
+                    "slotIndex": 19,
+                    "itemId": -1
+                },
+                {
+                    "category": 4,
+                    "slotIndex": 20,
+                    "itemId": -1
+                },
+                {
+                    "category": 4,
+                    "slotIndex": 21,
+                    "itemId": -1
+                },
+                {
+                    "category": 4,
+                    "slotIndex": 22,
+                    "itemId": -1
+                },
+                {
+                    "category": 4,
+                    "slotIndex": 23,
+                    "itemId": -1
+                },
+                {
+                    "category": 4,
+                    "slotIndex": 24,
+                    "itemId": -1
+                },
+                {
+                    "category": 4,
+                    "slotIndex": 25,
+                    "itemId": -1
+                },
+                {
+                    "category": 4,
+                    "slotIndex": 26,
+                    "itemId": -1
+                },
+                {
+                    "category": 4,
+                    "slotIndex": 27,
+                    "itemId": -1
+                },
+                {
+                    "category": 4,
+                    "slotIndex": 28,
+                    "itemId": -1
+                },
+                {
+                    "category": 4,
+                    "slotIndex": 29,
+                    "itemId": -1
+                },
+                {
+                    "category": 4,
+                    "slotIndex": 30,
+                    "itemId": -1
+                },
+                {
+                    "category": 4,
+                    "slotIndex": 31,
+                    "itemId": -1
+                },
+                {
+                    "category": 4,
+                    "slotIndex": 32,
+                    "itemId": -1
+                },
+                {
+                    "category": 4,
+                    "slotIndex": 33,
+                    "itemId": -1
+                },
+                {
+                    "category": 4,
+                    "slotIndex": 34,
+                    "itemId": -1
+                },
+                {
+                    "category": 4,
+                    "slotIndex": 35,
+                    "itemId": -1
+                },
+                {
+                    "category": 0,
+                    "slotIndex": 0,
+                    "itemId": 1000000
+                },
+                {
+                    "category": 0,
+                    "slotIndex": 1,
+                    "itemId": 1000001
+                },
+                {
+                    "category": 0,
+                    "slotIndex": 2,
+                    "itemId": 1000002
+                },
+                {
+                    "category": 0,
+                    "slotIndex": 3,
+                    "itemId": 1000003
+                },
+                {
+                    "category": 0,
+                    "slotIndex": 4,
+                    "itemId": 1000004
+                },
+                {
+                    "category": 0,
+                    "slotIndex": 5,
+                    "itemId": -1
+                },
+                {
+                    "category": 0,
+                    "slotIndex": 6,
+                    "itemId": -1
+                },
+                {
+                    "category": 0,
+                    "slotIndex": 7,
+                    "itemId": -1
+                },
+                {
+                    "category": 0,
+                    "slotIndex": 8,
+                    "itemId": -1
+                },
+                {
+                    "category": 0,
+                    "slotIndex": 9,
+                    "itemId": -1
+                },
+                {
+                    "category": 0,
+                    "slotIndex": 10,
+                    "itemId": -1
+                },
+                {
+                    "category": 0,
+                    "slotIndex": 11,
+                    "itemId": -1
+                },
+                {
+                    "category": 0,
+                    "slotIndex": 12,
+                    "itemId": -1
+                },
+                {
+                    "category": 0,
+                    "slotIndex": 13,
+                    "itemId": -1
+                },
+                {
+                    "category": 0,
+                    "slotIndex": 14,
+                    "itemId": -1
+                },
+                {
+                    "category": 0,
+                    "slotIndex": 15,
+                    "itemId": -1
+                },
+                {
+                    "category": 0,
+                    "slotIndex": 16,
+                    "itemId": -1
+                },
+                {
+                    "category": 0,
+                    "slotIndex": 17,
+                    "itemId": -1
+                },
+                {
+                    "category": 0,
+                    "slotIndex": 18,
+                    "itemId": -1
+                },
+                {
+                    "category": 0,
+                    "slotIndex": 19,
+                    "itemId": -1
+                },
+                {
+                    "category": 0,
+                    "slotIndex": 20,
+                    "itemId": -1
+                },
+                {
+                    "category": 0,
+                    "slotIndex": 21,
+                    "itemId": -1
+                },
+                {
+                    "category": 0,
+                    "slotIndex": 22,
+                    "itemId": -1
+                },
+                {
+                    "category": 0,
+                    "slotIndex": 23,
+                    "itemId": -1
+                },
+                {
+                    "category": 0,
+                    "slotIndex": 24,
+                    "itemId": -1
+                },
+                {
+                    "category": 0,
+                    "slotIndex": 25,
+                    "itemId": -1
+                },
+                {
+                    "category": 0,
+                    "slotIndex": 26,
+                    "itemId": -1
+                },
+                {
+                    "category": 0,
+                    "slotIndex": 27,
+                    "itemId": -1
+                },
+                {
+                    "category": 0,
+                    "slotIndex": 28,
+                    "itemId": -1
+                },
+                {
+                    "category": 0,
+                    "slotIndex": 29,
+                    "itemId": -1
+                },
+                {
+                    "category": 0,
+                    "slotIndex": 30,
+                    "itemId": -1
+                },
+                {
+                    "category": 0,
+                    "slotIndex": 31,
+                    "itemId": -1
+                },
+                {
+                    "category": 0,
+                    "slotIndex": 32,
+                    "itemId": -1
+                },
+                {
+                    "category": 0,
+                    "slotIndex": 33,
+                    "itemId": -1
+                },
+                {
+                    "category": 0,
+                    "slotIndex": 34,
+                    "itemId": -1
+                },
+                {
+                    "category": 0,
+                    "slotIndex": 35,
+                    "itemId": -1
+                }
+            ],
+            "quickSlots": [
+                {
+                    "slotIndex": 0,
+                    "itemId": -1
+                },
+                {
+                    "slotIndex": 1,
+                    "itemId": -1
+                },
+                {
+                    "slotIndex": 2,
+                    "itemId": -1
+                },
+                {
+                    "slotIndex": 3,
+                    "itemId": -1
+                },
+                {
+                    "slotIndex": 4,
+                    "itemId": -1
+                },
+                {
+                    "slotIndex": 5,
+                    "itemId": -1
+                }
+            ],
+            "materials": []
+        }
+    }
 }
