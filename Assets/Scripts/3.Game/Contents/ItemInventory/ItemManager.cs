@@ -44,6 +44,9 @@ public class ItemManager : Singleton<ItemManager>
     private bool _initialized;
     public bool IsInitialized => _initialized;
 
+    // 아이템 수량 변경 이벤트
+    public event System.Action<int, int> OnItemCountChanged;
+
     protected override void Awake()
     {
         base.Awake();
@@ -202,6 +205,23 @@ public class ItemManager : Singleton<ItemManager>
         haveItems[itemId] = GetItemCount(itemId) + count;
     }
 
+    public bool UseItem(int itemId,int count)
+    {
+        if (count <= 0)
+            return false;
+        if (!itemInfos.ContainsKey(itemId))
+        {
+            Debug.LogWarning($"[ItemManager] 등록되지 않은 아이템 ID: {itemId}", this);
+            return false;
+        }
+        if (GetItemCount(itemId) < count)
+        {
+            Debug.LogWarning($"[ItemManager] 아이템 ID: {itemId}의 보유 수량이 부족합니다.", this);
+            return false;
+        }
+        return TryRemoveItem(itemId, count);
+    }
+
     /// <summary>
     /// 보유 수량이 충분하면 차감하고 true를 반환한다.
     /// </summary>
@@ -216,6 +236,8 @@ public class ItemManager : Singleton<ItemManager>
             haveItems.Remove(itemId);
         else
             haveItems[itemId] = remaining;
+
+        OnItemCountChanged?.Invoke(itemId, remaining);
 
         return true;
     }

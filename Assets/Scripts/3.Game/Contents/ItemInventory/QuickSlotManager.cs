@@ -5,6 +5,69 @@ using UnityEngine;
 public class QuickSlotManager : MonoBehaviour
 {
     [SerializeField] QuickSlot[] quickSlots;
+    [SerializeField] ItemManager itemManager;
+    private void Start()
+    {
+        itemManager = ItemManager.Instance;
+        // ItemManager 인스턴스가 null이거나 활성화되지 않은 경우 처리
+        if (itemManager == null || !itemManager.isActiveAndEnabled)
+        {
+            Debug.LogError("ItemManager를 찾을 수 없습니다.", this);
+            enabled = false;
+            return;
+        }
+
+        if (itemManager != null)
+            itemManager.OnItemCountChanged += HandleItemCountChanged;
+    }
+    private void Update()
+    {
+        for (int i = 0; i < 6; i++)
+        {
+            if (Input.GetKeyDown((KeyCode)((int)KeyCode.Alpha1 + i)))
+                UseQuickSlotItem(i);
+        }
+    }
+
+    // OnDestroy에서 이벤트 구독 해제
+    private void OnDestroy()
+    {
+        if (itemManager != null)
+            itemManager.OnItemCountChanged -= HandleItemCountChanged;
+    }
+    // 아이템 사용 아이템 매니저에서 처리
+    private void HandleItemCountChanged(int itemId, int remaining)
+    {
+        Debug.Log($"아이템 {itemId}의 남은 수량: {remaining}");
+        // 남은 수량이 0보다 크면 퀵슬롯에서 제거하지 않음
+        if (remaining > 0)
+            return;
+        // 남은 수량이 0이면 퀵슬롯에서 제거
+        foreach (QuickSlot slot in quickSlots)
+        {
+            if (slot != null && slot.ItemInfo?.itemId == itemId)
+            {
+                slot.SetItem(null);
+            }
+        }
+    }
+
+    public void UseQuickSlotItem(int index)
+    {
+        if (quickSlots == null || index < 0 || index >= quickSlots.Length)
+            return;
+
+        if (itemManager == null)
+            return;
+
+        if (quickSlots[index] == null || quickSlots[index].ItemInfo == null)
+        {
+            Debug.LogWarning($"퀵슬롯 {index}에 아이템이 없습니다.");
+            return;
+        }
+        itemManager.UseItem(quickSlots[index].ItemInfo.itemId, 1);
+    }
+
     public List<QuickSlotSaveData> CallQuickSlotData()
     {
         var data = new List<QuickSlotSaveData>();
