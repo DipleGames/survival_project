@@ -17,4 +17,10 @@ public class ItemInventoryDrag : MonoBehaviour
         rectTransform = GetComponent<RectTransform>();
         gameObject.SetActive(false);
     }
+
+    public void DeleteDragData()
+    {
+        itemInfo = null;
+        gameObject.SetActive(false);
+    }
 }

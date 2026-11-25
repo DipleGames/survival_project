@@ -17,7 +17,9 @@ public class InvenControl : MonoBehaviour
 
     [SerializeField] GameObject[] UIPanels; // UI 패널들을 배열로 선언
     [SerializeField] public bool isUIActive = false; // 켜진 UI가 있는지
-    
+
+    ItemInventoryDrag itemInventoryDrag;
+
     void Start()
     {
         currentIndex = 0;
@@ -50,7 +52,7 @@ public class InvenControl : MonoBehaviour
         // UI가 켜져있을경우 A,D 키를 눌러 다른 탭으로 이동
         if (UIisON)
         {
-            // A 입력시 index가 0인경우 마지막 인덱스로 이동
+/*            // A 입력시 index가 0인경우 마지막 인덱스로 이동
             // A 입력시 index가 0이 아닌경우 index-1로 이동
             if (Input.GetKeyDown(KeyCode.A) && panels.Length > 1)
             {
@@ -73,16 +75,16 @@ public class InvenControl : MonoBehaviour
                 {
                     itemInvenCon();
                 }
-            }
+            }*/
 
 
             //TAP은 어차피 D키 입력과 동일한 처리
-            /*if(Input.GetKeyDown(KeyCode.Tab) && panels.Length > 1)
+            if (Input.GetKeyDown(KeyCode.Tab) && panels.Length > 1)
             {
                 panels[currentIndex].SetActive(false);
                 currentIndex = currentIndex < panels.Length - 1 ? currentIndex + 1 : 0;
                 panels[currentIndex].SetActive(true);
-            }*/
+            }
         }
     }
 
@@ -91,6 +93,17 @@ public class InvenControl : MonoBehaviour
         // 열려 있는 페이지의 키를 다시 누르면 닫기
         if (UIisON && currentIndex == index)
         {
+            if (itemInventoryDrag == null)
+            {
+                itemInventoryDrag = FindObjectOfType<ItemInventoryDrag>(true);
+            }
+            if (itemInventoryDrag != null)
+            {
+                Debug.Log("Closing ItemInventoryDrag UI");
+                // UI를 닫을시 드래그중인 아이템 정보 제거
+                if(itemInventoryDrag != null)
+                    itemInventoryDrag.DeleteDragData();
+            }
             panels[currentIndex].SetActive(false);
             UIisON = false;
             return;
@@ -120,10 +133,10 @@ public class InvenControl : MonoBehaviour
 
     public void CloseUI(int Index)
     {
-        for(int i = 0; i<UIPanels.Length; i++)
+        for (int i = 0; i < UIPanels.Length; i++)
         {
-            if(Index != i)
-            UIPanels[i].SetActive(false);
+            if (Index != i)
+                UIPanels[i].SetActive(false);
         }
         UIisON = false;
     }
